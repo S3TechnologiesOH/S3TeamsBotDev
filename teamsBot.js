@@ -1,19 +1,13 @@
 const { TeamsActivityHandler, TurnContext } = require("botbuilder");
-const { DefaultAzureCredential, getBearerTokenProvider } =  require("@azure/identity");
+const { DefaultAzureCredential, getBearerTokenProvider } = require("@azure/identity");
 const { AzureOpenAI } = require("openai");
-const { AzureKeyCredential } = require("@azure/core-auth");
 
 const endpoint = process.env.OPENAI_ENDPOINT;
-const apiKey = process.env.OPENAI_API_KEY;
-
 const credential = new DefaultAzureCredential();
 const scope = "https://cognitiveservices.azure.com/.default";
 const azureADTokenProvider = getBearerTokenProvider(credential, scope);
-const deployment = "Your Azure OpenAI deployment";
-const apiVersion = "2024-04-01-preview";
-
-const options = { azureADTokenProvider, deployment, apiVersion }
-const client = new AzureOpenAI(options);
+const deploymentId = process.env.OPENAI_DEPLOYMENT_ID;
+const client = new AzureOpenAI({ azureADTokenProvider, endpoint, apiVersion: "2024-04-01-preview" });
 
 class TeamsBot extends TeamsActivityHandler {
   constructor() {
@@ -46,53 +40,12 @@ class TeamsBot extends TeamsActivityHandler {
   }
 
   async getOpenAIResponse(context, prompt) {
-    const deploymentId = process.env.OPENAI_DEPLOYMENT_ID;
-    if (!apiKey) {
-      await context.sendActivity(`Error: Missing API key. API Key: ${apiKey}`);
-      return;
-    }
     if (!endpoint) {
       await context.sendActivity(`Error: Missing endpoint. Endpoint: ${endpoint}`);
       return;
     }
     if (!deploymentId) {
       await context.sendActivity(`Error: Missing deployment ID. Deployment ID: ${deploymentId}`);
-      return;
-    }
-
-    // Test API Key validity
-    try {
-      const keyTestResponse = await client.chat.completions.create({ messages: [{ role: 'user', content: 'Test' }], model: deploymentId, max_tokens: 1 });
-      if (!keyTestResponse) {
-        await context.sendActivity(`Error: Invalid API key. API Key: ${apiKey}`);
-        return;
-      }
-    } catch (error) {
-      await context.sendActivity(`Error: Invalid API key. API Key: ${apiKey}, Error: ${error.message}`);
-      return;
-    }
-
-    // Test endpoint validity
-    try {
-      const response = await client.chat.completions.create({ messages: [{ role: 'user', content: 'Test' }], model: deploymentId, max_tokens: 1 });
-      if (response.status !== 200) {
-        await context.sendActivity(`Error: Invalid endpoint. Endpoint: ${endpoint}`);
-        return;
-      }
-    } catch (error) {
-      await context.sendActivity(`Error: Unable to reach endpoint. Endpoint: ${endpoint}, Error: ${error.message}`);
-      return;
-    }
-
-    // Test deployment ID validity
-    try {
-      const response = await client.chat.completions.create({ messages: [{ role: 'user', content: 'Test' }], model: deploymentId, max_tokens: 1 });
-      if (!response) {
-        await context.sendActivity(`Error: Invalid deployment ID. Deployment ID: ${deploymentId}`);
-        return;
-      }
-    } catch (error) {
-      await context.sendActivity(`Error: Unable to validate deployment ID. Deployment ID: ${deploymentId}, Error: ${error.message}`);
       return;
     }
 
