@@ -1,13 +1,28 @@
+require('dotenv/config');
 const { TeamsActivityHandler, TurnContext } = require("botbuilder");
-const { DefaultAzureCredential, getBearerTokenProvider } = require("@azure/identity");
 const { AzureOpenAI } = require("openai");
+const { AzureKeyCredential } = require("@azure/core-auth");
 
-const endpoint = process.env.OPENAI_ENDPOINT;
-const credential = new DefaultAzureCredential();
-const scope = "https://cognitiveservices.azure.com/.default";
-const azureADTokenProvider = getBearerTokenProvider(credential, scope);
-const deploymentId = process.env.OPENAI_DEPLOYMENT_ID;
-const client = new AzureOpenAI({ azureADTokenProvider, endpoint, apiVersion: "2024-04-01-preview" });
+// Get environment variables
+const azureOpenAIKey = process.env.AZURE_OPENAI_KEY;
+const azureOpenAIEndpoint = process.env.AZURE_OPENAI_ENDPOINT;
+const azureOpenAIVersion = "2024-05-01-preview";
+
+// Check env variables
+if (!azureOpenAIKey || !azureOpenAIEndpoint) {
+  throw new Error("Please set AZURE_OPENAI_KEY and AZURE_OPENAI_ENDPOINT in your environment variables.");
+}
+
+// Get Azure SDK client
+const getClient = () => {
+  const assistantsClient = new AzureOpenAI({
+    endpoint: azureOpenAIEndpoint,
+    apiVersion: azureOpenAIVersion,
+    apiKey: new AzureKeyCredential(azureOpenAIKey),
+  });
+  return assistantsClient;
+};
+const client = getClient();
 
 // Assistant setup
 const assistantOptions = {
@@ -63,22 +78,22 @@ class TeamsBot extends TeamsActivityHandler {
   }
 
   async getOpenAIResponse(context, prompt) {
-    if (!endpoint) {
-      await context.sendActivity(`Error: Missing endpoint. Endpoint: ${endpoint}`);
+    if (!azureOpenAIEndpoint) {
+      await context.sendActivity(`Error: Missing endpoint. Endpoint: ${azureOpenAIEndpoint}`);
       return;
     }
-    if (!deploymentId) {
-      await context.sendActivity(`Error: Missing deployment ID. Deployment ID: ${deploymentId}`);
+    if (!assistantOptions.model) {
+      await context.sendActivity(`Error: Missing model deployment name.`);
       return;
+    }
+
+    const assistant = await setupAssistant();
+    if (!assistant) {
+      await context.sendActivity(`Error: Unable to set up assistant. Please check the endpoint, API key, and deployment ID.`);
+      return "Sorry, I couldn't connect to Azure OpenAI at this time.";
     }
 
     try {
-      const assistant = await setupAssistant();
-      if (!assistant) {
-        await context.sendActivity(`Error: Unable to set up assistant. Please check the endpoint, API key, and deployment ID.`);
-        return "Sorry, I couldn't connect to Azure OpenAI at this time.";
-      }
-
       const thread = await client.beta.threads.create({});
       await client.beta.threads.messages.create(thread.id, {
         role: "user",
@@ -103,7 +118,7 @@ class TeamsBot extends TeamsActivityHandler {
         return `Run status is ${runStatus}, unable to fetch messages.`;
       }
     } catch (error) {
-      await context.sendActivity(`Error fetching OpenAI response: ${error.message}. Endpoint: ${endpoint}, Deployment ID: ${deploymentId}`);
+      await context.sendActivity(`Error fetching OpenAI response: ${error.message}. Endpoint: ${azureOpenAIEndpoint}, Model: ${assistantOptions.model}`);
       return "Sorry, I couldn't connect to Azure OpenAI at this time.";
     }
   }
