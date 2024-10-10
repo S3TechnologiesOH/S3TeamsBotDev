@@ -1,11 +1,19 @@
 const { TeamsActivityHandler, TurnContext } = require("botbuilder");
-const { DefaultAzureCredential } = require("@azure/identity");
+const { DefaultAzureCredential, getBearerTokenProvider } =  require("@azure/identity");
 const { AzureOpenAI } = require("openai");
 const { AzureKeyCredential } = require("@azure/core-auth");
 
 const endpoint = process.env.OPENAI_ENDPOINT;
 const apiKey = process.env.OPENAI_API_KEY;
-const client = new AzureOpenAI({ apiKey: new AzureKeyCredential(apiKey), endpoint, apiVersion: "2024-04-01-preview" });
+
+const credential = new DefaultAzureCredential();
+const scope = "https://cognitiveservices.azure.com/.default";
+const azureADTokenProvider = getBearerTokenProvider(credential, scope);
+const deployment = "Your Azure OpenAI deployment";
+const apiVersion = "2024-04-01-preview";
+
+const options = { azureADTokenProvider, deployment, apiVersion }
+const client = new AzureOpenAI(options);
 
 class TeamsBot extends TeamsActivityHandler {
   constructor() {
