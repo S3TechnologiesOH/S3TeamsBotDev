@@ -39,15 +39,56 @@ class TeamsBot extends TeamsActivityHandler {
 
   async getOpenAIResponse(context, prompt) {
     const deploymentId = process.env.OPENAI_DEPLOYMENT_ID;
-    if (!apiKey || !endpoint || !deploymentId) {
-      await context.sendActivity(`Error: Missing API key, endpoint, or deployment ID. Please check your configuration. API Key: ${apiKey}, Endpoint: ${endpoint}, Deployment ID: ${deploymentId}`);
+    if (!apiKey) {
+      await context.sendActivity(`Error: Missing API key. API Key: ${apiKey}`);
       return;
     }
+    if (!endpoint) {
+      await context.sendActivity(`Error: Missing endpoint. Endpoint: ${endpoint}`);
+      return;
+    }
+    if (!deploymentId) {
+      await context.sendActivity(`Error: Missing deployment ID. Deployment ID: ${deploymentId}`);
+      return;
+    }
+
+    // Test API Key validity
+    try {
+      await client.getKey(); // Hypothetical function to test the API key
+    } catch (error) {
+      await context.sendActivity(`Error: Invalid API key. API Key: ${apiKey}`);
+      return;
+    }
+
+    // Test endpoint validity
+    try {
+      const response = await client.getStatus(endpoint); // Hypothetical function to test endpoint
+      if (response.status !== 200) {
+        await context.sendActivity(`Error: Invalid endpoint. Endpoint: ${endpoint}`);
+        return;
+      }
+    } catch (error) {
+      await context.sendActivity(`Error: Unable to reach endpoint. Endpoint: ${endpoint}`);
+      return;
+    }
+
+    // Test deployment ID validity
+    try {
+      const response = await client.deployments.get(deploymentId); // Hypothetical function to test deployment ID
+      if (!response) {
+        await context.sendActivity(`Error: Invalid deployment ID. Deployment ID: ${deploymentId}`);
+        return;
+      }
+    } catch (error) {
+      await context.sendActivity(`Error: Unable to validate deployment ID. Deployment ID: ${deploymentId}`);
+      return;
+    }
+
     try {
       const result = await client.chat.completions.create({ messages: [{ role: 'user', content: prompt }], model: deploymentId, max_tokens: 100 });
       return result.choices[0].message.content;
     } catch (error) {
-      await context.sendActivity(`Error fetching OpenAI response: ${error.message}. API Key: ${apiKey}, Endpoint: ${endpoint}, Deployment ID: ${deploymentId}`);
+      await context.sendActivity(`Error fetching OpenAI response: ${error.message}. Endpoint: ${endpoint}, Deployment ID: ${deploymentId}`);
       return "Sorry, I couldn't connect to Azure OpenAI at this time.";
     }
   }
