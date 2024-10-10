@@ -56,7 +56,7 @@ class TeamsBot extends TeamsActivityHandler {
       });
       return result.choices[0].message.content;
     } catch (error) {
-      await context.sendActivity(`Error fetching OpenAI response: ${error.message}. Endpoint: ${endpoint}, Deployment ID: ${deploymentId}`);
+      await context.sendActivity(`Error fetching OpenAI response: ${error.message}. API KEY ${apiKey}, Endpoint: ${endpoint}, Deployment ID: ${deploymentId}`);
       return "Sorry, I couldn't connect to Azure OpenAI at this time.";
     }
   }
