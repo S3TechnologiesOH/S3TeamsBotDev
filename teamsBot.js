@@ -14,32 +14,33 @@ if (!azureOpenAIKey || !azureOpenAIEndpoint) {
 }
 
 // Get Azure SDK client
-const getClient = () => {
-  const assistantsClient = new AzureOpenAI({
-    endpoint: azureOpenAIEndpoint,
-    apiVersion: azureOpenAIVersion,
-    apiKey: new AzureKeyCredential(azureOpenAIKey),
-  });
-  return assistantsClient;
-};
-const client = getClient();
+const client = new AzureOpenAI({
+  endpoint: azureOpenAIEndpoint,
+  apiVersion: azureOpenAIVersion,
+  apiKey: new AzureKeyCredential(azureOpenAIKey),
+});
 
 // Assistant setup
 const assistantOptions = {
   model: "gpt-4o-mini", // replace with model deployment name
   name: "ConnectWiseConverter",
-  instructions: "You will receive a list of important information from a work ticket. All of the important details are above the line made of =, this includes the ticket ID, summary, company, etc. Below the line made of = is the ticket entries, placed in a list. Your job is to summarize this information into a simple summarized organized text. The time entries shouldn't be in a list, they should all be outlined together.",
+  instructions: "You will receive a list of important information from a work ticket. All of the important details are above the line made of =, this includes the ticket ID, summary, company, etc. Below the line made of = is the ticket entries, placed in a list.\n\nYour job is to summarize this information into a simple summarized organized text. The time entries shouldn't be in a list, they should all be outlined together.",
   tools: [{ "type": "code_interpreter" }],
   tool_resources: { "code_interpreter": { "file_ids": ["assistant-lLB2Cw77WyjaZG8w4HnppXhT", "assistant-iMi54kbSw7oV7TaV7P71CVdr", "assistant-CQj87BSB26AuxVhb9oJ989k0", "assistant-8CxktxY5DXUQzlOJ9pA9H4Ko"] } },
   temperature: 0.5,
-  top_p: 0.1
+  top_p: 0.1,
 };
+
+let assistant; // Declare assistant instance globally for reuse
 
 const setupAssistant = async () => {
   try {
-    const assistantResponse = await client.beta.assistants.create(assistantOptions);
-    console.log(`Assistant created: ${JSON.stringify(assistantResponse)}`);
-    return assistantResponse;
+    if (!assistant) {
+      const assistantResponse = await client.beta.assistants.create(assistantOptions);
+      console.log(`Assistant created: ${JSON.stringify(assistantResponse)}`);
+      assistant = assistantResponse;
+    }
+    return assistant;
   } catch (error) {
     console.error(`Error creating assistant: ${error.message}`);
     console.error(`Error details: ${JSON.stringify(error.response?.data || error)}`);
@@ -62,6 +63,8 @@ class TeamsBot extends TeamsActivityHandler {
 
       if (response) {
         await context.sendActivity(`Azure OpenAI says: ${response}`);
+      } else {
+        await context.sendActivity(`I'm sorry, but I couldn't generate a response at this time.`);
       }
 
       await next();
@@ -89,10 +92,12 @@ class TeamsBot extends TeamsActivityHandler {
       return;
     }
 
-    const assistant = await setupAssistant();
     if (!assistant) {
-      await context.sendActivity(`Error: Unable to set up assistant. Please check the endpoint, API key, and deployment ID.`);
-      return "Sorry, I couldn't connect to Azure OpenAI at this time.";
+      assistant = await setupAssistant(); // Ensure the assistant is set up before proceeding
+      if (!assistant) {
+        await context.sendActivity(`Error: Unable to set up assistant. Please check the endpoint, API key, and deployment ID.`);
+        return null;
+      }
     }
 
     try {
@@ -115,13 +120,13 @@ class TeamsBot extends TeamsActivityHandler {
 
       if (runStatus === 'completed') {
         const messagesResponse = await client.beta.threads.messages.list(thread.id);
-        return messagesResponse[messagesResponse.length - 1].content;
+        return messagesResponse[messagesResponse.length - 1]?.content || "No response received.";
       } else {
         return `Run status is ${runStatus}, unable to fetch messages.`;
       }
     } catch (error) {
       await context.sendActivity(`Error fetching OpenAI response: ${error.message}. Endpoint: ${azureOpenAIEndpoint}, Model: ${assistantOptions.model}`);
-      return "Sorry, I couldn't connect to Azure OpenAI at this time.";
+      return null;
     }
   }
 }
@@ -130,3 +135,4 @@ module.exports.TeamsBot = TeamsBot;
 
 // Set up the assistant at startup
 setupAssistant();
+
