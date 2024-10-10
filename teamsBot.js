@@ -49,16 +49,12 @@ class TeamsBot extends TeamsActivityHandler {
 
   // Function to call the Azure OpenAI service
   async getOpenAIResponse(prompt) {
-    try {
-      const deploymentId = process.env.OPENAI_DEPLOYMENT_ID; // Replace with your Azure OpenAI deployment ID
-      const result = await client.chat.completions.create({ messages: [{ role: 'user', content: prompt }], model: deploymentId, max_tokens: 100 });
-      return result.choices[0].text;
-    } catch (error) {
+    try { $1 } catch (error) {
+      if (this.context) { await this.context.sendActivity('Error fetching OpenAI response'); }
       console.error("Error fetching OpenAI response:", error);
       console.log("Endpoint:", endpoint);
       console.log("Deployment ID:", process.env.OPENAI_DEPLOYMENT_ID);
-      await context.sendActivity(`Endpoint: ${endpoint}`);
-      await context.sendActivity(`Deployment ID: ${process.env.OPENAI_DEPLOYMENT_ID}`);
+      throw new Error(`Endpoint: ${endpoint}, Deployment ID: ${process.env.OPENAI_DEPLOYMENT_ID}`);
       return "Sorry, I couldn't connect to Azure OpenAI at this time.";
     }
   }
