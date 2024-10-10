@@ -54,33 +54,37 @@ class TeamsBot extends TeamsActivityHandler {
 
     // Test API Key validity
     try {
-      await client.getKey(); // Hypothetical function to test the API key
+      const keyTestResponse = await client.chat.completions.create({ messages: [{ role: 'user', content: 'Test' }], model: deploymentId, max_tokens: 1 });
+      if (!keyTestResponse) {
+        await context.sendActivity(`Error: Invalid API key. API Key: ${apiKey}`);
+        return;
+      }
     } catch (error) {
-      await context.sendActivity(`Error: Invalid API key. API Key: ${apiKey}`);
+      await context.sendActivity(`Error: Invalid API key. API Key: ${apiKey}, Error: ${error.message}`);
       return;
     }
 
     // Test endpoint validity
     try {
-      const response = await client.getStatus(endpoint); // Hypothetical function to test endpoint
+      const response = await client.chat.completions.create({ messages: [{ role: 'user', content: 'Test' }], model: deploymentId, max_tokens: 1 });
       if (response.status !== 200) {
         await context.sendActivity(`Error: Invalid endpoint. Endpoint: ${endpoint}`);
         return;
       }
     } catch (error) {
-      await context.sendActivity(`Error: Unable to reach endpoint. Endpoint: ${endpoint}`);
+      await context.sendActivity(`Error: Unable to reach endpoint. Endpoint: ${endpoint}, Error: ${error.message}`);
       return;
     }
 
     // Test deployment ID validity
     try {
-      const response = await client.deployments.get(deploymentId); // Hypothetical function to test deployment ID
+      const response = await client.chat.completions.create({ messages: [{ role: 'user', content: 'Test' }], model: deploymentId, max_tokens: 1 });
       if (!response) {
         await context.sendActivity(`Error: Invalid deployment ID. Deployment ID: ${deploymentId}`);
         return;
       }
     } catch (error) {
-      await context.sendActivity(`Error: Unable to validate deployment ID. Deployment ID: ${deploymentId}`);
+      await context.sendActivity(`Error: Unable to validate deployment ID. Deployment ID: ${deploymentId}, Error: ${error.message}`);
       return;
     }
 
