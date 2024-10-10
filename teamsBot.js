@@ -1,14 +1,14 @@
 const { TeamsActivityHandler, TurnContext } = require("botbuilder");
 const { DefaultAzureCredential } = require("@azure/identity");
-const { OpenAIClient } = require("@azure/openai").OpenAIClient;
+const { OpenAIClient } = require("@azure/openai");
 const { AzureKeyCredential } = require("@azure/core-auth"); // Import AzureKeyCredential from @azure/core-auth
 
 // Set your OpenAI endpoint here (from your Azure portal)
 const endpoint = process.env.OPENAI_ENDPOINT; // Example: "https://<your-resource-name>.openai.azure.com/"
 
 // Use API key credential (recommended for Azure OpenAI)
-const apiKey = process.env.OPENAI_API_KEY;
-const client = new OpenAIClient(endpoint, new AzureKeyCredential(apiKey));
+const apiKey = new AzureKeyCredential(process.env.OPENAI_API_KEY);
+const client = new OpenAIClient(endpoint, apiKey);
 
 class TeamsBot extends TeamsActivityHandler {
   constructor() {
