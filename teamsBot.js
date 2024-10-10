@@ -4,9 +4,18 @@ const { AzureKeyCredential } = require("@azure/core-auth");
 
 const endpoint = process.env.OPENAI_ENDPOINT;
 const apiKey = process.env.OPENAI_API_KEY;
-const credential = new AzureKeyCredential(apiKey);
 const deploymentId = process.env.OPENAI_DEPLOYMENT_ID;
-const client = new AzureOpenAI({ apiKey: credential, endpoint, apiVersion: "2024-04-01-preview" });
+
+if (!endpoint || !apiKey || !deploymentId) {
+  console.error('Missing environment variables: ensure OPENAI_ENDPOINT, OPENAI_API_KEY, and OPENAI_DEPLOYMENT_ID are set');
+  process.exit(1);
+}
+
+const client = new AzureOpenAI({
+  apiKey: new AzureKeyCredential(apiKey),
+  endpoint,
+  apiVersion: "2024-04-01-preview",
+});
 
 class TeamsBot extends TeamsActivityHandler {
   constructor() {
@@ -39,17 +48,12 @@ class TeamsBot extends TeamsActivityHandler {
   }
 
   async getOpenAIResponse(context, prompt) {
-    if (!endpoint) {
-      await context.sendActivity(`Error: Missing endpoint. Endpoint: ${endpoint}`);
-      return;
-    }
-    if (!deploymentId) {
-      await context.sendActivity(`Error: Missing deployment ID. Deployment ID: ${deploymentId}`);
-      return;
-    }
-
     try {
-      const result = await client.chat.completions.create({ messages: [{ role: 'user', content: prompt }], model: deploymentId, max_tokens: 100 });
+      const result = await client.chat.completions.create({
+        messages: [{ role: 'user', content: prompt }],
+        model: deploymentId,
+        max_tokens: 100,
+      });
       return result.choices[0].message.content;
     } catch (error) {
       await context.sendActivity(`Error fetching OpenAI response: ${error.message}. Endpoint: ${endpoint}, Deployment ID: ${deploymentId}`);
