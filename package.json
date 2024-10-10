@@ -2,7 +2,7 @@
     "name": "s3teamsbot",
     "version": "1.0.0",
     "msteams": {
-      "teamsAppId": null
+        "teamsAppId": null
     },
     "description": "Microsoft Teams Toolkit hello world Bot sample",
     "engines": {
@@ -21,7 +21,9 @@
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "dependencies": {
+        "@azure/openai": "^2.0.0-beta.2",
         "botbuilder": "^4.20.0",
+        "node": "^18.20.4",
         "restify": "^10.0.0"
     },
     "devDependencies": {
