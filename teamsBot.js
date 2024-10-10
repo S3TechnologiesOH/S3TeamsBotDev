@@ -1,16 +1,13 @@
 const { TeamsActivityHandler, TurnContext } = require("botbuilder");
-import { DefaultAzureCredential } from "@azure/identity";
-import { OpenAIClient, AzureKeyCredential } from "@azure/openai"; // Import OpenAIClient and AzureKeyCredential
-
-// Use Azure AD credentials
-const credential = new DefaultAzureCredential();
-const scope = "https://cognitiveservices.azure.com/.default";
+const { DefaultAzureCredential } = require("@azure/identity");
+const { OpenAIClient, AzureKeyCredential } = require("@azure/openai"); // Import OpenAIClient and AzureKeyCredential
 
 // Set your OpenAI endpoint here (from your Azure portal)
 const endpoint = process.env.OPENAI_ENDPOINT; // Example: "https://<your-resource-name>.openai.azure.com/"
 
-// Initialize the OpenAI Client using the endpoint and credentials
-const client = new OpenAIClient(endpoint, credential);
+// Use API key credential (recommended for Azure OpenAI)
+const apiKey = process.env.OPENAI_API_KEY;
+const client = new OpenAIClient(endpoint, new AzureKeyCredential(apiKey));
 
 class TeamsBot extends TeamsActivityHandler {
   constructor() {
@@ -52,7 +49,7 @@ class TeamsBot extends TeamsActivityHandler {
   // Function to call the Azure OpenAI service
   async getOpenAIResponse(prompt) {
     try {
-      const deploymentId = process.env.OPENAI_DEVELOPMENT_ID; // Replace with your Azure OpenAI deployment ID
+      const deploymentId = process.env.OPENAI_DEPLOYMENT_ID; // Replace with your Azure OpenAI deployment ID
       const response = await client.getCompletions(deploymentId, {
         prompt: prompt,
         max_tokens: 50 // Adjust as needed
