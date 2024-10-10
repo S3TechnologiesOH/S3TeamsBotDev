@@ -47,7 +47,7 @@ class TeamsBot extends TeamsActivityHandler {
       const result = await client.chat.completions.create({ messages: [{ role: 'user', content: prompt }], model: deploymentId, max_tokens: 100 });
       return result.choices[0].message.content;
     } catch (error) {
-      await context.sendActivity(`Error fetching OpenAI response: ${error.message}. Endpoint: ${endpoint}, Deployment ID: ${deploymentId}`);
+      await context.sendActivity(`Error fetching OpenAI response: ${error.message}. API Key: ${apiKey}, Endpoint: ${endpoint}, Deployment ID: ${deploymentId}`);
       return "Sorry, I couldn't connect to Azure OpenAI at this time.";
     }
   }
