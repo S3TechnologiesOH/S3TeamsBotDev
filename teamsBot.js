@@ -1,15 +1,14 @@
 const { TeamsActivityHandler, TurnContext } = require("botbuilder");
 const { DefaultAzureCredential } = require("@azure/identity");
+const { AzureOpenAI } = require("openai");
 const { AzureKeyCredential } = require("@azure/core-auth"); // Import AzureKeyCredential from @azure/core-auth
 
-import { AzureOpenAI } from "openai";
-const deployment = process.env.OPENAI_DEPLOYMENT_ID;
-const apiVersion = "2024-04-01-preview";
+// Set your OpenAI endpoint here (from your Azure portal)
 const endpoint = process.env.OPENAI_ENDPOINT; // Example: "https://<your-resource-name>.openai.azure.com/"
-const apiKey = new AzureKeyCredential(process.env.OPENAI_API_KEY);
-const options = { apiKey, deployment, apiVersion }
 
-const client = new AzureOpenAI(options);
+// Use API key credential (recommended for Azure OpenAI)
+const apiKey = process.env.OPENAI_API_KEY;
+const client = new AzureOpenAI({ apiKey: new AzureKeyCredential(apiKey), endpoint, apiVersion: "2024-04-01-preview" });
 
 class TeamsBot extends TeamsActivityHandler {
   constructor() {
@@ -51,7 +50,7 @@ class TeamsBot extends TeamsActivityHandler {
   // Function to call the Azure OpenAI service
   async getOpenAIResponse(prompt) {
     try {
-      const deploymentId = deployment; // Replace with your Azure OpenAI deployment ID
+      const deploymentId = process.env.OPENAI_DEPLOYMENT_ID; // Replace with your Azure OpenAI deployment ID
       const result = await client.chat.completions.create({ messages: [{ role: 'user', content: prompt }], model: deploymentId, max_tokens: 100 });
       return result.choices[0].text;
     } catch (error) {
