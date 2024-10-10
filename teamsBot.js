@@ -27,6 +27,7 @@ const setupAssistant = async () => {
     return assistantResponse;
   } catch (error) {
     console.error(`Error creating assistant: ${error.message}`);
+    console.error(`Error details: ${JSON.stringify(error.response?.data || error)}`);
     return null;
   }
 };
@@ -74,7 +75,7 @@ class TeamsBot extends TeamsActivityHandler {
     try {
       const assistant = await setupAssistant();
       if (!assistant) {
-        await context.sendActivity(`Error: Unable to set up assistant.`);
+        await context.sendActivity(`Error: Unable to set up assistant. Please check the endpoint, API key, and deployment ID.`);
         return "Sorry, I couldn't connect to Azure OpenAI at this time.";
       }
 
