@@ -18,7 +18,7 @@ class TeamsBot extends TeamsActivityHandler {
       const txt = removedMentionText.toLowerCase().replace(/\n|\r/g, "").trim();
 
       const prompt = `You said: ${txt}`;
-      const response = await this.getOpenAIResponse(prompt);
+      const response = await this.getOpenAIResponse(context, prompt);
 
       await context.sendActivity(`Azure OpenAI says: ${response}`);
 
@@ -37,10 +37,19 @@ class TeamsBot extends TeamsActivityHandler {
     });
   }
 
-  async getOpenAIResponse(prompt) {
+  async getOpenAIResponse(context, prompt) {
     const deploymentId = process.env.OPENAI_DEPLOYMENT_ID;
-    const result = await client.chat.completions.create({ messages: [{ role: 'user', content: prompt }], model: deploymentId, max_tokens: 100 });
-    return result.choices[0].message.content;
+    if (!apiKey || !endpoint || !deploymentId) {
+      await context.sendActivity(`Error: Missing API key, endpoint, or deployment ID. Please check your configuration. API Key: ${apiKey}, Endpoint: ${endpoint}, Deployment ID: ${deploymentId}`);
+      return;
+    }
+    try {
+      const result = await client.chat.completions.create({ messages: [{ role: 'user', content: prompt }], model: deploymentId, max_tokens: 100 });
+      return result.choices[0].message.content;
+    } catch (error) {
+      await context.sendActivity(`Error fetching OpenAI response: ${error.message}. Endpoint: ${endpoint}, Deployment ID: ${deploymentId}`);
+      return "Sorry, I couldn't connect to Azure OpenAI at this time.";
+    }
   }
 }
 
