@@ -1,6 +1,6 @@
 const { TeamsActivityHandler, TurnContext } = require("botbuilder");
 const { DefaultAzureCredential } = require("@azure/identity");
-const { OpenAIClient } = require("@azure/openai");
+const { OpenAIClient } = require("@azure/openai").OpenAIClient;
 const { AzureKeyCredential } = require("@azure/core-auth"); // Import AzureKeyCredential from @azure/core-auth
 
 // Set your OpenAI endpoint here (from your Azure portal)
