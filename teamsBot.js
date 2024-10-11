@@ -4,8 +4,8 @@ const { DefaultAzureCredential, getBearerTokenProvider } = require("@azure/ident
 const { AzureOpenAI } = require("openai");
 
 // Load environment variables
-const openAIEndpoint = process.env.AZURE_OPENAI_ENDPOINT;
-const openAIDeployment = process.env.AZURE_OPENAI_DEPLOYMENT;
+const openAIEndpoint = "https://s3azureopenaitest.openai.azure.com/";
+const openAIDeployment = "gpt-4o-mini";
 const openAIAPIKey = process.env.AZURE_OPENAI_API_KEY;
 
 // Validate environment variables
