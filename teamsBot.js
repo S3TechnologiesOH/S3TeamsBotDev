@@ -1,5 +1,4 @@
 const { TeamsActivityHandler, TurnContext } = require("botbuilder");
-const { OpenAIClient, AzureKeyCredential } = require("@azure/openai");
 const { DefaultAzureCredential, getBearerTokenProvider } = require("@azure/identity");
 const { AzureOpenAI } = require("openai");
 
