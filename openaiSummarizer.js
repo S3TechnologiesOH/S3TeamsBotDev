@@ -22,32 +22,35 @@ const client = new AzureOpenAI({
 });
 
 async function summarizeJSON(jsonData) {
-    // Convert JSON data into a string for sending to the assistant
-    const jsonString = JSON.stringify(jsonData, null, 2);
-    const promptMessage = "You are a helpful assistant for summarizing ConnectWise tickets and their related time entries in a structured and consistent format.";
-   
     try {
+      // Convert the JSON data to a formatted string
+      const jsonString = JSON.stringify(jsonData, null, 2);
+      console.log("Debug Log: JSON being passed to OpenAI:", jsonString); // Debug log to verify JSON
+  
+      // Call OpenAI with the JSON string as part of the prompt
+      const promptMessage = `Here is the detailed time entries information in JSON format: \n${jsonString}\n Please summarize the time entries.`;
+  
       const messages = [
         { role: "system", content: "You are a helpful assistant that summarizes JSON data." },
         { role: "user", content: promptMessage },
       ];
   
-      // Call OpenAI to generate a summarized response
+      // OpenAI API call
       const response = await client.chat.completions.create({
         messages,
-        model: "gpt-4o-mini",  // Adjust this model if needed
-        max_tokens: 300,        // Increase token limit for a longer summary
-        temperature: 0.2,       // Adjust creativity
+        model: "gpt-4o-mini",
+        max_tokens: 300,
+        temperature: 0.2,
         stream: false,
       });
   
-      // Return the summarized content
       return response.choices[0].message.content.trim();
     } catch (error) {
-      console.error("Error communicating with Azure OpenAI:", error);
+      console.error("Error summarizing JSON:", error);
       throw new Error("Failed to summarize JSON data.");
     }
   }
+  
 
 module.exports = {
   summarizeJSON,

@@ -80,10 +80,19 @@ class TeamsBot extends TeamsActivityHandler {
       // Fetch related time entries
       const timeEntries = await fetch_time_entries_for_ticket(ticketId);
       
-      // Summarize only the time entries to avoid repeating ticket info
-      const timeEntriesSummary = await summarizeJSON(timeEntries);
+      // Combine ticket and time entries into a single object
+      const combinedData = {
+        ticket: ticketInfo,
+        timeEntries: timeEntries,
+      };
   
-      // Format the ticket details in a readable way
+      // Log the combined data to check if it's being passed correctly
+      console.log("Debug Log: Combined data being passed to OpenAI:", combinedData);
+  
+      // Summarize the combined data
+      const combinedSummary = await summarizeJSON(combinedData);
+  
+      // Send the formatted details back to the user
       const formattedTicketDetails = 
         `**ID:** ${get_attr_or_key(ticketInfo, 'id')}\n\n` +
         `**Summary:** ${get_attr_or_key(ticketInfo, 'summary')}\n\n` +
@@ -95,11 +104,10 @@ class TeamsBot extends TeamsActivityHandler {
         `**Assigned to:** ${get_attr_or_key(ticketInfo, 'resources')}\n\n` +
         `**Actual Hours:** ${get_attr_or_key(ticketInfo, 'actualHours')}\n\n`;
   
-      // Combine formatted ticket details with time entries summary
-      const fullMessage = `${formattedTicketDetails}**Time Entries Summary:**\n\n${timeEntriesSummary}`;
+      const fullMessage = `${formattedTicketDetails}\n\n**Time Entries Summary:**\n${combinedSummary}`;
   
-      // Split message if it's too long (Microsoft Teams message size limit)
-      const chunkSize = 10000; // Max character limit for a message in Teams
+      // Split and send the message in chunks if too long
+      const chunkSize = 2000;
       for (let i = 0; i < fullMessage.length; i += chunkSize) {
         const messageChunk = fullMessage.slice(i, i + chunkSize);
         await context.sendActivity(messageChunk);
