@@ -6,14 +6,13 @@ const { AzureKeyCredential } = require("@azure/openai");
 // Load environment variables
 const openAIEndpoint = process.env.OPENAI_ENDPOINT;
 const openAIDeployment = process.env.OPENAI_DEPLOYMENT_ID; // Replace with your actual deployment name
-const openAIAPIKey = process.env.OPENAI_API_KEY;
 
 // Validate environment variables
 if (!openAIEndpoint || !openAIDeployment) {
   throw new Error("AZURE_OPENAI_ENDPOINT", openAIEndpoint , "and AZURE_OPENAI_DEPLOYMENT ", openAIDeployment , "must be set as environment variables.");
 }
 
-const apiKey = new AzureKeyCredential(openAIAPIKey);
+const apiKey = new AzureKeyCredential(process.env.OPENAI_API_KEY);
 
 // Define API version
 const apiVersion = "2024-04-01-preview";
