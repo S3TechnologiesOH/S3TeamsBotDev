@@ -1,6 +1,7 @@
 const { TeamsActivityHandler, TurnContext } = require("botbuilder");
 const { AzureOpenAI } = require("openai");
 const { DefaultAzureCredential, getBearerTokenProvider } = require("@azure/identity");
+const { AzureKeyCredential } = required("@azure/openai");
 
 // Load environment variables
 const openAIEndpoint = process.env.OPENAI_ENDPOINT;
@@ -12,10 +13,7 @@ if (!openAIEndpoint || !openAIDeployment) {
   throw new Error("AZURE_OPENAI_ENDPOINT", openAIEndpoint , "and AZURE_OPENAI_DEPLOYMENT ", openAIDeployment , "must be set as environment variables.");
 }
 
-// Authenticate using Microsoft Entra ID (Recommended)
-const credential = new DefaultAzureCredential();
-const scope = "https://cognitiveservices.azure.com/.default";
-const azureADTokenProvider = getBearerTokenProvider(credential, scope);
+const apiKey = new AzureKeyCredential(openAIAPIKey);
 
 // Define API version
 const apiVersion = "2024-04-01-preview";
@@ -23,7 +21,7 @@ const apiVersion = "2024-04-01-preview";
 // Construct the Azure OpenAI client with Microsoft Entra ID tokens
 const client = new AzureOpenAI({
   endpoint: openAIEndpoint,            // Correct key: 'endpoint'
-  azureADTokenProvider, // Correct key: 'tokenProvider'
+  apiKey, // Correct key: 'tokenProvider'
   deployment: openAIDeployment,
   apiVersion,                          // Specify the API version
 });
