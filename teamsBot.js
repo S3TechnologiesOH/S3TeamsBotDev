@@ -20,7 +20,7 @@ const apiVersion = "2024-04-01-preview";
 // Construct the Azure OpenAI client with Microsoft Entra ID tokens
 const client = new AzureOpenAI({
   endpoint: openAIEndpoint,            // Correct key: 'endpoint'
-  AZURE_OPENAI_API_KEY,
+  openAIAPIKey,
   deployment: openAIDeployment,
   apiVersion,                          // Specify the API version
 });
