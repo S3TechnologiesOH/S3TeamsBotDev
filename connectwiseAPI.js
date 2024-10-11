@@ -1,4 +1,5 @@
-const { Connectwise, TicketsApi, Ticket } = require('connectwise-rest-api/release/api/api');
+const { Connectwise} = require('connectwise-rest-api');
+const { TicketsApi, Ticket } = require('connectwise-rest-api/release/api/api');
 
 // Set your ConnectWise configuration
 const connectwiseUrl = process.env.CW_URL;  // Your ConnectWise URL
