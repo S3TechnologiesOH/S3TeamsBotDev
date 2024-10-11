@@ -36,14 +36,16 @@ class TeamsBot extends TeamsActivityHandler {
       const removedMentionText = TurnContext.removeRecipientMention(context.activity);
       const userMessage = removedMentionText.toLowerCase().replace(/\n|\r/g, "").trim();
 
-      // Check if the message starts with `/prompt`
-      if (userMessage.startsWith("/prompt")) {
-        const promptMessage = userMessage.replace("/prompt", "").trim();
-
-        // Send the OpenAI response
-        await this.handleOpenAIRequest(context, promptMessage);
-      } else {
-        await context.sendActivity("Unknown command. Use `/prompt [message]` to interact with OpenAI.");
+      // Check if the message starts with a slash ("/")
+      if (userMessage.startsWith("/")) {
+        // Check if it's a /prompt command
+        if (userMessage.startsWith("/prompt")) {
+          const promptMessage = userMessage.replace("/prompt", "").trim();
+          await this.handleOpenAIRequest(context, promptMessage);
+        } else {
+          // If the command is unknown
+          await context.sendActivity("Unknown command. Use `/prompt [message]` to interact with OpenAI.");
+        }
       }
 
       await next();
