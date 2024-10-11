@@ -8,7 +8,7 @@ const privateKey = process.env.CW_PRIVATE_KEY;
 
 // Authenticate with ConnectWise using a basic auth header
 const authKey = Buffer.from(`${companyId}+${publicKey}:${privateKey}`).toString('base64');
-
+console.log(`Auth Key: ${authKey}`);
 // Initialize the Tickets API
 let cwService;
 console.log(`Company ID: ${process.env.CW_COMPANY_ID}`);
