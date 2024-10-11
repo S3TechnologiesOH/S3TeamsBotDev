@@ -28,45 +28,34 @@ const client = new AzureOpenAI({
   apiVersion,                          // Specify the API version
 });
 
-// *(Optional and Highly Discouraged)* Authenticate using API Key
-// Uncomment the following lines if you choose to use an API key instead of Entra ID tokens
-
-// if (!openAIAPIKey) {
-//   throw new Error("AZURE_OPENAI_API_KEY must be set as an environment variable.");
-// }
-// const { AzureKeyCredential } = require("openai");
-// const apiKeyCredential = new AzureKeyCredential(openAIAPIKey);
-// const client = new AzureOpenAI({
-//   endpoint: openAIEndpoint,              // Correct key: 'endpoint'
-//   tokenProvider: apiKeyCredential,       // Correct key: 'tokenProvider'
-//   deployment: openAIDeployment,
-//   apiVersion,                            // Specify the API version
-// });
-
 class TeamsBot extends TeamsActivityHandler {
   constructor() {
     super();
 
     // Handle incoming messages
     this.onMessage(async (context, next) => {
-      console.log("Received a message activity.");
+      await context.sendActivity("Debug Log: Received a message activity."); // Debug message to chat
 
       // Remove the bot's mention from the message
       const removedMentionText = TurnContext.removeRecipientMention(context.activity);
       const userMessage = removedMentionText.toLowerCase().replace(/\n|\r/g, "").trim();
 
-      // Log the user's message
-      console.log(`User Message: ${userMessage}`);
+      // Send the user's message to the bot chat for debugging
+      await context.sendActivity(`Debug Log: User Message is '${userMessage}'`);
+
+      const messages = [
+        { role: "system", content: "You are a helpful assistant." },
+        { role: "user", content: userMessage },
+      ];
 
       try {
         // Call Azure OpenAI to generate a response
         const response = await client.chat.completions.create({
-          messages: [
-            { role: "system", content: "You are a helpful assistant." },
-            { role: "user", content: userMessage },
-          ],
+          messages,
+          model: "gpt-4o-mini",
           max_tokens: 150, // Adjust as needed
           temperature: 0.2, // Adjust creativity
+          stream: false
         });
 
         // Extract the assistant's reply
@@ -74,8 +63,13 @@ class TeamsBot extends TeamsActivityHandler {
 
         // Send the AI-generated response back to the user
         await context.sendActivity(`**Assistant:** ${botReply}`);
+
+        // Log the AI response to the bot chat
+        await context.sendActivity(`Debug Log: AI Response is '${botReply}'`);
       } catch (error) {
-        console.error("Error communicating with Azure OpenAI:", error);
+        // Send the error message to the bot chat
+        await context.sendActivity("Debug Log: Error communicating with Azure OpenAI:");
+        await context.sendActivity(JSON.stringify(error, null, 2)); // Send detailed error information
         await context.sendActivity("Sorry, I encountered an error while processing your request.");
       }
 
