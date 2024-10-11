@@ -5,9 +5,10 @@ const connectwiseUrl = process.env.CW_URL;  // Your ConnectWise URL
 const companyId = process.env.CW_COMPANY_ID;
 const publicKey = process.env.CW_PUBLIC_KEY;
 const privateKey = process.env.CW_PRIVATE_KEY;
+const clientId = process.env.CW_CLIENTID;
+const authKey = process.env.CW_AUTHKEY;
 
 // Authenticate with ConnectWise using a basic auth header
-const authKey = Buffer.from(`${companyId}+${publicKey}:${privateKey}`).toString('base64');
 console.log(`Auth Key: ${authKey}`);
 // Initialize the Tickets API
 let cwService;
@@ -15,7 +16,7 @@ console.log(`Company ID: ${process.env.CW_COMPANY_ID}`);
 console.log(`Public Key: ${process.env.CW_PUBLIC_KEY}`);
 try {
   cwService = new TicketsApi(`${connectwiseUrl}`);  // Initialize API without version path in the base URL
-  cwService.defaultHeaders = { 'Authorization': `Basic ${authKey}` };
+  cwService.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
 } catch (error) {
   console.error("Error initializing ConnectWise API:", error);
   throw new Error("Failed to initialize ConnectWise API.");
