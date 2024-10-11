@@ -9,7 +9,7 @@ const openAIAPIKey = process.env.AZURE_OPENAI_API_KEY;
 
 // Validate environment variables
 if (!openAIEndpoint || !openAIDeployment) {
-  throw new Error("AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_DEPLOYMENT must be set as environment variables.");
+  throw new Error("AZURE_OPENAI_ENDPOINT", openAIEndpoint , "and AZURE_OPENAI_DEPLOYMENT ", openAIDeployment , "must be set as environment variables.");
 }
 
 // Authenticate using Microsoft Entra ID (Recommended)
