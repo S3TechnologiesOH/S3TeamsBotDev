@@ -80,43 +80,34 @@ class TeamsBot extends TeamsActivityHandler {
       // Fetch related time entries
       const timeEntries = await fetch_time_entries_for_ticket(ticketId);
       
-      // Combine the ticket and time entries data
-      const combinedData = {
-        ticket: ticketInfo,
-        timeEntries: timeEntries
-      };
-      
-      // Summarize the combined ticket and time entries data using OpenAI
-      const combinedSummary = await summarizeJSON(combinedData);
+      // Summarize only the time entries to avoid repeating ticket info
+      const timeEntriesSummary = await summarizeJSON(timeEntries);
   
+      // Format the ticket details in a readable way
       const formattedTicketDetails = 
-      `ID: ${get_attr_or_key(ticketInfo, 'id')}\n` +
-      `Summary: ${get_attr_or_key(ticketInfo, 'summary')}\n` +
-      `Record Type: ${get_attr_or_key(ticketInfo, 'recordType')}\n` +
-      `Company: ${get_attr_or_key(ticketInfo.company, 'name')}\n` +
-      `Board: ${get_attr_or_key(ticketInfo.board, 'name')}\n` +
-      `Status: ${get_attr_or_key(ticketInfo.status, 'name')}\n` +
-      `Priority: ${get_attr_or_key(ticketInfo.priority, 'name')}\n` +
-      `Assigned to: ${get_attr_or_key(ticketInfo, 'resources')}\n` +
-      `Actual Hours: ${get_attr_or_key(ticketInfo, 'actualHours')}\n`;
-
-    // Create a card with the ticket details and time entries summary
-    const summaryCard = CardFactory.heroCard(
-      "Ticket and Time Entries Summary",
-      `${formattedTicketDetails}\n\n**Time Entries Summary:** ${combinedSummary}`,
-      null,
-      null
-    );
+        `**ID:** ${get_attr_or_key(ticketInfo, 'id')}\n` +
+        `**Summary:** ${get_attr_or_key(ticketInfo, 'summary')}\n` +
+        `**Record Type:** ${get_attr_or_key(ticketInfo, 'recordType')}\n` +
+        `**Company:** ${get_attr_or_key(ticketInfo.company, 'name')}\n` +
+        `**Board:** ${get_attr_or_key(ticketInfo.board, 'name')}\n` +
+        `**Status:** ${get_attr_or_key(ticketInfo.status, 'name')}\n` +
+        `**Priority:** ${get_attr_or_key(ticketInfo.priority, 'name')}\n` +
+        `**Assigned to:** ${get_attr_or_key(ticketInfo, 'resources')}\n` +
+        `**Actual Hours:** ${get_attr_or_key(ticketInfo, 'actualHours')}\n\n`;
   
-      // Send the card as a response
-      await context.sendActivity({ attachments: [summaryCard] });
+      // Combine formatted ticket details with time entries summary
+      const fullMessage = `${formattedTicketDetails}**Time Entries Summary:**\n${timeEntriesSummary}`;
+  
+      // Send the full message as plain text
+      await context.sendActivity(fullMessage);
       
     } catch (error) {
       await context.sendActivity(`Sorry, I encountered an error while processing the ticket ID: ${ticketId}`);
       console.error("Error fetching ticket or time entries:", error);
     }
   }
-
+  
+  
   // Send a welcome card with command list
   async sendWelcomeCard(context) {
     const card = CardFactory.heroCard(
