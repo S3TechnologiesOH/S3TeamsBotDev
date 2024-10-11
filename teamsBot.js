@@ -6,7 +6,7 @@ const { AzureKeyCredential } = require("@azure/openai");
 // Load environment variables
 const openAIEndpoint = process.env.OPENAI_ENDPOINT;
 const openAIDeployment = process.env.OPENAI_DEPLOYMENT_ID; // Replace with your actual deployment name
-const openAIAPIKey = process.env.OPENAI_API_KEY;
+const openAIAPIKey = process.env.AZURE_OPENAI_API_KEY;
 
 // Validate environment variables
 if (!openAIEndpoint || !openAIDeployment) {
@@ -20,7 +20,7 @@ const apiVersion = "2024-04-01-preview";
 // Construct the Azure OpenAI client with Microsoft Entra ID tokens
 const client = new AzureOpenAI({
   endpoint: openAIEndpoint,            // Correct key: 'endpoint'
-  openAIAPIKey,
+  AZURE_OPENAI_API_KEY,
   deployment: openAIDeployment,
   apiVersion,                          // Specify the API version
 });
