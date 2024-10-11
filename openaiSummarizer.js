@@ -2,7 +2,7 @@ const { AzureOpenAI } = require("openai");
 
 // Load environment variables
 const openAIEndpoint = process.env.OPENAI_ENDPOINT;
-const openAIDeployment = process.env.OPENAIDEPLOYMENT;
+const openAIDeployment = process.env.OPENAI_DEPLOYMENT_ID;
 const openAIAPIKey = process.env.AZURE_OPENAI_API_KEY;
 
 // Validate environment variables
