@@ -22,11 +22,14 @@ class TeamsBot extends TeamsActivityHandler {
           await this.handleOpenAIRequest(context, promptMessage);
         } else if (userMessage.startsWith("/ticket")) {
           // Handle ConnectWise ticket request
-          const ticketId = userMessage.replace("/ticket", "").trim();
-          if (ticketId) {
-            await this.handleTicketRequest(context, ticketId); // Pass ticketId here
+          const ticketIdString = userMessage.replace("/ticket", "").trim();
+          const ticketId = parseInt(ticketIdString, 10);  // Convert the ticketId string to an integer
+
+          // Check if the parsed ticketId is a valid number
+          if (!isNaN(ticketId)) {
+            await this.handleTicketRequest(context, ticketId); // Pass the ticketId (number)
           } else {
-            await context.sendActivity("Please provide a ticket ID after `/ticket`.");
+            await context.sendActivity("Please provide a valid numeric ticket ID after `/ticket`.");
           }
         } else {
           // If the command is unknown
