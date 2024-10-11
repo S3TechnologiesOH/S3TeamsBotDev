@@ -1,10 +1,10 @@
 const { TeamsActivityHandler, TurnContext } = require("botbuilder");
-const { DefaultAzureCredential, getBearerTokenProvider } = require("@azure/identity");
 const { AzureOpenAI } = require("openai");
+const { DefaultAzureCredential, getBearerTokenProvider } = require("@azure/identity");
 
 // Load environment variables
-const openAIEndpoint = process.env.OPENAI_ENDPOINT;
-const openAIDeployment = "gpt-4o-mini";
+const openAIEndpoint = process.env.AZURE_OPENAI_ENDPOINT;
+const openAIDeployment = "gpt-4o-mini"; // Replace with your actual deployment name
 const openAIAPIKey = process.env.AZURE_OPENAI_API_KEY;
 
 // Validate environment variables
@@ -17,10 +17,16 @@ const credential = new DefaultAzureCredential();
 const scope = "https://cognitiveservices.azure.com/.default";
 const azureADTokenProvider = getBearerTokenProvider(credential, scope);
 
+// Define API version
 const apiVersion = "2024-04-01-preview";
-const options = { openAIEndpoint, azureADTokenProvider, openAIDeployment, apiVersion }
-const client = new AzureOpenAI(options);
+
 // Construct the Azure OpenAI client with Microsoft Entra ID tokens
+const client = new AzureOpenAI({
+  endpoint: openAIEndpoint,            // Correct key: 'endpoint'
+  tokenProvider: azureADTokenProvider, // Correct key: 'tokenProvider'
+  deployment: openAIDeployment,
+  apiVersion,                          // Specify the API version
+});
 
 // *(Optional and Highly Discouraged)* Authenticate using API Key
 // Uncomment the following lines if you choose to use an API key instead of Entra ID tokens
@@ -28,10 +34,13 @@ const client = new AzureOpenAI(options);
 // if (!openAIAPIKey) {
 //   throw new Error("AZURE_OPENAI_API_KEY must be set as an environment variable.");
 // }
+// const { AzureKeyCredential } = require("openai");
 // const apiKeyCredential = new AzureKeyCredential(openAIAPIKey);
-// const openaiClient = new OpenAIClient(openAIEndpoint, apiKeyCredential, {
+// const client = new AzureOpenAI({
+//   endpoint: openAIEndpoint,              // Correct key: 'endpoint'
+//   tokenProvider: apiKeyCredential,       // Correct key: 'tokenProvider'
 //   deployment: openAIDeployment,
-//   apiVersion: "2024-04-01-preview", // Specify the API version
+//   apiVersion,                            // Specify the API version
 // });
 
 class TeamsBot extends TeamsActivityHandler {
@@ -51,7 +60,7 @@ class TeamsBot extends TeamsActivityHandler {
 
       try {
         // Call Azure OpenAI to generate a response
-        const response = await openaiClient.chat.completions.create({
+        const response = await client.chat.completions.create({
           messages: [
             { role: "system", content: "You are a helpful assistant." },
             { role: "user", content: userMessage },
