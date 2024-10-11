@@ -12,7 +12,7 @@ class TeamsBot extends TeamsActivityHandler {
 
       // Remove bot mention
       const removedMentionText = TurnContext.removeRecipientMention(context.activity);
-      const userMessage = removedMentionText.toLowerCase().replace(/\n|\r/g, "").trim();
+      const userMessage = removedMentionText.toLowerCase().replace(/\n|\r/g, "").trim(); // Define userMessage here
 
       // Check if the message starts with a slash ("/")
       if (userMessage.startsWith("/")) {
@@ -23,7 +23,11 @@ class TeamsBot extends TeamsActivityHandler {
         } else if (userMessage.startsWith("/ticket")) {
           // Handle ConnectWise ticket request
           const ticketId = userMessage.replace("/ticket", "").trim();
-          await this.handleTicketRequest(context, ticketId);
+          if (ticketId) {
+            await this.handleTicketRequest(context, ticketId); // Pass ticketId here
+          } else {
+            await context.sendActivity("Please provide a ticket ID after `/ticket`.");
+          }
         } else {
           // If the command is unknown
           await context.sendActivity("Unknown command. Use `/prompt [message]` or `/ticket [id]`.");
@@ -65,24 +69,22 @@ class TeamsBot extends TeamsActivityHandler {
 
   // Handle ConnectWise ticket request when the user sends a /ticket [id] message
   async handleTicketRequest(context, ticketId) {
-    
     if (!ticketId) {
-      await context.sendActivity("Please provide a ticket ID after `/ticket`.");
+      await context.sendActivity("Please provide a valid ticket ID.");
       return;
     }
-    const ticketIdparsed = parseInt(userMessage.replace("/ticket", "").trim(), 10);  // Convert to number
 
     try {
       // Fetch the ticket info
-      const ticketInfo = await fetch_ticket_by_id(ticketIdparsed);
+      const ticketInfo = await fetch_ticket_by_id(ticketId);
       await context.sendActivity(`Ticket Info:\n${JSON.stringify(ticketInfo, null, 2)}`);
 
       // Fetch related time entries
-      const timeEntries = await fetch_time_entries_for_ticket(ticketIdparsed);
+      const timeEntries = await fetch_time_entries_for_ticket(ticketId);
       await context.sendActivity(`Time Entries:\n${JSON.stringify(timeEntries, null, 2)}`);
       
     } catch (error) {
-      await context.sendActivity(`Sorry, I encountered an error while processing the ticket ID: ${ticketIdparsed}`);
+      await context.sendActivity(`Sorry, I encountered an error while processing the ticket ID: ${ticketId}`);
       console.error("Error fetching ticket or time entries:", error);
     }
   }
