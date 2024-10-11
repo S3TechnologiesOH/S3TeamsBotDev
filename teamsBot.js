@@ -1,138 +1,96 @@
-require('dotenv/config');
 const { TeamsActivityHandler, TurnContext } = require("botbuilder");
+const { OpenAIClient, AzureKeyCredential } = require("@azure/openai");
+const { DefaultAzureCredential, getBearerTokenProvider } = require("@azure/identity");
 const { AzureOpenAI } = require("openai");
-const { AzureKeyCredential } = require("@azure/core-auth");
 
-// Get environment variables
-const azureOpenAIKey = process.env.AZURE_OPENAI_KEY;
-const azureOpenAIEndpoint = process.env.AZURE_OPENAI_ENDPOINT;
-const azureOpenAIVersion = "2024-05-01-preview";
+// Load environment variables
+const openAIEndpoint = process.env.AZURE_OPENAI_ENDPOINT;
+const openAIDeployment = process.env.AZURE_OPENAI_DEPLOYMENT;
+const openAIAPIKey = process.env.AZURE_OPENAI_API_KEY;
 
-// Check env variables
-if (!azureOpenAIKey || !azureOpenAIEndpoint) {
-  throw new Error("Please set AZURE_OPENAI_KEY and AZURE_OPENAI_ENDPOINT in your environment variables.");
+// Validate environment variables
+if (!openAIEndpoint || !openAIDeployment) {
+  throw new Error("AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_DEPLOYMENT must be set as environment variables.");
 }
 
-// Get Azure SDK client
-const client = new AzureOpenAI({
-  endpoint: azureOpenAIEndpoint,
-  apiVersion: azureOpenAIVersion,
-  apiKey: new AzureKeyCredential(azureOpenAIKey),
-});
+// Authenticate using Microsoft Entra ID (Recommended)
+const credential = new DefaultAzureCredential();
+const scope = "https://cognitiveservices.azure.com/.default";
+const azureADTokenProvider = getBearerTokenProvider(credential, scope);
 
-// Assistant setup
-const assistantOptions = {
-  model: "gpt-4o-mini", // replace with model deployment name
-  name: "ConnectWiseConverter",
-  instructions: "You will receive a list of important information from a work ticket. All of the important details are above the line made of =, this includes the ticket ID, summary, company, etc. Below the line made of = is the ticket entries, placed in a list.\n\nYour job is to summarize this information into a simple summarized organized text. The time entries shouldn't be in a list, they should all be outlined together.",
-  tools: [{ "type": "code_interpreter" }],
-  tool_resources: { "code_interpreter": { "file_ids": ["assistant-lLB2Cw77WyjaZG8w4HnppXhT", "assistant-iMi54kbSw7oV7TaV7P71CVdr", "assistant-CQj87BSB26AuxVhb9oJ989k0", "assistant-8CxktxY5DXUQzlOJ9pA9H4Ko"] } },
-  temperature: 0.5,
-  top_p: 0.1,
-};
+const deployment = "Your Azure OpenAI deployment";
+const apiVersion = "2024-04-01-preview";
+const options = { azureADTokenProvider, deployment, apiVersion }
+const client = new AzureOpenAI(options);
+// Construct the Azure OpenAI client with Microsoft Entra ID tokens
 
-let assistant; // Declare assistant instance globally for reuse
+// *(Optional and Highly Discouraged)* Authenticate using API Key
+// Uncomment the following lines if you choose to use an API key instead of Entra ID tokens
 
-const setupAssistant = async () => {
-  try {
-    if (!assistant) {
-      const assistantResponse = await client.beta.assistants.create(assistantOptions);
-      console.log(`Assistant created: ${JSON.stringify(assistantResponse)}`);
-      assistant = assistantResponse;
-    }
-    return assistant;
-  } catch (error) {
-    console.error(`Error creating assistant: ${error.message}`);
-    console.error(`Error details: ${JSON.stringify(error.response?.data || error)}`);
-    return null;
-  }
-};
+// if (!openAIAPIKey) {
+//   throw new Error("AZURE_OPENAI_API_KEY must be set as an environment variable.");
+// }
+// const apiKeyCredential = new AzureKeyCredential(openAIAPIKey);
+// const openaiClient = new OpenAIClient(openAIEndpoint, apiKeyCredential, {
+//   deployment: openAIDeployment,
+//   apiVersion: "2024-04-01-preview", // Specify the API version
+// });
 
 class TeamsBot extends TeamsActivityHandler {
   constructor() {
     super();
 
+    // Handle incoming messages
     this.onMessage(async (context, next) => {
-      console.log("Running with Message Activity.");
+      console.log("Received a message activity.");
 
+      // Remove the bot's mention from the message
       const removedMentionText = TurnContext.removeRecipientMention(context.activity);
-      const txt = removedMentionText.toLowerCase().replace(/\n|\r/g, "").trim();
+      const userMessage = removedMentionText.toLowerCase().replace(/\n|\r/g, "").trim();
 
-      const prompt = `You said: ${txt}`;
-      const response = await this.getOpenAIResponse(context, prompt);
+      // Log the user's message
+      console.log(`User Message: ${userMessage}`);
 
-      if (response) {
-        await context.sendActivity(`Azure OpenAI says: ${response}`);
-      } else {
-        await context.sendActivity(`I'm sorry, but I couldn't generate a response at this time.`);
+      try {
+        // Call Azure OpenAI to generate a response
+        const response = await openaiClient.chat.completions.create({
+          messages: [
+            { role: "system", content: "You are a helpful assistant." },
+            { role: "user", content: userMessage },
+          ],
+          max_tokens: 150, // Adjust as needed
+          temperature: 0.2, // Adjust creativity
+        });
+
+        // Extract the assistant's reply
+        const botReply = response.choices[0].message.content.trim();
+
+        // Send the AI-generated response back to the user
+        await context.sendActivity(`**Assistant:** ${botReply}`);
+      } catch (error) {
+        console.error("Error communicating with Azure OpenAI:", error);
+        await context.sendActivity("Sorry, I encountered an error while processing your request.");
       }
 
+      // Ensure the next BotHandler is run
       await next();
     });
 
+    // Handle MembersAdded event
     this.onMembersAdded(async (context, next) => {
       const membersAdded = context.activity.membersAdded;
-      for (let cnt = 0; cnt < membersAdded.length; cnt++) {
-        if (membersAdded[cnt].id) {
-          await context.sendActivity(`Hi there! I'm a Teams bot that can communicate with Azure OpenAI.`);
-          break;
+      for (let member of membersAdded) {
+        // Avoid sending a welcome message to the bot itself
+        if (member.id !== context.activity.recipient.id) {
+          await context.sendActivity(
+            "Hi there! I'm a Teams bot powered by Azure OpenAI. Ask me anything!"
+          );
+          break; // Only send one welcome message
         }
       }
       await next();
     });
   }
-
-  async getOpenAIResponse(context, prompt) {
-    if (!azureOpenAIEndpoint) {
-      await context.sendActivity(`Error: Missing endpoint. Endpoint: ${azureOpenAIEndpoint}`);
-      return;
-    }
-    if (!assistantOptions.model) {
-      await context.sendActivity(`Error: Missing model deployment name.`);
-      return;
-    }
-
-    if (!assistant) {
-      assistant = await setupAssistant(); // Ensure the assistant is set up before proceeding
-      if (!assistant) {
-        await context.sendActivity(`Error: Unable to set up assistant. Please check the endpoint, API key, and deployment ID.`);
-        return null;
-      }
-    }
-
-    try {
-      const thread = await client.beta.threads.create({});
-      await client.beta.threads.messages.create(thread.id, {
-        role: "user",
-        content: prompt
-      });
-
-      const runResponse = await client.beta.threads.runs.create(thread.id, {
-        assistant_id: assistant.id
-      });
-
-      let runStatus = runResponse.status;
-      while (runStatus === 'queued' || runStatus === 'in_progress') {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        const runStatusResponse = await client.beta.threads.runs.retrieve(thread.id, runResponse.id);
-        runStatus = runStatusResponse.status;
-      }
-
-      if (runStatus === 'completed') {
-        const messagesResponse = await client.beta.threads.messages.list(thread.id);
-        return messagesResponse[messagesResponse.length - 1]?.content || "No response received.";
-      } else {
-        return `Run status is ${runStatus}, unable to fetch messages.`;
-      }
-    } catch (error) {
-      await context.sendActivity(`Error fetching OpenAI response: ${error.message}. Endpoint: ${azureOpenAIEndpoint}, Model: ${assistantOptions.model}`);
-      return null;
-    }
-  }
 }
 
 module.exports.TeamsBot = TeamsBot;
-
-// Set up the assistant at startup
-setupAssistant();
-
