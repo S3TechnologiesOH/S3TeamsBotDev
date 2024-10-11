@@ -29,7 +29,7 @@ async function summarizeJSON(jsonData) {
 
   try {
     const messages = [
-      { role: "system", content: "You will receive a list of important information from a work ticket in raw json format. Also you might get a json of all of the time entries for that ticket. You need to get all of the important details from either of them. You need to figure out if its an info json or a time entries json. Your job is to summarize this information into a simple summarized organized text. The time entries shouldn't be in a list, they should all be outlined together." },
+      { role: "system", content: "Your job is to summarize the json file you are given, and format it for a Microsoft Teams card made with CardFactory." },
       { role: "user", content: promptMessage },
     ];
 
