@@ -2,6 +2,7 @@ const { TeamsActivityHandler, TurnContext, CardFactory } = require("botbuilder")
 const { getOpenAIResponse } = require("./openaiService"); // OpenAI logic
 const { fetch_ticket_by_id, fetch_time_entries_for_ticket } = require("./connectwiseAPI"); // ConnectWise API logic
 const { summarizeJSON } = require('./openaiSummarizer');
+const { CardFactory } = require("botbuilder");
 
 class TeamsBot extends TeamsActivityHandler {
   constructor() {
@@ -75,24 +76,36 @@ class TeamsBot extends TeamsActivityHandler {
     try {
       // Fetch the ticket info
       const ticketInfo = await fetch_ticket_by_id(ticketId);
-  
-      // Summarize the ticket information using OpenAI
-      const summary = await summarizeJSON(ticketInfo);
-      await context.sendActivity(`Ticket Summary:\n${summary}`);
-  
+      
       // Fetch related time entries
       const timeEntries = await fetch_time_entries_for_ticket(ticketId);
+      
+      // Combine the ticket and time entries data
+      const combinedData = {
+        ticket: ticketInfo,
+        timeEntries: timeEntries
+      };
+      
+      // Summarize the combined ticket and time entries data using OpenAI
+      const combinedSummary = await summarizeJSON(combinedData);
   
-      // Summarize the time entries using OpenAI
-      const timeEntriesSummary = await summarizeJSON(timeEntries);
-      await context.sendActivity(`Time Entries Summary:\n${timeEntriesSummary}`);
+      // Create a card with the summary
+      const summaryCard = CardFactory.heroCard(
+        "Ticket and Time Entries Summary",
+        combinedSummary, // The combined summary content
+        null,
+        null
+      );
+  
+      // Send the card as a response
+      await context.sendActivity({ attachments: [summaryCard] });
       
     } catch (error) {
       await context.sendActivity(`Sorry, I encountered an error while processing the ticket ID: ${ticketId}`);
       console.error("Error fetching ticket or time entries:", error);
     }
   }
-  
+
   // Send a welcome card with command list
   async sendWelcomeCard(context) {
     const card = CardFactory.heroCard(
