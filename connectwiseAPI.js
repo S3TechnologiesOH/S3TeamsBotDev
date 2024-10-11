@@ -1,5 +1,4 @@
 const { Connectwise} = require('connectwise-rest-api');
-const { TicketsApi, Ticket } = require('connectwise-rest-api/release/api/api');
 
 // Set your ConnectWise configuration
 const connectwiseUrl = process.env.CW_URL;  // Your ConnectWise URL
@@ -7,16 +6,13 @@ const companyId = process.env.CW_COMPANY_ID;
 const publicKey = process.env.CW_PUBLIC_KEY;
 const privateKey = process.env.CW_PRIVATE_KEY;
 
-// Authenticate with ConnectWise using a basic auth header
-const authKey = Buffer.from(`${companyId}+${publicKey}:${privateKey}`).toString('base64');
-const cwService = new TicketsApi(`${connectwiseUrl}`);
-cwService.defaultHeaders = { 'Authorization': `Basic TXlTM1RlY2grZUp6Q2h1TTFVOTAxZUhNWjpyVVl3em1YNm9MdjFiaVZ0` };
+const connectwise = new Connectwise(connectwiseUrl, companyId, publicKey, privateKey);
 
 // Fetch a ticket by its ID
 async function fetch_ticket_by_id(ticketId) {
   console.log(`Fetching ticket with ID: ${ticketId}`);
   try {
-    const response = await cwService.serviceTicketsIdGet({ id: ticketId });  // Pass the id as part of an object
+    const response = await Connectwise.TicketsApi.serviceTicketsIdGet({ id: ticketId });  // Pass the id as part of an object
     return response;  // The full ticket data will be returned as an object
   } catch (error) {
     console.error("Error fetching ticket:", error);
