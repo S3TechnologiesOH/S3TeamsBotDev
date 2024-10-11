@@ -3,9 +3,9 @@ const { AzureOpenAI } = require("openai");
 const { DefaultAzureCredential, getBearerTokenProvider } = require("@azure/identity");
 
 // Load environment variables
-const openAIEndpoint = process.env.AZURE_OPENAI_ENDPOINT;
-const openAIDeployment = "gpt-4o-mini"; // Replace with your actual deployment name
-const openAIAPIKey = process.env.AZURE_OPENAI_API_KEY;
+const openAIEndpoint = process.env.OPENAI_ENDPOINT;
+const openAIDeployment = process.env.OPENAI_DEPLOYMENT_ID; // Replace with your actual deployment name
+const openAIAPIKey = process.env.OPENAI_API_KEY;
 
 // Validate environment variables
 if (!openAIEndpoint || !openAIDeployment) {
