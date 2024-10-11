@@ -2,6 +2,7 @@ const { TeamsActivityHandler, TurnContext, CardFactory } = require("botbuilder")
 const { getOpenAIResponse } = require("./openaiService"); // OpenAI logic
 const { fetch_ticket_by_id, fetch_time_entries_for_ticket } = require("./connectwiseAPI"); // ConnectWise API logic
 const { summarizeJSON } = require('./openaiSummarizer');
+const { get_attr_or_key } = require('./connectwiseHelpers');
 
 class TeamsBot extends TeamsActivityHandler {
   constructor() {
