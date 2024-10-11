@@ -80,7 +80,7 @@ class TeamsBot extends TeamsActivityHandler {
       // Fetch related time entries
       const timeEntries = await fetch_time_entries_for_ticket(ticketId);
       
-      // Summarize only the time entries to avoid repeating ticket info
+      // Summarize the time entries (keep OpenAI focused only on time entries)
       const timeEntriesSummary = await summarizeJSON(timeEntries);
   
       // Format the ticket details in a readable way
@@ -98,8 +98,12 @@ class TeamsBot extends TeamsActivityHandler {
       // Combine formatted ticket details with time entries summary
       const fullMessage = `${formattedTicketDetails}**Time Entries Summary:**\n${timeEntriesSummary}`;
   
-      // Send the full message as plain text
-      await context.sendActivity(fullMessage);
+      // Split message if it's too long (Microsoft Teams message size limit)
+      const chunkSize = 2000; // Max character limit for a message in Teams (you can adjust this as needed)
+      for (let i = 0; i < fullMessage.length; i += chunkSize) {
+        const messageChunk = fullMessage.slice(i, i + chunkSize);
+        await context.sendActivity(messageChunk);
+      }
       
     } catch (error) {
       await context.sendActivity(`Sorry, I encountered an error while processing the ticket ID: ${ticketId}`);

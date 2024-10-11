@@ -21,34 +21,33 @@ const client = new AzureOpenAI({
   apiVersion,
 });
 
-// Function to send the JSON data to OpenAI for summarization
 async function summarizeJSON(jsonData) {
-  // Convert JSON data into a string for sending to the assistant
-  const jsonString = JSON.stringify(jsonData, null, 2);
-  const promptMessage = `Here is a JSON output of a ConnectWise ticket or time entries: \n${jsonString}\n Please provide a brief summary.`;
-
-  try {
-    const messages = [
-      { role: "system", content: "Your job is to summarize the json file you are given, and format it for a Microsoft Teams card made with CardFactory. You need to format out the important information that is in it and make it look nice." },
-      { role: "user", content: promptMessage },
-    ];
-
-    // Call OpenAI to generate a summarized response
-    const response = await client.chat.completions.create({
-      messages,
-      model: "gpt-4o-mini",  // Adjust this model if needed
-      max_tokens: 150,        // Adjust token limit as necessary for summaries
-      temperature: 0.2,       // Adjust creativity
-      stream: false,
-    });
-
-    // Return the summarized content
-    return response.choices[0].message.content.trim();
-  } catch (error) {
-    console.error("Error communicating with Azure OpenAI:", error);
-    throw new Error("Failed to summarize JSON data.");
+    // Convert JSON data into a string for sending to the assistant
+    const jsonString = JSON.stringify(jsonData, null, 2);
+    const promptMessage = `Here is a JSON output of a ConnectWise ticket or time entries: \n${jsonString}\n Please provide a detailed summary.`;
+  
+    try {
+      const messages = [
+        { role: "system", content: "You are a helpful assistant that summarizes JSON data." },
+        { role: "user", content: promptMessage },
+      ];
+  
+      // Call OpenAI to generate a summarized response
+      const response = await client.chat.completions.create({
+        messages,
+        model: "gpt-4o-mini",  // Adjust this model if needed
+        max_tokens: 300,        // Increase token limit for a longer summary
+        temperature: 0.2,       // Adjust creativity
+        stream: false,
+      });
+  
+      // Return the summarized content
+      return response.choices[0].message.content.trim();
+    } catch (error) {
+      console.error("Error communicating with Azure OpenAI:", error);
+      throw new Error("Failed to summarize JSON data.");
+    }
   }
-}
 
 module.exports = {
   summarizeJSON,
