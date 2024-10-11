@@ -23,6 +23,7 @@
     "dependencies": {
         "@azure/openai": "^2.0.0-beta.2",
         "botbuilder": "^4.20.0",
+        "connectwise-rest-api": "^1.2.1",
         "node": "^18.20.4",
         "openai": "^4.67.3",
         "restify": "^10.0.0"
