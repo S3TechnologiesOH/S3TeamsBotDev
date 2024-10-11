@@ -29,7 +29,7 @@ async function summarizeJSON(jsonData) {
 
   try {
     const messages = [
-      { role: "system", content: "Your job is to summarize the json file you are given, and format it for a Microsoft Teams card made with CardFactory." },
+      { role: "system", content: "Your job is to summarize the json file you are given, and format it for a Microsoft Teams card made with CardFactory. You need to format out the important information that is in it and make it look nice." },
       { role: "user", content: promptMessage },
     ];
 
