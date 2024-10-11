@@ -65,22 +65,24 @@ class TeamsBot extends TeamsActivityHandler {
 
   // Handle ConnectWise ticket request when the user sends a /ticket [id] message
   async handleTicketRequest(context, ticketId) {
+    
     if (!ticketId) {
       await context.sendActivity("Please provide a ticket ID after `/ticket`.");
       return;
     }
+    const ticketIdparsed = parseInt(userMessage.replace("/ticket", "").trim(), 10);  // Convert to number
 
     try {
       // Fetch the ticket info
-      const ticketInfo = await fetch_ticket_by_id(ticketId);
+      const ticketInfo = await fetch_ticket_by_id(ticketIdparsed);
       await context.sendActivity(`Ticket Info:\n${JSON.stringify(ticketInfo, null, 2)}`);
 
       // Fetch related time entries
-      const timeEntries = await fetch_time_entries_for_ticket(ticketId);
+      const timeEntries = await fetch_time_entries_for_ticket(ticketIdparsed);
       await context.sendActivity(`Time Entries:\n${JSON.stringify(timeEntries, null, 2)}`);
       
     } catch (error) {
-      await context.sendActivity(`Sorry, I encountered an error while processing the ticket ID: ${ticketId}`);
+      await context.sendActivity(`Sorry, I encountered an error while processing the ticket ID: ${ticketIdparsed}`);
       console.error("Error fetching ticket or time entries:", error);
     }
   }

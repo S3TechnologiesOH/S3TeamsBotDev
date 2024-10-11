@@ -14,6 +14,7 @@ cwService.defaultHeaders = { 'Authorization': `Basic ${authKey}` };
 
 // Fetch a ticket by its ID
 async function fetch_ticket_by_id(ticketId) {
+  console.log(`Fetching ticket with ID: ${ticketId}`);
   try {
     const response = await cwService.serviceTicketsIdGet(ticketId);
     return response;  // The full ticket data will be returned as an object
