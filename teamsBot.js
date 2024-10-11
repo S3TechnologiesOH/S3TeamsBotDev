@@ -1,7 +1,7 @@
 const { TeamsActivityHandler, TurnContext } = require("botbuilder");
 const { AzureOpenAI } = require("openai");
 const { DefaultAzureCredential, getBearerTokenProvider } = require("@azure/identity");
-const { AzureKeyCredential } = required("@azure/openai");
+const { AzureKeyCredential } = require("@azure/openai");
 
 // Load environment variables
 const openAIEndpoint = process.env.OPENAI_ENDPOINT;
