@@ -90,15 +90,15 @@ class TeamsBot extends TeamsActivityHandler {
       const combinedSummary = await summarizeJSON(combinedData);
   
       const formattedTicketDetails = 
-      `**ID:** ${get_attr_or_key(ticketInfo, 'id')}\n` +
-      `**Summary:** ${get_attr_or_key(ticketInfo, 'summary')}\n` +
-      `**Record Type:** ${get_attr_or_key(ticketInfo, 'recordType')}\n` +
-      `**Company:** ${get_attr_or_key(ticketInfo.company, 'name')}\n` +
-      `**Board:** ${get_attr_or_key(ticketInfo.board, 'name')}\n` +
-      `**Status:** ${get_attr_or_key(ticketInfo.status, 'name')}\n` +
-      `**Priority:** ${get_attr_or_key(ticketInfo.priority, 'name')}\n` +
-      `**Assigned to:** ${get_attr_or_key(ticketInfo, 'resources')}\n` +
-      `**Actual Hours:** ${get_attr_or_key(ticketInfo, 'actualHours')}\n`;
+      `ID: ${get_attr_or_key(ticketInfo, 'id')}\n` +
+      `Summary: ${get_attr_or_key(ticketInfo, 'summary')}\n` +
+      `Record Type: ${get_attr_or_key(ticketInfo, 'recordType')}\n` +
+      `Company: ${get_attr_or_key(ticketInfo.company, 'name')}\n` +
+      `Board: ${get_attr_or_key(ticketInfo.board, 'name')}\n` +
+      `Status: ${get_attr_or_key(ticketInfo.status, 'name')}\n` +
+      `Priority: ${get_attr_or_key(ticketInfo.priority, 'name')}\n` +
+      `Assigned to: ${get_attr_or_key(ticketInfo, 'resources')}\n` +
+      `Actual Hours: ${get_attr_or_key(ticketInfo, 'actualHours')}\n`;
 
     // Create a card with the ticket details and time entries summary
     const summaryCard = CardFactory.heroCard(
