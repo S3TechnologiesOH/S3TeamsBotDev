@@ -80,26 +80,26 @@ class TeamsBot extends TeamsActivityHandler {
       // Fetch related time entries
       const timeEntries = await fetch_time_entries_for_ticket(ticketId);
       
-      // Summarize the time entries (keep OpenAI focused only on time entries)
+      // Summarize only the time entries to avoid repeating ticket info
       const timeEntriesSummary = await summarizeJSON(timeEntries);
   
       // Format the ticket details in a readable way
       const formattedTicketDetails = 
-        `**ID:** ${get_attr_or_key(ticketInfo, 'id')}\n` +
-        `**Summary:** ${get_attr_or_key(ticketInfo, 'summary')}\n` +
-        `**Record Type:** ${get_attr_or_key(ticketInfo, 'recordType')}\n` +
-        `**Company:** ${get_attr_or_key(ticketInfo.company, 'name')}\n` +
-        `**Board:** ${get_attr_or_key(ticketInfo.board, 'name')}\n` +
-        `**Status:** ${get_attr_or_key(ticketInfo.status, 'name')}\n` +
-        `**Priority:** ${get_attr_or_key(ticketInfo.priority, 'name')}\n` +
-        `**Assigned to:** ${get_attr_or_key(ticketInfo, 'resources')}\n` +
+        `**ID:** ${get_attr_or_key(ticketInfo, 'id')}\n\n` +
+        `**Summary:** ${get_attr_or_key(ticketInfo, 'summary')}\n\n` +
+        `**Record Type:** ${get_attr_or_key(ticketInfo, 'recordType')}\n\n` +
+        `**Company:** ${get_attr_or_key(ticketInfo.company, 'name')}\n\n` +
+        `**Board:** ${get_attr_or_key(ticketInfo.board, 'name')}\n\n` +
+        `**Status:** ${get_attr_or_key(ticketInfo.status, 'name')}\n\n` +
+        `**Priority:** ${get_attr_or_key(ticketInfo.priority, 'name')}\n\n` +
+        `**Assigned to:** ${get_attr_or_key(ticketInfo, 'resources')}\n\n` +
         `**Actual Hours:** ${get_attr_or_key(ticketInfo, 'actualHours')}\n\n`;
   
       // Combine formatted ticket details with time entries summary
-      const fullMessage = `${formattedTicketDetails}**Time Entries Summary:**\n${timeEntriesSummary}`;
+      const fullMessage = `${formattedTicketDetails}**Time Entries Summary:**\n\n${timeEntriesSummary}`;
   
       // Split message if it's too long (Microsoft Teams message size limit)
-      const chunkSize = 10000; // Max character limit for a message in Teams (you can adjust this as needed)
+      const chunkSize = 2000; // Max character limit for a message in Teams
       for (let i = 0; i < fullMessage.length; i += chunkSize) {
         const messageChunk = fullMessage.slice(i, i + chunkSize);
         await context.sendActivity(messageChunk);
