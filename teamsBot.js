@@ -19,7 +19,7 @@ const scope = "https://cognitiveservices.azure.com/.default";
 const azureADTokenProvider = getBearerTokenProvider(credential, scope);
 
 const apiVersion = "2024-04-01-preview";
-const options = { azureADTokenProvider, deployment, apiVersion }
+const options = { azureADTokenProvider, openAIDeployment, apiVersion }
 const client = new AzureOpenAI(options);
 // Construct the Azure OpenAI client with Microsoft Entra ID tokens
 
