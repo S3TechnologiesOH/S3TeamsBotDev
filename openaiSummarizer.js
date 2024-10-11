@@ -28,7 +28,7 @@ async function summarizeJSON(jsonData) {
       console.log("Debug Log: JSON being passed to OpenAI:", jsonString); // Debug log to verify JSON
   
       // Call OpenAI with the JSON string as part of the prompt
-      const promptMessage = `Here is the detailed time entries information in JSON format: \n${jsonString}\n Please summarize the time entries.`;
+      const promptMessage = `Here is the detailed time entries information in JSON format: \n${jsonString}\n Please summarize the time entries. Only summarize using Bullets or Numbered titles. Do not give paragraphs.`;
   
       const messages = [
         { role: "system", content: "You are a helpful assistant that summarizes JSON data." },
