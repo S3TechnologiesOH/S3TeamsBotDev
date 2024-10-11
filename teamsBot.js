@@ -1,6 +1,7 @@
 const { TeamsActivityHandler, TurnContext, CardFactory } = require("botbuilder");
 const { getOpenAIResponse } = require("./openaiService"); // OpenAI logic
 const { fetch_ticket_by_id, fetch_time_entries_for_ticket } = require("./connectwiseAPI"); // ConnectWise API logic
+const { summarizeJSON } = require('./openaiSummarizer');
 
 class TeamsBot extends TeamsActivityHandler {
   constructor() {
@@ -70,28 +71,28 @@ class TeamsBot extends TeamsActivityHandler {
     }
   }
 
-  // Handle ConnectWise ticket request when the user sends a /ticket [id] message
   async handleTicketRequest(context, ticketId) {
-    if (!ticketId) {
-      await context.sendActivity("Please provide a valid ticket ID.");
-      return;
-    }
-
     try {
       // Fetch the ticket info
       const ticketInfo = await fetch_ticket_by_id(ticketId);
-      await context.sendActivity(`Ticket Info:\n${JSON.stringify(ticketInfo, null, 2)}`);
-
+  
+      // Summarize the ticket information using OpenAI
+      const summary = await summarizeJSON(ticketInfo);
+      await context.sendActivity(`Ticket Summary:\n${summary}`);
+  
       // Fetch related time entries
       const timeEntries = await fetch_time_entries_for_ticket(ticketId);
-      await context.sendActivity(`Time Entries:\n${JSON.stringify(timeEntries, null, 2)}`);
+  
+      // Summarize the time entries using OpenAI
+      const timeEntriesSummary = await summarizeJSON(timeEntries);
+      await context.sendActivity(`Time Entries Summary:\n${timeEntriesSummary}`);
       
     } catch (error) {
       await context.sendActivity(`Sorry, I encountered an error while processing the ticket ID: ${ticketId}`);
       console.error("Error fetching ticket or time entries:", error);
     }
   }
-
+  
   // Send a welcome card with command list
   async sendWelcomeCard(context) {
     const card = CardFactory.heroCard(
