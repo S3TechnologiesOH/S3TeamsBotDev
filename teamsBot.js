@@ -1,28 +1,6 @@
 const { TeamsActivityHandler, TurnContext, CardFactory } = require("botbuilder");
-const { AzureOpenAI } = require("openai");
-const { DefaultAzureCredential, getBearerTokenProvider } = require("@azure/identity");
-const { AzureKeyCredential } = require("@azure/openai");
-
-// Load environment variables
-const openAIEndpoint = process.env.OPENAI_ENDPOINT;
-const openAIDeployment = process.env.OPENAI_DEPLOYMENT_ID;
-const openAIAPIKey = process.env.AZURE_OPENAI_API_KEY;
-
-// Validate environment variables
-if (!openAIEndpoint || !openAIDeployment) {
-  throw new Error("AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_DEPLOYMENT must be set as environment variables.");
-}
-
-// Define API version
-const apiVersion = "2024-04-01-preview";
-
-// Construct the Azure OpenAI client
-const client = new AzureOpenAI({
-  endpoint: openAIEndpoint,
-  openAIAPIKey,
-  deployment: openAIDeployment,
-  apiVersion,
-});
+const { getOpenAIResponse } = require("./openaiService"); // OpenAI logic
+const { fetch_ticket_by_id, fetch_time_entries_for_ticket } = require("./connectwiseAPI"); // ConnectWise API logic
 
 class TeamsBot extends TeamsActivityHandler {
   constructor() {
@@ -38,13 +16,17 @@ class TeamsBot extends TeamsActivityHandler {
 
       // Check if the message starts with a slash ("/")
       if (userMessage.startsWith("/")) {
-        // Check if it's a /prompt command
         if (userMessage.startsWith("/prompt")) {
+          // Handle OpenAI prompt
           const promptMessage = userMessage.replace("/prompt", "").trim();
           await this.handleOpenAIRequest(context, promptMessage);
+        } else if (userMessage.startsWith("/ticket")) {
+          // Handle ConnectWise ticket request
+          const ticketId = userMessage.replace("/ticket", "").trim();
+          await this.handleTicketRequest(context, ticketId);
         } else {
           // If the command is unknown
-          await context.sendActivity("Unknown command. Use `/prompt [message]` to interact with OpenAI.");
+          await context.sendActivity("Unknown command. Use `/prompt [message]` or `/ticket [id]`.");
         }
       }
 
@@ -71,26 +53,35 @@ class TeamsBot extends TeamsActivityHandler {
       return;
     }
 
-    const messages = [
-      { role: "system", content: "You are a helpful assistant." },
-      { role: "user", content: promptMessage },
-    ];
-
     try {
-      // Call Azure OpenAI to generate a response
-      const response = await client.chat.completions.create({
-        messages,
-        model: "gpt-4o-mini",
-        max_tokens: 150, // Adjust as needed
-        temperature: 0.2, // Adjust creativity
-        stream: false,
-      });
-
-      const botReply = response.choices[0].message.content.trim();
+      // Call the OpenAI service to get a response
+      const botReply = await getOpenAIResponse(promptMessage);
       await context.sendActivity(`**Assistant:** ${botReply}`);
     } catch (error) {
       await context.sendActivity("Sorry, I encountered an error while processing your request.");
-      await context.sendActivity(JSON.stringify(error, null, 2)); // Send detailed error
+      console.error(error);
+    }
+  }
+
+  // Handle ConnectWise ticket request when the user sends a /ticket [id] message
+  async handleTicketRequest(context, ticketId) {
+    if (!ticketId) {
+      await context.sendActivity("Please provide a ticket ID after `/ticket`.");
+      return;
+    }
+
+    try {
+      // Fetch the ticket info
+      const ticketInfo = await fetch_ticket_by_id(ticketId);
+      await context.sendActivity(`Ticket Info:\n${JSON.stringify(ticketInfo, null, 2)}`);
+
+      // Fetch related time entries
+      const timeEntries = await fetch_time_entries_for_ticket(ticketId);
+      await context.sendActivity(`Time Entries:\n${JSON.stringify(timeEntries, null, 2)}`);
+      
+    } catch (error) {
+      await context.sendActivity(`Sorry, I encountered an error while processing the ticket ID: ${ticketId}`);
+      console.error("Error fetching ticket or time entries:", error);
     }
   }
 
@@ -100,7 +91,10 @@ class TeamsBot extends TeamsActivityHandler {
       "Welcome to the Teams Bot",
       "Here are the available commands:",
       null,
-      [{ type: "Action.Submit", title: "/prompt [message]", value: "/prompt [message]" }]
+      [
+        { type: "Action.Submit", title: "/prompt [message]", value: "/prompt [message]" },
+        { type: "Action.Submit", title: "/ticket [id]", value: "/ticket [id]" }
+      ]
     );
 
     await context.sendActivity({ attachments: [card] });
