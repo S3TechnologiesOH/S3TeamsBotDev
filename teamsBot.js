@@ -99,7 +99,7 @@ class TeamsBot extends TeamsActivityHandler {
       const fullMessage = `${formattedTicketDetails}**Time Entries Summary:**\n\n${timeEntriesSummary}`;
   
       // Split message if it's too long (Microsoft Teams message size limit)
-      const chunkSize = 2000; // Max character limit for a message in Teams
+      const chunkSize = 10000; // Max character limit for a message in Teams
       for (let i = 0; i < fullMessage.length; i += chunkSize) {
         const messageChunk = fullMessage.slice(i, i + chunkSize);
         await context.sendActivity(messageChunk);
