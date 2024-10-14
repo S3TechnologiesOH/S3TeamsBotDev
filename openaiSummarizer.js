@@ -28,22 +28,41 @@ async function summarizeJSON(jsonData) {
       //console.log("Debug Log: JSON being passed to OpenAI:", jsonString); // Debug log to verify JSON
   
       // Call OpenAI with the JSON string as part of the prompt
-      const promptMessage = `Here is the detailed time entries information in JSON format: \n${jsonString}\n Please summarize the time entries. Only summarize using Bullets or Numbered titles. Keep the summaries breif and organized by the type topic. Dont include old entries. Don't make a title, for example "summary of time entries". Do not give paragraphs.`;
+      const promptMessage = `\n${jsonString}\n`;
   
-      const messages = [
-        { role: "system", content: "You are a helpful assistant that summarizes JSON data." },
-        { role: "user", content: promptMessage },
-      ];
-  
-      // OpenAI API call
-      const response = await client.chat.completions.create({
-        messages,
-        model: "gpt-4o-mini",
-        max_tokens: 200,
-        temperature: 0.01,
-        stream: false,
-      });
-  
+      assistant = client.beta.assistants.retrieve("asst_2siYL2u8sZy9PhFDZQvlyKOi")
+      
+      thread = client.beta.threads.create()
+      message = client.beta.threads.messages.create(
+        thread_id = thread.id,
+        role = "user",
+        content = promptMessage
+      )
+      
+      run = client.beta.threads.runs.create(
+        thread_id = thread.id,
+        assistant_id = assistant.id
+      )
+
+      while (run.status in ['queued', 'in_progress', 'cancelling']){
+        time.sleep(1)
+        run = client.beta.threads.runs.retrieve(
+          thread_id=thread.id,
+          run_id=run.id
+        )
+      }
+      if (run.status == 'completed'){
+        messages = client.beta.threads.messages.list(
+          thread_id=thread.id
+        )
+        print(messages)
+        return messages;
+      }
+      else
+      {
+        print(run.status)
+      }
+
       return response.choices[0].message.content.trim();
     } catch (error) {
       console.error("Error summarizing JSON:", error);
