@@ -22,54 +22,58 @@ const client = new AzureOpenAI({
 });
 
 async function summarizeJSON(jsonData) {
-    try {
-      // Convert the JSON data to a formatted string
-      const jsonString = JSON.stringify(jsonData, null, 2);
-      //console.log("Debug Log: JSON being passed to OpenAI:", jsonString); // Debug log to verify JSON
-  
-      // Call OpenAI with the JSON string as part of the prompt
-      const promptMessage = `\n${jsonString}\n`;
-  
-      assistant = client.beta.assistants.retrieve("asst_2siYL2u8sZy9PhFDZQvlyKOi")
-      
-      thread = client.beta.threads.create()
-      message = client.beta.threads.messages.create(
-        thread_id = thread.id,
-        role = "user",
-        content = promptMessage
-      )
-      
-      run = client.beta.threads.runs.create(
-        thread_id = thread.id,
-        assistant_id = assistant.id
-      )
+  try {
+    // Convert the JSON data to a formatted string
+    const jsonString = JSON.stringify(jsonData, null, 2);
+    //console.log("Debug Log: JSON being passed to OpenAI:", jsonString); // Debug log to verify JSON
 
-      while (run.status in ['queued', 'in_progress', 'cancelling']){
-        time.sleep(1)
-        run = client.beta.threads.runs.retrieve(
-          thread_id=thread.id,
-          run_id=run.id
-        )
-      }
-      if (run.status == 'completed'){
-        messages = client.beta.threads.messages.list(
-          thread_id=thread.id
-        )
-        print(messages)
-        return messages;
-      }
-      else
-      {
-        print(run.status)
-      }
+    // Call OpenAI with the JSON string as part of the prompt
+    const promptMessage = `\n${jsonString}\n`;
 
-      return response.choices[0].message.content.trim();
-    } catch (error) {
-      console.error("Error summarizing JSON:", error);
-      throw new Error("Failed to summarize JSON data.");
+    // Retrieve assistant
+    const assistant = await client.beta.assistants.retrieve("asst_2siYL2u8sZy9PhFDZQvlyKOi");
+
+    // Create a new thread
+    const thread = await client.beta.threads.create({ assistant_id: assistant.id });
+
+    // Create a new message in the thread
+    await client.beta.threads.messages.create({
+      thread_id: thread.id,
+      role: "user",
+      content: promptMessage,
+    });
+
+    // Run the assistant in the thread
+    let run = await client.beta.threads.runs.create({
+      thread_id: thread.id,
+      assistant_id: assistant.id,
+    });
+
+    // Wait for the run to complete
+    while (["queued", "in_progress", "cancelling"].includes(run.status)) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      run = await client.beta.threads.runs.retrieve({
+        thread_id: thread.id,
+        run_id: run.id,
+      });
     }
+
+    // Handle completed run
+    if (run.status === "completed") {
+      const messages = await client.beta.threads.messages.list({ thread_id: thread.id });
+      console.log(messages);
+      return messages;
+    } else {
+      console.error("Run status:", run.status);
+    }
+
+    throw new Error("Failed to summarize JSON data.");
+  } catch (error) {
+    console.error("Error summarizing JSON:", error);
+    throw new Error("Failed to summarize JSON data.");
   }
-  
+}
+
 
 module.exports = {
   summarizeJSON,
