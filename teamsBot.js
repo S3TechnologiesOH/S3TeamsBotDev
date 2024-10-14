@@ -10,7 +10,7 @@ class TeamsBot extends TeamsActivityHandler {
 
     // Handle incoming messages
     this.onMessage(async (context, next) => {
-      await context.sendActivity("Debug Log: Received a message activity."); // Debug message
+      //await context.sendActivity("Debug Log: Received a message activity."); // Debug message
 
       // Remove bot mention
       const removedMentionText = TurnContext.removeRecipientMention(context.activity);
@@ -87,7 +87,7 @@ class TeamsBot extends TeamsActivityHandler {
       };
   
       // Log the combined data to check if it's being passed correctly
-      console.log("Debug Log: Combined data being passed to OpenAI:", combinedData);
+      //console.log("Debug Log: Combined data being passed to OpenAI:", combinedData);
   
       // Summarize the combined data
       const combinedSummary = await summarizeJSON(combinedData);

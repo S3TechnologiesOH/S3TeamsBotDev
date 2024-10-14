@@ -25,7 +25,7 @@ async function summarizeJSON(jsonData) {
     try {
       // Convert the JSON data to a formatted string
       const jsonString = JSON.stringify(jsonData, null, 2);
-      console.log("Debug Log: JSON being passed to OpenAI:", jsonString); // Debug log to verify JSON
+      //console.log("Debug Log: JSON being passed to OpenAI:", jsonString); // Debug log to verify JSON
   
       // Call OpenAI with the JSON string as part of the prompt
       const promptMessage = `Here is the detailed time entries information in JSON format: \n${jsonString}\n Please summarize the time entries. Only summarize using Bullets or Numbered titles. Keep the summaries breif and organized by the type topic. Dont include old entries. Don't make a title, for example "summary of time entries". Do not give paragraphs.`;
