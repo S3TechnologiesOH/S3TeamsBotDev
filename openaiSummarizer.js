@@ -40,7 +40,7 @@ async function summarizeJSON(jsonData) {
         messages,
         model: "gpt-4o-mini",
         max_tokens: 1000,
-        temperature: 0.05,
+        temperature: 0.01,
         stream: false,
       });
   
