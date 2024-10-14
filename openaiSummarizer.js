@@ -39,7 +39,7 @@ async function summarizeJSON(jsonData) {
       const response = await client.chat.completions.create({
         messages,
         model: "gpt-4o-mini",
-        max_tokens: 1000,
+        max_tokens: 200,
         temperature: 0.01,
         stream: false,
       });
