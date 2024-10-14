@@ -26,26 +26,27 @@ async function summarizeJSON(jsonData) {
     // Convert the JSON data to a formatted string
     const jsonString = JSON.stringify(jsonData, null, 2);
 
-    // Call OpenAI with the JSON string as part of the prompt
+    // Create prompt message
     const promptMessage = `\n${jsonString}\n`;
 
-    // Retrieve assistant
+    // Retrieve the assistant
     const assistant = await client.beta.assistants.retrieve("asst_2siYL2u8sZy9PhFDZQvlyKOi");
 
-    // Create a new thread
-    const thread = await client.beta.threads.create({ assistant_id: assistant.id });
+    // Create a new thread associated with the assistant
+    const thread = await client.beta.threads.create({
+      assistant_id: assistant.id,
+    });
 
-    // Create a new message in the thread
+    // Add user message to the thread
     await client.beta.threads.messages.create({
       thread_id: thread.id,
       role: "user",
       content: promptMessage,
     });
 
-    // Run the assistant in the thread
+    // Start a run for the assistant on the created thread
     let run = await client.beta.threads.runs.create({
       thread_id: thread.id,
-      // Removed assistant_id
     });
 
     // Wait for the run to complete
@@ -64,15 +65,13 @@ async function summarizeJSON(jsonData) {
       return messages;
     } else {
       console.error("Run status:", run.status);
+      throw new Error(`Run did not complete successfully: ${run.status}`);
     }
-
-    throw new Error("Failed to summarize JSON data.");
   } catch (error) {
     console.error("Error summarizing JSON:", error);
     throw new Error("Failed to summarize JSON data.");
   }
 }
-
 
 module.exports = {
   summarizeJSON,
