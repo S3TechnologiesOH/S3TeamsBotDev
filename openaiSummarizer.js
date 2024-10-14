@@ -25,7 +25,6 @@ async function summarizeJSON(jsonData) {
   try {
     // Convert the JSON data to a formatted string
     const jsonString = JSON.stringify(jsonData, null, 2);
-    //console.log("Debug Log: JSON being passed to OpenAI:", jsonString); // Debug log to verify JSON
 
     // Call OpenAI with the JSON string as part of the prompt
     const promptMessage = `\n${jsonString}\n`;
@@ -46,7 +45,7 @@ async function summarizeJSON(jsonData) {
     // Run the assistant in the thread
     let run = await client.beta.threads.runs.create({
       thread_id: thread.id,
-      assistant_id: assistant.id,
+      // Removed assistant_id
     });
 
     // Wait for the run to complete
