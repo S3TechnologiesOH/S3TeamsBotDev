@@ -71,13 +71,22 @@ async function summarizeJSON(jsonData) {
     if (runStatus === 'completed') {
       console.log("Run completed successfully");
       const messagesResponse = await client.beta.threads.messages.list(thread.id);
-      console.log("Messages retrieved: ",  JSON.stringify(messagesResponse));
-      console.log("Content: ", messagesResponse.data.content[0].value);
-      // Extract the content of the latest message
-      const latestMessage = messagesResponse.data[messagesResponse.data.length - 1];
-      const messageContent = latestMessage.content; // Get the actual message content
-      
-      console.log("Latest message content: ", messageContent);
+      if (messagesResponse && messagesResponse.data) {
+        messagesResponse.data.forEach((message) => {
+          if (message.content && message.content.length > 0) {
+            message.content.forEach((contentItem) => {
+              if (contentItem.type === "text" && contentItem.text && contentItem.text.value) {
+                console.log("Message Content: ", contentItem.text.value);
+                messageContent = contentItem.text.value;
+              }
+            });
+          }
+        });
+      } else {
+        console.log("No messages found");
+      }
+
+      //console.log("Latest message content: ", messageContent);
 
       return messageContent; // Return the message content as a string
     } else {
