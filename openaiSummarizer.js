@@ -25,13 +25,11 @@ async function summarizeJSON(jsonData) {
   try {
     console.log("Starting summarizeJSON function");
 
-    // Convert the JSON data to a formatted string
-    const jsonString = JSON.stringify(jsonData, null, 2);
-    console.log("Formatted JSON data: ", jsonString);
-    console.log("JSON string length: ", jsonString.length);
-
-    // Create prompt message
-    const promptMessage = `\n${jsonString}\n`;
+    // Simplify JSON data to make it easier for the assistant to process
+    const simplifiedEntries = jsonData.map(entry => `Time Entry ID: ${entry.id}\nNotes: ${entry._info.notes || 'No notes'}`).join('\n\n');
+    
+    // Create simplified prompt message
+    const promptMessage = `Here are the time entries. Summarize them:\n${simplifiedEntries}`;
     console.log("Prompt message created: ", promptMessage);
 
     const assistant = await client.beta.assistants.retrieve("asst_2siYL2u8sZy9PhFDZQvlyKOi");
@@ -49,8 +47,8 @@ async function summarizeJSON(jsonData) {
 
     const runResponse = await client.beta.threads.runs.create(thread.id, {
       assistant_id: assistant.id,
-      temperature: 0.5, // Adjust temperature to more reasonable value
-      top_p: 0.9,       // Adjust top_p for better balance
+      temperature: 0.7, // Adjust temperature
+      top_p: 0.9,       // Adjust top_p
       max_prompt_tokens: 1024, // Limit token size if needed
     });
     console.log("Run started: ", runResponse);
@@ -93,6 +91,7 @@ async function summarizeJSON(jsonData) {
     throw new Error("Failed to summarize JSON data.");
   }
 }
+
 
 module.exports = {
   summarizeJSON,
