@@ -28,6 +28,7 @@ async function summarizeJSON(jsonData) {
     // Convert the JSON data to a formatted string
     const jsonString = JSON.stringify(jsonData, null, 2);
     console.log("Formatted JSON data: ", jsonString);
+    console.log("JSON string length: ", jsonString.length);
 
     // Create prompt message
     const promptMessage = `\n${jsonString}\n`;
@@ -48,6 +49,9 @@ async function summarizeJSON(jsonData) {
 
     const runResponse = await client.beta.threads.runs.create(thread.id, {
       assistant_id: assistant.id,
+      temperature: 0.5, // Adjust temperature to more reasonable value
+      top_p: 0.9,       // Adjust top_p for better balance
+      max_prompt_tokens: 1024, // Limit token size if needed
     });
     console.log("Run started: ", runResponse);
 
@@ -61,17 +65,25 @@ async function summarizeJSON(jsonData) {
       console.log(`Updated run status: ${runStatus}`);
     }
 
+    // Handle failed status
+    if (runStatus === 'failed') {
+      console.log("Run failed. Error details: ", runResponse.last_error, runResponse.incomplete_details);
+      throw new Error(`Run did not complete successfully. Status: ${runStatus}`);
+    }
+
     // Get the messages in the thread once the run has completed
     if (runStatus === 'completed') {
       console.log("Run completed successfully");
       const messagesResponse = await client.beta.threads.messages.list(thread.id);
-      // Assuming the response contains an array of messages in 'data'
-      const latestMessage = messagesResponse.data[messagesResponse.data.length]; // Get the most recent message
-      const messageContent = latestMessage.content; // Extract the content of the message
+      console.log("Messages retrieved: ", messagesResponse);
 
+      // Extract the content of the latest message
+      const latestMessage = messagesResponse.data[messagesResponse.data.length - 1];
+      const messageContent = latestMessage.content; // Get the actual message content
+      
       console.log("Latest message content: ", messageContent);
 
-      return messageContent; // Return the actual message content as a string
+      return messageContent; // Return the message content as a string
     } else {
       console.error(`Run did not complete successfully. Status: ${runStatus}`);
       throw new Error(`Run did not complete successfully. Status: ${runStatus}`);
