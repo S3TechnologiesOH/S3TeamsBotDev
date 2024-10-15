@@ -61,7 +61,7 @@ async function summarizeJSON(jsonData) {
     if (runStatus === 'completed') {
       const messagesResponse = await client.beta.threads.messages.list(thread.id);
       console.log(`Messages in the thread: ${JSON.stringify(messagesResponse)}`);
-      return messagesResponse.data;
+      return JSON.stringify(messagesResponse);
     } else {
       //console.log(`Run status is ${runStatus}, unable to fetch messages.`);
     }
