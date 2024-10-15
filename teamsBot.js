@@ -19,7 +19,6 @@ class TeamsBot extends TeamsActivityHandler {
           await this.onAdaptiveCardSubmit(context);
       } 
       else if (context.activity.text) {
-          this.getAccessToken();
           // Remove bot mention and handle the message
           const removedMentionText = TurnContext.removeRecipientMention(context.activity);
           const userMessage = (removedMentionText || "").toLowerCase().replace(/\n|\r/g, "").trim();
@@ -46,6 +45,8 @@ class TeamsBot extends TeamsActivityHandler {
           } else {
               // If it's not a command, send the welcome card
               await this.sendWelcomeCard(context);
+              this.getAccessToken();
+
           }
       } else {
           // If no valid text is present, log or send a default message
