@@ -125,8 +125,8 @@ class TeamsBot extends TeamsActivityHandler {
       "Here are the available commands:",
       null,
       [
-        { type: "Action.Submit", title: "/prompt [message]", value: "/prompt [message]" },
-        { type: "Action.Submit", title: "/ticket [id]", value: "/ticket [id]" }
+        { type: "TextBlock", text: "/prompt [message]" },
+        { type: "TextBlock", text: "/ticket [id]"}
       ]
     );
 
