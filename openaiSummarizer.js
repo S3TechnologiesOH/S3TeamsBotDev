@@ -56,7 +56,11 @@ async function summarizeJSON(jsonData) {
       
       // Assuming the latest message contains the summary
       const latestMessage = messagesResponse.data[messagesResponse.data.length - 1];
-      let summaryText = latestMessage.content.toString().trim();
+
+      // Check if content is an object, and stringify it if necessary
+      let summaryText = typeof latestMessage.content === 'object' 
+        ? JSON.stringify(latestMessage.content, null, 2) // Pretty print JSON if it's an object
+        : latestMessage.content.toString().trim(); // Convert to string if it's already a primitive value
 
       return summaryText;
     } else {
