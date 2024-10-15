@@ -8,44 +8,48 @@ class TeamsBot extends TeamsActivityHandler {
   constructor() {
     super();
 
-    // Handle incoming messages
     this.onMessage(async (context, next) => {
-      //await context.sendActivity("Debug Log: Received a message activity."); // Debug message
-
-      // Remove bot mention
-      const removedMentionText = TurnContext.removeRecipientMention(context.activity);
-      const userMessage = removedMentionText.toLowerCase().replace(/\n|\r/g, "").trim(); // Define userMessage here
-
-      // Check if the message starts with a slash ("/")
-      if (userMessage.startsWith("/")) {
-        if (userMessage.startsWith("/prompt")) {
-          // Handle OpenAI prompt
-          const promptMessage = userMessage.replace("/prompt", "").trim();
-          await this.handleOpenAIRequest(context, promptMessage);
-        } else if (userMessage.startsWith("/ticket")) {
-          // Handle ConnectWise ticket request
-          const ticketIdString = userMessage.replace("/ticket", "").trim().replace("#", "");
-          const ticketId = parseInt(ticketIdString, 10);  // Convert the ticketId string to an integer
-
-          // Check if the parsed ticketId is a valid number
-          if (!isNaN(ticketId)) {
-            await this.handleTicketRequest(context, ticketId); // Pass the ticketId (number)
+      // Check if there is an activity text before proceeding
+      if (context.activity.text) {
+          // Remove bot mention
+          const removedMentionText = TurnContext.removeRecipientMention(context.activity);
+          
+          // Ensure removedMentionText is valid and not null or undefined
+          const userMessage = (removedMentionText || "").toLowerCase().replace(/\n|\r/g, "").trim();
+  
+          // Check if the message starts with a slash ("/")
+          if (userMessage.startsWith("/")) {
+              if (userMessage.startsWith("/prompt")) {
+                  // Handle OpenAI prompt
+                  const promptMessage = userMessage.replace("/prompt", "").trim();
+                  await this.handleOpenAIRequest(context, promptMessage);
+              } else if (userMessage.startsWith("/ticket")) {
+                  // Handle ConnectWise ticket request
+                  const ticketIdString = userMessage.replace("/ticket", "").trim().replace("#", "");
+                  const ticketId = parseInt(ticketIdString, 10);  // Convert the ticketId string to an integer
+  
+                  // Check if the parsed ticketId is a valid number
+                  if (!isNaN(ticketId)) {
+                      await this.handleTicketRequest(context, ticketId); // Pass the ticketId (number)
+                  } else {
+                      await context.sendActivity("Please provide a valid numeric ticket ID after `/ticket`.");
+                  }
+              } else {
+                  // If the command is unknown
+                  await context.sendActivity("Unknown command. Use `/prompt [message]` or `/ticket [id]`.");
+              }
           } else {
-            await context.sendActivity("Please provide a valid numeric ticket ID after `/ticket`.");
+              // If it's not a command, send the welcome card
+              await this.sendWelcomeCard(context);
           }
-        } else {
-          // If the command is unknown
-          await context.sendActivity("Unknown command. Use `/prompt [message]` or `/ticket [id]`.");
-        }
+      } else {
+          // If no valid text is present, log or send a default message
+          await context.sendActivity("I didn't understand your message. Please use `/prompt` or `/ticket` commands.");
       }
-      else
-      {
-        await this.sendWelcomeCard(context);
-      }
-
+  
       await next();
-    });
-
+  });
+  
     // Handle MembersAdded event for welcoming new users and sending the command list
     this.onMembersAdded(async (context, next) => {
       const membersAdded = context.activity.membersAdded;
