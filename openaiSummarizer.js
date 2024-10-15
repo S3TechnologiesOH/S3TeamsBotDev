@@ -56,7 +56,7 @@ async function summarizeJSON(jsonData) {
       
       // Assuming the latest message contains the summary
       const latestMessage = messagesResponse.data[messagesResponse.data.length - 1];
-      let summaryText = latestMessage.content;
+      let summaryText = latestMessage.content.toString().trim();
 
       return summaryText;
     } else {
