@@ -29,10 +29,18 @@ async function summarizeJSON(jsonData) {
     // Create prompt message
     const promptMessage = `\n${jsonString}\n`;
 
-    // Retrieve the assistant
     const assistant = await client.beta.assistants.retrieve("asst_2siYL2u8sZy9PhFDZQvlyKOi");
-    // Create a new thread associated with the assistant
+    console.log("Assistant retrieved:", assistant);
     const thread = await client.beta.threads.create();
+    console.log("Thread created:", thread);
+    
+    try {
+      const messages = await client.beta.threads.messages.list({ thread_id: thread.id });
+      console.log("Messages retrieved:", messages);
+    } catch (error) {
+      console.error("Error retrieving messages:", error.response ? error.response.data : error);
+    }
+    
 
     // Add user message to the thread
     await client.beta.threads.messages.create({
