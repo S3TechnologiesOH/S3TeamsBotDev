@@ -61,12 +61,10 @@ async function summarizeJSON(jsonData) {
       // If the summaryText includes object representations like [object Object], process them
       if (jsonData.timeEntries) {
         // Format timeEntries into a human-readable format
-        const timeEntriesSummary = jsonData.timeEntries.map(entry => 
-          `Technician: ${entry.technician}, Hours: ${entry.hours}, Notes: ${entry.notes}`
-        ).join('\n');
+        const timeEntriesSummary = jsonData.timeEntries.map(entry => entry.notes).join('\n');
         
         // Replace [object Object] placeholder with the formatted time entries
-        summaryText = summaryText.replace("[object Object]", timeEntriesSummary);
+        summaryText =  timeEntriesSummary;
       }
 
       return summaryText;
