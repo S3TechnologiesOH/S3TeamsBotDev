@@ -118,20 +118,54 @@ class TeamsBot extends TeamsActivityHandler {
   }
   
   
-  // Send a welcome card with command list
-  async sendWelcomeCard(context) {
-    const card = CardFactory.heroCard(
-      "Welcome to the Teams Bot",
-      "Here are the available commands:",
-      null,
-      [
-        { type: "TextBlock", text: "/prompt [message]" },
-        { type: "TextBlock", text: "/ticket [id]"}
+// Send a welcome card with an improved command list
+async sendWelcomeCard(context) {
+  const adaptiveCard = {
+      "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+      "type": "AdaptiveCard",
+      "version": "1.4",
+      "body": [
+          {
+              "type": "TextBlock",
+              "text": "Welcome to the Teams Bot!",
+              "weight": "Bolder",
+              "size": "Large",
+              "wrap": true
+          },
+          {
+              "type": "TextBlock",
+              "text": "Here are the available commands:",
+              "wrap": true,
+              "spacing": "Medium"
+          },
+          {
+              "type": "TextBlock",
+              "text": "/prompt [message]",
+              "spacing": "Small",
+              "wrap": true,
+              "fontType": "Monospace",
+              "weight": "Bolder"
+          },
+          {
+              "type": "TextBlock",
+              "text": "/ticket [id]",
+              "spacing": "Small",
+              "wrap": true,
+              "fontType": "Monospace",
+              "weight": "Bolder"
+          },
+          {
+              "type": "TextBlock",
+              "text": "You can use these commands to interact with the bot.",
+              "wrap": true,
+              "spacing": "Medium"
+          }
       ]
-    );
+  };
 
-    await context.sendActivity({ attachments: [card] });
-  }
+  await context.sendActivity({ attachments: [CardFactory.adaptiveCard(adaptiveCard)] });
+}
+
 }
 
 module.exports.TeamsBot = TeamsBot;
