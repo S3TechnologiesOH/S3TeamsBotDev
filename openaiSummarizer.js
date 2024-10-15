@@ -41,36 +41,45 @@ async function summarizeJSON(jsonData) {
       console.error("Error retrieving messages:", error.response ? error.response.data : error);
     }
     
+    // Add a user question to the thread
+    const threadResponse = await client.beta.threads.messages.create(
+      assistantThread.id,
+      {
+        role,
+        content: promptMessage,
+      }
+    );
+    console.log(`Message created: ${JSON.stringify(threadResponse)}`);
 
-    // Add user message to the thread
-    await client.beta.threads.messages.create({
-      thread_id: thread.id,
-      role: "user",
-      content: promptMessage,
-    });
+    
+    const runResponse = await assistantsClient.beta.threads.runs.create(
+      assistantThread.id,
+      {
+        assistant_id: assistantResponse.id,
+      }
+    );
+    console.log(`Run started: ${JSON.stringify(runResponse)}`);
 
-    // Start a run for the assistant on the created thread
-    let run = await client.beta.threads.runs.create({
-      thread_id: thread.id,
-    });
-
-    // Wait for the run to complete
-    while (["queued", "in_progress", "cancelling"].includes(run.status)) {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      run = await client.beta.threads.runs.retrieve({
-        thread_id: thread.id,
-        run_id: run.id,
-      });
+    // Polling until the run completes or fails
+    let runStatus = runResponse.status;
+    while (runStatus === 'queued' || runStatus === 'in_progress') {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      const runStatusResponse = await assistantsClient.beta.threads.runs.retrieve(
+        assistantThread.id,
+        runResponse.id
+      );
+      runStatus = runStatusResponse.status;
+      console.log(`Current run status: ${runStatus}`);
     }
 
-    // Handle completed run
-    if (run.status === "completed") {
-      const messages = await client.beta.threads.messages.list({ thread_id: thread.id });
-      console.log(messages);
-      return messages;
+    // Get the messages in the thread once the run has completed
+    if (runStatus === 'completed') {
+      const messagesResponse = await assistantsClient.beta.threads.messages.list(
+        assistantThread.id
+      );
+      console.log(`Messages in the thread: ${JSON.stringify(messagesResponse)}`);
     } else {
-      console.error("Run status:", run.status);
-      throw new Error(`Run did not complete successfully: ${run.status}`);
+      console.log(`Run status is ${runStatus}, unable to fetch messages.`);
     }
   } catch (error) {
     console.error("Error summarizing JSON:", error);
