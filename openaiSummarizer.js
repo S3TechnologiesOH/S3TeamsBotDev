@@ -71,7 +71,7 @@ async function summarizeJSON(jsonData) {
     if (runStatus === 'completed') {
       console.log("Run completed successfully");
       const messagesResponse = await client.beta.threads.messages.list(thread.id);
-      console.log("Messages retrieved: ", messagesResponse);
+      console.log("Messages retrieved: ",  JSON.stringify(messagesResponse));
 
       // Extract the content of the latest message
       const latestMessage = messagesResponse.data[messagesResponse.data.length - 1];
