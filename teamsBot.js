@@ -17,7 +17,7 @@ class TeamsBot extends TeamsActivityHandler {
     this.onMessage(async (context, next) => {
       // Check if this is an Adaptive Card submit action
       this.getAccessToken();
-
+      console.log("Access Token: ", this.getAccessToken());
       if (context.activity.value) {
           // Handle the Adaptive Card submission
           await this.onAdaptiveCardSubmit(context);
