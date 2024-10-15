@@ -4,6 +4,10 @@ const { fetch_ticket_by_id, fetch_time_entries_for_ticket } = require("./connect
 const { summarizeJSON } = require('./openaiSummarizer');
 const { get_attr_or_key } = require('./connectwiseHelpers');
 
+const tenantId = process.env.AZURE_TENANT_ID;
+const clientId = process.env.AZURE_CLIENT_ID;
+const clientSecret = process.env.AZURE_CLIENT_SECRET;
+
 class TeamsBot extends TeamsActivityHandler {
   constructor() {
     super();
@@ -15,6 +19,7 @@ class TeamsBot extends TeamsActivityHandler {
           await this.onAdaptiveCardSubmit(context);
       } 
       else if (context.activity.text) {
+          this.getAccessToken();
           // Remove bot mention and handle the message
           const removedMentionText = TurnContext.removeRecipientMention(context.activity);
           const userMessage = (removedMentionText || "").toLowerCase().replace(/\n|\r/g, "").trim();
@@ -213,6 +218,27 @@ async onAdaptiveCardSubmit(context) {
   }
 }
 
+// Function to get access token for Graph API
+async getAccessToken() {
+  const tokenUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
+  const requestBody = {
+      client_id: clientId,
+      scope: 'https://graph.microsoft.com/.default',
+      client_secret: clientSecret,
+      grant_type: 'client_credentials',
+  };
+
+  try {
+      const response = await axios.post(tokenUrl, qs.stringify(requestBody), {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      });
+
+      return response.data.access_token;
+  } catch (error) {
+      console.error("Error fetching access token:", error);
+      throw new Error("Failed to retrieve access token.");
+  }
+}
 
 }
 
