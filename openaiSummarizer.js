@@ -32,9 +32,7 @@ async function summarizeJSON(jsonData) {
     // Retrieve the assistant
     const assistant = await client.beta.assistants.retrieve("asst_2siYL2u8sZy9PhFDZQvlyKOi");
     // Create a new thread associated with the assistant
-    const thread = await client.beta.threads.create({
-      id: assistant.id,
-    });
+    const thread = await client.beta.threads.create();
 
     // Add user message to the thread
     await client.beta.threads.messages.create({
