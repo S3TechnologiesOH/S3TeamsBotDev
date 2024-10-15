@@ -184,14 +184,19 @@ async sendWelcomeCard(context) {
 // Handle the user input and command action
 async onAdaptiveCardSubmit(context) {
   const submittedData = context.activity.value;
-  
+
   // Check if the action is to run the /ticket command
-  if (submittedData.action === 'runTicketCommand' && submittedData.ticketNumber) {
+  if (submittedData && submittedData.action === 'runTicketCommand') {
       const ticketNumber = submittedData.ticketNumber;
-      const command = `/ticket ${ticketNumber}`;
       
-      // You can process the command here (e.g., fetching ticket details)
-      await context.sendActivity(`Running command: ${command}`);
+      // Ensure the ticket number is defined and not empty
+      if (ticketNumber && ticketNumber.trim() !== "") {
+          const command = `/ticket ${ticketNumber}`;
+          await context.sendActivity(`Running command: ${command}`);
+      } else {
+          // If no valid ticket number is entered
+          await context.sendActivity("Please enter a valid ticket number.");
+      }
   } else {
       await context.sendActivity("Please enter a valid ticket number.");
   }
