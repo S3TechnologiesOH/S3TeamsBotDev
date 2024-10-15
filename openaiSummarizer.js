@@ -26,7 +26,7 @@ async function summarizeJSON(jsonData) {
     console.log("Starting summarizeJSON function");
 
     // Simplify JSON data to make it easier for the assistant to process
-    const simplifiedEntries = jsonData.map(entry => `Time Entry ID: ${entry.id}\nNotes: ${entry._info.notes || 'No notes'}`).join('\n\n');
+    const simplifiedEntries = jsonData.map(entry => `*Time Entry ID: ${entry.id}\nNotes: ${entry._info.notes || 'No notes'}`).join('\n\n');
     
     // Create simplified prompt message
     const promptMessage = simplifiedEntries;
@@ -75,7 +75,7 @@ async function summarizeJSON(jsonData) {
         messagesResponse.data.forEach((message) => {
           if (message.content && message.content.length > 0) {
             message.content.forEach((contentItem) => {
-              if (contentItem.type === "text" && contentItem.text && contentItem.text.value) {
+              if (contentItem.type === "text" && contentItem.text && contentItem.text.value && !contentItem.text.value.startsWith("*")){
                 console.log("Message Content: ", contentItem.text.value);
                 messageContent = contentItem.text.value;
               }
