@@ -52,7 +52,7 @@ async function summarizeJSON(jsonData) {
 
   // Get the messages in the thread once the run has completed
   if (runStatus === 'completed') {
-    const messagesResponse = await client.beta.threads.messages.list(thread.id);
+    const messagesResponse = await client.beta.threads.messages.list({thread_id:thread.id});
   
     return messagesResponse;
   } else {
