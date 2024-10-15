@@ -41,14 +41,15 @@ async function summarizeJSON(jsonData) {
     // Add a user message to the thread
     const threadResponse = await client.beta.threads.messages.create(thread.id, {
       role: "user",
-      content: promptMessage.toString(),
+      content: promptMessage,
     });
+
     console.log("User message added to thread: ", threadResponse);
 
     const runResponse = await client.beta.threads.runs.create(thread.id, {
       assistant_id: assistant.id,
     });
-    console.log("Run started: ", runResponse);
+    console.log("Run started: ", JSON.stringify(runResponse));
 
     // Polling until the run completes or fails
     let runStatus = runResponse.status;
