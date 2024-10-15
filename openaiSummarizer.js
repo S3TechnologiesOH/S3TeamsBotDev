@@ -66,7 +66,7 @@ async function summarizeJSON(jsonData) {
       console.log("Run completed successfully");
       const messagesResponse = await client.beta.threads.messages.list(thread.id);
       // Assuming the response contains an array of messages in 'data'
-      const latestMessage = messagesResponse.data[messagesResponse.data.length - 1]; // Get the most recent message
+      const latestMessage = messagesResponse.data[messagesResponse.data.length]; // Get the most recent message
       const messageContent = latestMessage.content; // Extract the content of the message
 
       console.log("Latest message content: ", messageContent);
