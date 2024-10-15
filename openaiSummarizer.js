@@ -30,23 +30,17 @@ async function summarizeJSON(jsonData) {
     const promptMessage = `\n${jsonString}\n`;
 
     const assistant = await client.beta.assistants.retrieve("asst_2siYL2u8sZy9PhFDZQvlyKOi");
-    //console.log("Assistant retrieved:", assistant);
     const thread = await client.beta.threads.create();
-    //console.log("Thread created:", thread);
 
-    
     // Add a user message to the thread
     const threadResponse = await client.beta.threads.messages.create(thread.id, {
       role: "user",
       content: promptMessage,
     });
-    console.log(`Message created: ${JSON.stringify(threadResponse)}`);
 
     const runResponse = await client.beta.threads.runs.create(thread.id, {
       assistant_id: assistant.id,
     });
-    //console.log(`Run started: ${JSON.stringify(runResponse)}`);
-    
 
     // Polling until the run completes or fails
     let runStatus = runResponse.status;
@@ -54,22 +48,26 @@ async function summarizeJSON(jsonData) {
       await new Promise(resolve => setTimeout(resolve, 1000));
       const runStatusResponse = await client.beta.threads.runs.retrieve(thread.id, runResponse.id);
       runStatus = runStatusResponse.status;
-      //console.log(`Current run status: ${runStatus}`);
     }
 
     // Get the messages in the thread once the run has completed
     if (runStatus === 'completed') {
       const messagesResponse = await client.beta.threads.messages.list(thread.id);
-      console.log(`Messages in the thread: ${JSON.stringify(messagesResponse)}`);
-      return messagesResponse;
+      
+      // Assuming the latest message contains the summary
+      const latestMessage = messagesResponse.data[messagesResponse.data.length - 1];
+      const summaryText = latestMessage.content;  // Get the message content
+
+      return summaryText;
     } else {
-      //console.log(`Run status is ${runStatus}, unable to fetch messages.`);
+      throw new Error(`Run did not complete successfully. Status: ${runStatus}`);
     }
   } catch (error) {
     console.error("Error summarizing JSON:", error);
     throw new Error("Failed to summarize JSON data.");
   }
 }
+
 
 module.exports = {
   summarizeJSON,
