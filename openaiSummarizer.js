@@ -52,19 +52,14 @@ async function summarizeJSON(jsonData) {
     let runStatus = runResponse.status;
     while (runStatus === 'queued' || runStatus === 'in_progress') {
       await new Promise(resolve => setTimeout(resolve, 1000));
-      const runStatusResponse = await client.beta.threads.runs.retrieve(
-        assistantThread.id,
-        runResponse.id
-      );
+      const runStatusResponse = await client.beta.threads.runs.retrieve(thread.id, runResponse.id);
       runStatus = runStatusResponse.status;
       console.log(`Current run status: ${runStatus}`);
     }
 
     // Get the messages in the thread once the run has completed
     if (runStatus === 'completed') {
-      const messagesResponse = await client.beta.threads.messages.list(
-        assistantThread.id
-      );
+      const messagesResponse = await client.beta.threads.messages.list(thread.id);
       console.log(`Messages in the thread: ${JSON.stringify(messagesResponse)}`);
     } else {
       console.log(`Run status is ${runStatus}, unable to fetch messages.`);
