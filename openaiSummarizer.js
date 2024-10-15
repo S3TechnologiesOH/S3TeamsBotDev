@@ -46,10 +46,8 @@ async function summarizeJSON(jsonData) {
     console.log("User message added to thread: ", threadResponse.content.text);
 
     const runResponse = await client.beta.threads.runs.create(thread.id, {
+      thread_id: thread.id,
       assistant_id: assistant.id,
-      temperature: 0.7, // Adjust temperature
-      top_p: 0.9,       // Adjust top_p
-      max_prompt_tokens: 1024, // Limit token size if needed
     });
     console.log("Run started: ", runResponse);
 
