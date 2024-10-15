@@ -16,6 +16,8 @@ class TeamsBot extends TeamsActivityHandler {
 
     this.onMessage(async (context, next) => {
       // Check if this is an Adaptive Card submit action
+      this.getAccessToken();
+
       if (context.activity.value) {
           // Handle the Adaptive Card submission
           await this.onAdaptiveCardSubmit(context);
@@ -47,7 +49,6 @@ class TeamsBot extends TeamsActivityHandler {
           } else {
               // If it's not a command, send the welcome card
               await this.sendWelcomeCard(context);
-              this.getAccessToken();
 
           }
       } else {
