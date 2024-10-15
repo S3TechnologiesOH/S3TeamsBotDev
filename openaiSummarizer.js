@@ -58,15 +58,6 @@ async function summarizeJSON(jsonData) {
       const latestMessage = messagesResponse.data[messagesResponse.data.length - 1];
       let summaryText = latestMessage.content;
 
-      // If the summaryText includes object representations like [object Object], process them
-      if (jsonData.timeEntries) {
-        // Format timeEntries into a human-readable format
-        const timeEntriesSummary = jsonData.timeEntries.map(entry => entry.notes).join('\n');
-        
-        // Replace [object Object] placeholder with the formatted time entries
-        summaryText =  timeEntriesSummary;
-      }
-
       return summaryText;
     } else {
       throw new Error(`Run did not complete successfully. Status: ${runStatus}`);
