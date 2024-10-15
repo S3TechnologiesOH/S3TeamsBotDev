@@ -23,47 +23,60 @@ const client = new AzureOpenAI({
 
 async function summarizeJSON(jsonData) {
   try {
+    console.log("Starting summarizeJSON function");
+
     // Convert the JSON data to a formatted string
     const jsonString = JSON.stringify(jsonData, null, 2);
+    console.log("Formatted JSON data: ", jsonString);
 
     // Create prompt message
     const promptMessage = `\n${jsonString}\n`;
+    console.log("Prompt message created: ", promptMessage);
 
     const assistant = await client.beta.assistants.retrieve("asst_2siYL2u8sZy9PhFDZQvlyKOi");
+    console.log("Assistant retrieved: ", assistant);
+
     const thread = await client.beta.threads.create();
+    console.log("Thread created: ", thread);
 
     // Add a user message to the thread
     const threadResponse = await client.beta.threads.messages.create(thread.id, {
       role: "user",
       content: promptMessage,
     });
+    console.log("User message added to thread: ", threadResponse);
 
     const runResponse = await client.beta.threads.runs.create(thread.id, {
       assistant_id: assistant.id,
     });
+    console.log("Run started: ", runResponse);
 
     // Polling until the run completes or fails
     let runStatus = runResponse.status;
     while (runStatus === 'queued' || runStatus === 'in_progress') {
+      console.log(`Current run status: ${runStatus}`);
       await new Promise(resolve => setTimeout(resolve, 1000));
       const runStatusResponse = await client.beta.threads.runs.retrieve(thread.id, runResponse.id);
       runStatus = runStatusResponse.status;
+      console.log(`Updated run status: ${runStatus}`);
     }
 
-  // Get the messages in the thread once the run has completed
-  if (runStatus === 'completed') {
-    const messagesResponse = await client.beta.threads.messages.list({thread_id:thread.id});
-  
-    return messagesResponse;
-  } else {
-    throw new Error(`Run did not complete successfully. Status: ${runStatus}`);
-  }
+    // Get the messages in the thread once the run has completed
+    if (runStatus === 'completed') {
+      console.log("Run completed successfully");
+      const messagesResponse = await client.beta.threads.messages.list({ thread_id: thread.id });
+      console.log("Messages retrieved: ", messagesResponse);
+      
+      return messagesResponse;
+    } else {
+      console.error(`Run did not complete successfully. Status: ${runStatus}`);
+      throw new Error(`Run did not complete successfully. Status: ${runStatus}`);
+    }
   } catch (error) {
     console.error("Error summarizing JSON:", error);
     throw new Error("Failed to summarize JSON data.");
   }
 }
-
 
 module.exports = {
   summarizeJSON,
