@@ -29,7 +29,7 @@ async function summarizeJSON(jsonData) {
     const simplifiedEntries = jsonData.map(entry => `Time Entry ID: ${entry.id}\nNotes: ${entry._info.notes || 'No notes'}`).join('\n\n');
     
     // Create simplified prompt message
-    const promptMessage = `Here are the time entries. Summarize them:\n${simplifiedEntries}`;
+    const promptMessage = simplifiedEntries;
     console.log("Prompt message created: ", promptMessage);
 
     const assistant = await client.beta.assistants.retrieve("asst_2siYL2u8sZy9PhFDZQvlyKOi");
@@ -43,7 +43,7 @@ async function summarizeJSON(jsonData) {
       role: "user",
       content: promptMessage,
     });
-    console.log("User message added to thread: ", threadResponse);
+    console.log("User message added to thread: ", threadResponse.text);
 
     const runResponse = await client.beta.threads.runs.create(thread.id, {
       assistant_id: assistant.id,
