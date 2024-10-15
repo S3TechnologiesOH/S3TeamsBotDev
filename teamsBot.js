@@ -9,12 +9,14 @@ class TeamsBot extends TeamsActivityHandler {
     super();
 
     this.onMessage(async (context, next) => {
-      // Check if there is an activity text before proceeding
-      if (context.activity.text) {
-          // Remove bot mention
+      // Check if this is an Adaptive Card submit action
+      if (context.activity.value) {
+          // Handle the Adaptive Card submission
+          await this.onAdaptiveCardSubmit(context);
+      } 
+      else if (context.activity.text) {
+          // Remove bot mention and handle the message
           const removedMentionText = TurnContext.removeRecipientMention(context.activity);
-          
-          // Ensure removedMentionText is valid and not null or undefined
           const userMessage = (removedMentionText || "").toLowerCase().replace(/\n|\r/g, "").trim();
   
           // Check if the message starts with a slash ("/")
@@ -28,14 +30,12 @@ class TeamsBot extends TeamsActivityHandler {
                   const ticketIdString = userMessage.replace("/ticket", "").trim().replace("#", "");
                   const ticketId = parseInt(ticketIdString, 10);  // Convert the ticketId string to an integer
   
-                  // Check if the parsed ticketId is a valid number
                   if (!isNaN(ticketId)) {
                       await this.handleTicketRequest(context, ticketId); // Pass the ticketId (number)
                   } else {
                       await context.sendActivity("Please provide a valid numeric ticket ID after `/ticket`.");
                   }
               } else {
-                  // If the command is unknown
                   await context.sendActivity("Unknown command. Use `/prompt [message]` or `/ticket [id]`.");
               }
           } else {
