@@ -35,24 +35,18 @@ async function summarizeJSON(jsonData) {
     console.log("Thread created:", thread);
 
     
-    // Add a user question to the thread
-    const threadResponse = await client.beta.threads.messages.create(
-      assistantThread.id,
-      {
-        role,
-        content: promptMessage,
-      }
-    );
+    // Add a user message to the thread
+    const threadResponse = await client.beta.threads.messages.create(thread.id, {
+      role: "user",
+      content: promptMessage,
+    });
     console.log(`Message created: ${JSON.stringify(threadResponse)}`);
 
-    
-    const runResponse = await assistantsClient.beta.threads.runs.create(
-      assistantThread.id,
-      {
-        assistant_id: assistantResponse.id,
-      }
-    );
+    const runResponse = await client.beta.threads.runs.create(thread.id, {
+      assistant_id: assistant.id,
+    });
     console.log(`Run started: ${JSON.stringify(runResponse)}`);
+    
 
     // Polling until the run completes or fails
     let runStatus = runResponse.status;
