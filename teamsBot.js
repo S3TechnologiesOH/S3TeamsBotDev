@@ -195,8 +195,15 @@ async onAdaptiveCardSubmit(context) {
       
       // Ensure the ticket number is defined and not empty
       if (ticketNumber && ticketNumber.trim() !== "") {
-          const command = `/ticket ${ticketNumber}`;
-          await context.sendActivity(`Running command: ${command}`);
+          // Directly call the handleTicketRequest method with the ticket number
+          const ticketId = parseInt(ticketNumber.trim(), 10); // Parse ticket number into an integer
+
+          if (!isNaN(ticketId)) {
+              // Call the handleTicketRequest to process the ticket ID
+              await this.handleTicketRequest(context, ticketId);
+          } else {
+              await context.sendActivity("Please enter a valid numeric ticket number.");
+          }
       } else {
           // If no valid ticket number is entered
           await context.sendActivity("Please enter a valid ticket number.");
@@ -205,6 +212,7 @@ async onAdaptiveCardSubmit(context) {
       await context.sendActivity("Please enter a valid ticket number.");
   }
 }
+
 
 }
 
