@@ -30,9 +30,9 @@ async function summarizeJSON(jsonData) {
     const promptMessage = `\n${jsonString}\n`;
 
     const assistant = await client.beta.assistants.retrieve("asst_2siYL2u8sZy9PhFDZQvlyKOi");
-    console.log("Assistant retrieved:", assistant);
+    //console.log("Assistant retrieved:", assistant);
     const thread = await client.beta.threads.create();
-    console.log("Thread created:", thread);
+    //console.log("Thread created:", thread);
 
     
     // Add a user message to the thread
@@ -40,12 +40,12 @@ async function summarizeJSON(jsonData) {
       role: "user",
       content: promptMessage,
     });
-    console.log(`Message created: ${JSON.stringify(threadResponse)}`);
+    //console.log(`Message created: ${JSON.stringify(threadResponse)}`);
 
     const runResponse = await client.beta.threads.runs.create(thread.id, {
       assistant_id: assistant.id,
     });
-    console.log(`Run started: ${JSON.stringify(runResponse)}`);
+    //console.log(`Run started: ${JSON.stringify(runResponse)}`);
     
 
     // Polling until the run completes or fails
@@ -54,15 +54,15 @@ async function summarizeJSON(jsonData) {
       await new Promise(resolve => setTimeout(resolve, 1000));
       const runStatusResponse = await client.beta.threads.runs.retrieve(thread.id, runResponse.id);
       runStatus = runStatusResponse.status;
-      console.log(`Current run status: ${runStatus}`);
+      //console.log(`Current run status: ${runStatus}`);
     }
 
     // Get the messages in the thread once the run has completed
     if (runStatus === 'completed') {
       const messagesResponse = await client.beta.threads.messages.list(thread.id);
-      console.log(`Messages in the thread: ${JSON.stringify(messagesResponse)}`);
+      //console.log(`Messages in the thread: ${JSON.stringify(messagesResponse)}`);
     } else {
-      console.log(`Run status is ${runStatus}, unable to fetch messages.`);
+      //console.log(`Run status is ${runStatus}, unable to fetch messages.`);
     }
   } catch (error) {
     console.error("Error summarizing JSON:", error);
