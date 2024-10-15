@@ -24,7 +24,7 @@ class TeamsBot extends TeamsActivityHandler {
           await this.handleOpenAIRequest(context, promptMessage);
         } else if (userMessage.startsWith("/ticket")) {
           // Handle ConnectWise ticket request
-          const ticketIdString = userMessage.replace("/ticket", "").trim();
+          const ticketIdString = userMessage.replace("/ticket", "").trim().replace("#", "");
           const ticketId = parseInt(ticketIdString, 10);  // Convert the ticketId string to an integer
 
           // Check if the parsed ticketId is a valid number
@@ -37,6 +37,10 @@ class TeamsBot extends TeamsActivityHandler {
           // If the command is unknown
           await context.sendActivity("Unknown command. Use `/prompt [message]` or `/ticket [id]`.");
         }
+      }
+      else
+      {
+        await this.sendWelcomeCard(context);
       }
 
       await next();
