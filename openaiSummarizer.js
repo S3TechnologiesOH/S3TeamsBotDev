@@ -85,9 +85,8 @@ async function summarizeJSON(jsonData) {
       } else {
         console.log("No messages found");
       }
-
       return messageContent; // Return the message content as a string
-      
+
     } else {
       console.error(`Run did not complete successfully. Status: ${runStatus}`);
       throw new Error(`Run did not complete successfully. Status: ${runStatus}`);
