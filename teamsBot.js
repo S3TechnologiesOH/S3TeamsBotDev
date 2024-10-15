@@ -118,7 +118,7 @@ class TeamsBot extends TeamsActivityHandler {
   }
   
   
-// Send a welcome card with an improved command list
+// Send a welcome card with an input field for the ticket number
 async sendWelcomeCard(context) {
   const adaptiveCard = {
       "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
@@ -156,14 +156,45 @@ async sendWelcomeCard(context) {
           },
           {
               "type": "TextBlock",
-              "text": "You can use these commands to interact with the bot.",
+              "text": "Enter a ticket number below to start:",
               "wrap": true,
               "spacing": "Medium"
+          },
+          {
+              "type": "Input.Text",
+              "id": "ticketNumber",  // The input field ID to reference the input value
+              "placeholder": "Enter ticket number",
+              "style": "text"
+          }
+      ],
+      "actions": [
+          {
+              "type": "Action.Submit",
+              "title": "Start",
+              "data": {
+                  "action": "runTicketCommand"
+              }
           }
       ]
   };
 
   await context.sendActivity({ attachments: [CardFactory.adaptiveCard(adaptiveCard)] });
+}
+
+// Handle the user input and command action
+async onAdaptiveCardSubmit(context) {
+  const submittedData = context.activity.value;
+  
+  // Check if the action is to run the /ticket command
+  if (submittedData.action === 'runTicketCommand' && submittedData.ticketNumber) {
+      const ticketNumber = submittedData.ticketNumber;
+      const command = `/ticket ${ticketNumber}`;
+      
+      // You can process the command here (e.g., fetching ticket details)
+      await context.sendActivity(`Running command: ${command}`);
+  } else {
+      await context.sendActivity("Please enter a valid ticket number.");
+  }
 }
 
 }
