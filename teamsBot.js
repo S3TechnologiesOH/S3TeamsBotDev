@@ -74,23 +74,14 @@ class TeamsBot extends TeamsActivityHandler {
 
   async handleTicketRequest(context, ticketId) {
     try {
-      // Fetch the ticket info
-      const ticketInfo = await fetch_ticket_by_id(ticketId);
-      
       // Fetch related time entries
       const timeEntries = await fetch_time_entries_for_ticket(ticketId);
-      
-      // Combine ticket and time entries into a single object
-      const combinedData = {
-        ticket: ticketInfo,
-        timeEntries: timeEntries,
-      };
-  
+
       // Log the combined data to check if it's being passed correctly
       //console.log("Debug Log: Combined data being passed to OpenAI:", combinedData);
   
       // Summarize the combined data
-      const combinedSummary = await summarizeJSON(combinedData);
+      const combinedSummary = await summarizeJSON(timeEntries);
   
       // Send the formatted details back to the user
       const formattedTicketDetails = 
