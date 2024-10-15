@@ -64,10 +64,14 @@ async function summarizeJSON(jsonData) {
     // Get the messages in the thread once the run has completed
     if (runStatus === 'completed') {
       console.log("Run completed successfully");
-      const messagesResponse = await client.beta.threads.messages.list({ thread_id: thread.id });
-      console.log("Messages retrieved: ", messagesResponse);
-      
-      return messagesResponse;
+      const messagesResponse = await client.beta.threads.messages.list(thread.id);
+      // Assuming the response contains an array of messages in 'data'
+      const latestMessage = messagesResponse.data[messagesResponse.data.length - 1]; // Get the most recent message
+      const messageContent = latestMessage.content; // Extract the content of the message
+
+      console.log("Latest message content: ", messageContent);
+
+      return messageContent; // Return the actual message content as a string
     } else {
       console.error(`Run did not complete successfully. Status: ${runStatus}`);
       throw new Error(`Run did not complete successfully. Status: ${runStatus}`);
