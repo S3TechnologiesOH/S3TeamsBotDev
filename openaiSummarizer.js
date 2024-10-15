@@ -54,15 +54,45 @@ async function summarizeJSON(jsonData) {
     if (runStatus === 'completed') {
       const messagesResponse = await client.beta.threads.messages.list(thread.id);
       
-      // Assuming the latest message contains the summary
+      // Assuming the latest message contains the JSON string
       const latestMessage = messagesResponse.data[messagesResponse.data.length - 1];
 
-      // Check if content is an object, and stringify it if necessary
-      let summaryText = typeof latestMessage.content === 'object' 
-        ? JSON.stringify(latestMessage.content, null, 2) // Pretty print JSON if it's an object
-        : latestMessage.content.toString().trim(); // Convert to string if it's already a primitive value
+      // Parse the JSON content from the message
+      let messageContent = latestMessage.content;
+      let parsedContent;
 
-      return summaryText;
+      try {
+        parsedContent = JSON.parse(messageContent); // Parse the JSON content
+      } catch (error) {
+        console.error("Failed to parse message content:", error);
+        return messageContent; // If parsing fails, return the raw message content
+      }
+
+      // Extract useful information from the parsed content
+      let ticketInfo = parsedContent.ticket;
+      let summaryText = `
+        ID: ${ticketInfo.id}
+        Summary: ${ticketInfo.summary}
+        Record Type: ${ticketInfo.recordType}
+        Company: ${ticketInfo.company.name}
+        Board: ${ticketInfo.board.name}
+        Status: ${ticketInfo.status.name}
+        Priority: ${ticketInfo.priority.name}
+        Assigned to: ${ticketInfo.resources}
+        Actual Hours: ${ticketInfo.actualHours}
+        Time Entries Summary:
+      `;
+
+      // If time entries exist, format them
+      if (ticketInfo.timeEntries && ticketInfo.timeEntries.length > 0) {
+        ticketInfo.timeEntries.forEach((entry, index) => {
+          summaryText += `\nTime Entry ${index + 1}:\n- ID: ${entry.id}\n- Notes: ${entry._info.notes || 'No notes'}`;
+        });
+      } else {
+        summaryText += "\nNo time entries available.";
+      }
+
+      return summaryText.trim();
     } else {
       throw new Error(`Run did not complete successfully. Status: ${runStatus}`);
     }
@@ -71,7 +101,6 @@ async function summarizeJSON(jsonData) {
     throw new Error("Failed to summarize JSON data.");
   }
 }
-
 
 module.exports = {
   summarizeJSON,
