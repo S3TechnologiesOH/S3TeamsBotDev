@@ -74,6 +74,9 @@ class TeamsBot extends TeamsActivityHandler {
 
   async handleTicketRequest(context, ticketId) {
     try {
+      // Fetch the ticket info
+      const ticketInfo = await fetch_ticket_by_id(ticketId);
+      
       // Fetch related time entries
       const timeEntries = await fetch_time_entries_for_ticket(ticketId);
 
