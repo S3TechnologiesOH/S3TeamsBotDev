@@ -1,14 +1,21 @@
 const { AzureOpenAI } = require("openai");
 
+// Load environment variables
 const openAIEndpoint = process.env.OPENAI_ENDPOINT;
 const openAIDeployment = process.env.OPENAI_DEPLOYMENT_ID;
 const openAIAPIKey = process.env.AZURE_OPENAI_API_KEY;
 
+// Validate environment variables
 if (!openAIEndpoint || !openAIDeployment) {
-  throw new Error("AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_DEPLOYMENT must be set as environment variables.");
+  throw new Error(
+    "AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_DEPLOYMENT must be set as environment variables."
+  );
 }
 
+// Define API version
 const apiVersion = "2024-04-01-preview";
+
+// Construct the Azure OpenAI client
 const client = new AzureOpenAI({
   endpoint: openAIEndpoint,
   openAIAPIKey,
@@ -16,97 +23,128 @@ const client = new AzureOpenAI({
   apiVersion,
 });
 
-let currentThread = null; // Store the thread for reuse
-
-async function summarizeJSON(context, jsonData) {
-  try {
-    console.log("Starting summarizeJSON function");
-
-    // Batch entries into a concise format
-    const simplifiedEntries = jsonData.map(entry =>
-      `ID: ${entry.id}\nNotes: ${entry._info.notes || 'No notes'}`
-    ).join('\n\n');
-
-    const promptMessage = `Summarize these entries:\n\n${simplifiedEntries}`;
-    console.log("Prompt message created: ", promptMessage);
-
-    // Reuse existing thread if available, or create a new one
-    if (!currentThread) {
-      currentThread = await retryWithBackoff(() => client.beta.threads.create());
-      console.log("Thread created: ", currentThread);
-    }
-
-    const threadResponse = await retryWithBackoff(() =>
-      client.beta.threads.messages.create(currentThread.id, {
-        role: "user",
-        content: promptMessage,
-      })
-    );
-    console.log("User message added to thread: ", JSON.stringify(threadResponse));
-
-    const runResponse = await retryWithBackoff(() =>
-      client.beta.threads.runs.create(currentThread.id, {
-        assistant_id: "asst_2siYL2u8sZy9PhFDZQvlyKOi",
-        max_completion_tokens: 500, // Limit response length
-        temperature: 0.3, // Control verbosity
-      })
-    );
-    console.log("Run started: ", runResponse);
-    await context.sendActivity("Processing your request. Please wait...");
-
-    let runStatus = runResponse.status;
-    while (runStatus === 'queued' || runStatus === 'in_progress') {
-      console.log(`Current run status: ${runStatus}`);
-      await new Promise(resolve => setTimeout(resolve, 3000)); // Poll less frequently
-      const runStatusResponse = await client.beta.threads.runs.retrieve(currentThread.id, runResponse.id);
-      runStatus = runStatusResponse.status;
-      console.log(`Updated run status: ${runStatus}`);
-    }
-
-    if (runStatus === 'completed') {
-      console.log("Run completed successfully");
-      const messagesResponse = await client.beta.threads.messages.list(currentThread.id);
-      const messageContent = extractMessageContent(messagesResponse);
-      console.log("Message Content: ", messageContent);
-      return messageContent;
-    } else {
-      console.error(`Run did not complete successfully. Status: ${runStatus}`);
-      throw new Error(`Run did not complete successfully. Status: ${runStatus}`);
-    }
-
-  } catch (error) {
-    console.error("Error summarizing JSON:", error);
-    throw new Error("Failed to summarize JSON data.");
+// Helper: Split data into chunks for API calls
+function splitDataIntoChunks(data, chunkSize = 3000) {
+  const chunks = [];
+  for (let i = 0; i < data.length; i += chunkSize) {
+    chunks.push(data.slice(i, i + chunkSize));
   }
+  return chunks;
 }
 
-// Extract message content from the response
-function extractMessageContent(messagesResponse) {
-  if (messagesResponse && messagesResponse.data) {
-    for (const message of messagesResponse.data) {
-      for (const contentItem of message.content) {
-        if (contentItem.type === "text" && contentItem.text && contentItem.text.value) {
-          return contentItem.text.value;
-        }
-      }
-    }
-  }
-  return "No valid content found.";
+// Helper: Rate limit function with delay
+async function rateLimitedCall(fn, delay = 1000) {
+  await new Promise((resolve) => setTimeout(resolve, delay));
+  return await fn();
 }
 
-// Retry with exponential backoff
-async function retryWithBackoff(fn, retries = 3) {
-  let delay = 1000; // 1 second
+// Helper: Retry logic with exponential backoff
+async function retryWithBackoff(fn, retries = 5, delay = 1000) {
   for (let i = 0; i < retries; i++) {
     try {
       return await fn();
     } catch (error) {
       if (i === retries - 1) throw error;
       console.log(`Retrying in ${delay / 1000} seconds...`);
-      await context.sendActivity(`Retrying in ${delay / 1000} seconds...`);
-      await new Promise(resolve => setTimeout(resolve, delay));
+      await new Promise((resolve) => setTimeout(resolve, delay));
       delay *= 2; // Exponential backoff
     }
+  }
+}
+
+// Function: Summarize JSON data
+async function summarizeJSON(jsonData) {
+  try {
+    console.log("Starting summarizeJSON function");
+
+    // Simplify and split large data into smaller chunks
+    const simplifiedEntries = jsonData
+      .map((entry) => `* Time Entry ID: ${entry.id}\nNotes: ${entry._info.notes || 'No notes'}`)
+      .join("\n\n");
+
+    const chunks = splitDataIntoChunks(simplifiedEntries, 3000);
+    let combinedSummary = "";
+
+    // Process each chunk separately
+    for (const chunk of chunks) {
+      const summary = await processChunk(chunk);
+      combinedSummary += summary + "\n\n";
+    }
+
+    console.log("Final Summary: ", combinedSummary.trim());
+    return combinedSummary.trim();
+  } catch (error) {
+    console.error("Error summarizing JSON:", error);
+    throw new Error("Failed to summarize JSON data.");
+  }
+}
+
+// Function: Process each chunk with API calls
+async function processChunk(chunk) {
+  try {
+    console.log("Processing chunk: ", chunk);
+
+    const assistant = await retryWithBackoff(() =>
+      client.beta.assistants.retrieve("asst_2siYL2u8sZy9PhFDZQvlyKOi")
+    );
+    console.log("Assistant retrieved: ", assistant);
+
+    const thread = await rateLimitedCall(() =>
+      client.beta.threads.create()
+    );
+    console.log("Thread created: ", thread);
+
+    const threadResponse = await client.beta.threads.messages.create(thread.id, {
+      role: "user",
+      content: chunk,
+    });
+    console.log("User message added to thread: ", threadResponse);
+
+    const runResponse = await client.beta.threads.runs.create(thread.id, {
+      assistant_id: assistant.id,
+      parallel_tool_calls: false, // Disable parallel calls to reduce token overload
+      temperature: 0.3,
+      max_completion_tokens: 400,
+    });
+    console.log("Run started: ", runResponse);
+
+    // Polling until the run completes or fails
+    let runStatus = runResponse.status;
+    while (runStatus === "queued" || runStatus === "in_progress") {
+      console.log(`Current run status: ${runStatus}`);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      const runStatusResponse = await client.beta.threads.runs.retrieve(
+        thread.id,
+        runResponse.id
+      );
+      runStatus = runStatusResponse.status;
+      console.log(`Updated run status: ${runStatus}`);
+    }
+
+    if (runStatus === "completed") {
+      const messagesResponse = await client.beta.threads.messages.list({
+        thread_id: thread.id,
+      });
+      console.log("Messages retrieved: ", messagesResponse);
+
+      // Extract and return the message content
+      let messageContent = "";
+      messagesResponse.data.forEach((message) => {
+        message.content.forEach((contentItem) => {
+          if (contentItem.type === "text" && contentItem.text.value) {
+            messageContent += contentItem.text.value + "\n";
+          }
+        });
+      });
+
+      return messageContent.trim();
+    } else {
+      throw new Error(`Run did not complete successfully. Status: ${runStatus}`);
+    }
+  } catch (error) {
+    console.error("Error processing chunk:", error);
+    throw new Error("Failed to process chunk.");
   }
 }
 
