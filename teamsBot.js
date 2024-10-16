@@ -197,7 +197,7 @@ async sendWelcomeCard(context) {
 
 // Handle the user input and command action
 async onAdaptiveCardSubmit(context) {
-  const submittedData = context.activity.value;
+  const submittedData = context.activity.value.replace("#", "");
 
   // Check if the action is to run the /ticket command
   if (submittedData && submittedData.action === 'runTicketCommand') {
