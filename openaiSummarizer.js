@@ -7,15 +7,13 @@ const openAIAPIKey = process.env.AZURE_OPENAI_API_KEY;
 
 // Validate environment variables
 if (!openAIEndpoint || !openAIDeployment) {
-  throw new Error(
-    "AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_DEPLOYMENT must be set as environment variables."
-  );
+  throw new Error("AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_DEPLOYMENT must be set.");
 }
 
 // Define API version
 const apiVersion = "2024-04-01-preview";
 
-// Construct the Azure OpenAI client
+// Construct Azure OpenAI client
 const client = new AzureOpenAI({
   endpoint: openAIEndpoint,
   openAIAPIKey,
@@ -23,154 +21,107 @@ const client = new AzureOpenAI({
   apiVersion,
 });
 
-// Helper: Split data into chunks for API calls
-function splitDataIntoChunks(data, chunkSize = 3000) {
+// Helper function: Split large data into smaller chunks
+function splitDataIntoChunks(data, maxTokens = 1500) {
   const chunks = [];
-  for (let i = 0; i < data.length; i += chunkSize) {
-    chunks.push(data.slice(i, i + chunkSize));
+  let currentChunk = "";
+
+  for (const line of data.split("\n")) {
+    if ((currentChunk + line).length > maxTokens) {
+      chunks.push(currentChunk.trim());
+      currentChunk = "";
+    }
+    currentChunk += line + "\n";
   }
+
+  if (currentChunk) {
+    chunks.push(currentChunk.trim());
+  }
+
   return chunks;
 }
 
-// Helper: Rate limit function with delay
-async function rateLimitedCall(fn, delay = 1000) {
-  await new Promise((resolve) => setTimeout(resolve, delay));
-  return await fn();
+// Helper function: Extract message content from API response
+function extractMessageContent(messages) {
+  for (const message of messages.data) {
+    for (const contentItem of message.content) {
+      if (contentItem.type === "text" && contentItem.text.value) {
+        return contentItem.text.value;
+      }
+    }
+  }
+  throw new Error("No valid content found in messages.");
 }
 
-// Helper: Retry logic with exponential backoff
-async function retryWithBackoff(fn, retries = 5, delay = 1000) {
-  for (let i = 0; i < retries; i++) {
-    try {
-      return await fn();
-    } catch (error) {
-      if (i === retries - 1) throw error;
-      console.log(`Retrying in ${delay / 1000} seconds...`);
-      await new Promise((resolve) => setTimeout(resolve, delay));
-      delay *= 2; // Exponential backoff
+// Helper function: Process a single chunk with retries
+async function processChunk(chunk, retries = 3) {
+  try {
+    const thread = await client.beta.threads.create();
+    await client.beta.threads.messages.create(thread.id, {
+      role: "user",
+      content: chunk,
+    });
+
+    const runResponse = await client.beta.threads.runs.create(thread.id, {
+      assistant_id: "asst_2siYL2u8sZy9PhFDZQvlyKOi",
+    });
+
+    let runStatus = runResponse.status;
+    while (runStatus === "queued" || runStatus === "in_progress") {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const statusResponse = await client.beta.threads.runs.retrieve(
+        thread.id,
+        runResponse.id
+      );
+      runStatus = statusResponse.status;
     }
+
+    if (runStatus !== "completed") {
+      console.warn(`Run failed with status: ${runStatus}`);
+      throw new Error(`Run failed: ${runStatus}`);
+    }
+
+    const messages = await client.beta.threads.messages.list(thread.id);
+    return extractMessageContent(messages);
+  } catch (error) {
+    if (retries > 0) {
+      console.warn(`Retrying... (${3 - retries} attempts left)`);
+      return await processChunk(chunk, retries - 1);
+    }
+    console.error("Error processing chunk:", error);
+    throw new Error("Failed to process chunk.");
   }
 }
 
+// Main function: Summarize JSON data
 async function summarizeJSON(jsonData) {
   try {
     console.log("Starting summarizeJSON function");
 
-    // Validate jsonData and ensure it's an array
+    // Ensure jsonData is an array
     if (!Array.isArray(jsonData)) {
-      console.warn("jsonData is not an array. Attempting to parse...");
-      jsonData = tryParseArray(jsonData);
-      if (!Array.isArray(jsonData)) {
-        throw new Error("Invalid input: Expected an array of time entries.");
-      }
+      throw new Error("Expected an array of time entries.");
     }
 
-    // Simplify and split large data into smaller chunks
+    // Simplify the entries to reduce token usage
     const simplifiedEntries = jsonData
-      .map((entry) => {
-        const notes = entry._info?.notes || "No notes";
-        return `* Time Entry ID: ${entry.id}\nNotes: ${notes}`;
-      })
+      .map((entry) => `* Time Entry ID: ${entry.id}\nNotes: ${entry._info.notes || "No notes"}`)
       .join("\n\n");
 
-    const chunks = splitDataIntoChunks(simplifiedEntries, 3000);
+    const chunks = splitDataIntoChunks(simplifiedEntries);
     let combinedSummary = "";
 
-    // Process each chunk separately
+    // Process each chunk and combine the summaries
     for (const chunk of chunks) {
       const summary = await processChunk(chunk);
       combinedSummary += summary + "\n\n";
     }
 
-    console.log("Final Summary: ", combinedSummary.trim());
+    console.log("Final Summary:", combinedSummary.trim());
     return combinedSummary.trim();
   } catch (error) {
     console.error("Error summarizing JSON:", error);
     throw new Error("Failed to summarize JSON data.");
-  }
-}
-
-// Helper function to parse potential JSON strings or single objects into an array
-function tryParseArray(data) {
-  try {
-    if (typeof data === "string") {
-      return JSON.parse(data);
-    } else if (typeof data === "object" && data !== null) {
-      return Array.isArray(data) ? data : [data]; // Wrap in array if it's a single object
-    }
-  } catch (error) {
-    console.error("Error parsing data:", error);
-  }
-  return [];
-}
-
-
-// Function: Process each chunk with API calls
-async function processChunk(chunk) {
-  try {
-    console.log("Processing chunk: ", chunk);
-
-    const assistant = await retryWithBackoff(() =>
-      client.beta.assistants.retrieve("asst_2siYL2u8sZy9PhFDZQvlyKOi")
-    );
-    console.log("Assistant retrieved: ", assistant);
-
-    const thread = await rateLimitedCall(() =>
-      client.beta.threads.create()
-    );
-    console.log("Thread created: ", thread);
-
-    const threadResponse = await client.beta.threads.messages.create(thread.id, {
-      role: "user",
-      content: chunk,
-    });
-    console.log("User message added to thread: ", threadResponse);
-
-    const runResponse = await client.beta.threads.runs.create(thread.id, {
-      assistant_id: assistant.id,
-      parallel_tool_calls: false, // Disable parallel calls to reduce token overload
-      temperature: 0.3,
-      max_completion_tokens: 400,
-    });
-    console.log("Run started: ", runResponse);
-
-    // Polling until the run completes or fails
-    let runStatus = runResponse.status;
-    while (runStatus === "queued" || runStatus === "in_progress") {
-      console.log(`Current run status: ${runStatus}`);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      const runStatusResponse = await client.beta.threads.runs.retrieve(
-        thread.id,
-        runResponse.id
-      );
-      runStatus = runStatusResponse.status;
-      console.log(`Updated run status: ${runStatus}`);
-    }
-
-    if (runStatus === "completed") {
-      const messagesResponse = await client.beta.threads.messages.list({
-        thread_id: thread.id,
-      });
-      console.log("Messages retrieved: ", messagesResponse);
-
-      // Extract and return the message content
-      let messageContent = "";
-      messagesResponse.data.forEach((message) => {
-        message.content.forEach((contentItem) => {
-          if (contentItem.type === "text" && contentItem.text.value) {
-            messageContent += contentItem.text.value + "\n";
-          }
-        });
-      });
-
-      return messageContent.trim();
-    } else {
-      throw new Error(`Run did not complete successfully. Status: ${runStatus}`);
-    }
-  } catch (error) {
-    console.error("Error processing chunk:", error);
-    throw new Error("Failed to process chunk.");
   }
 }
 
