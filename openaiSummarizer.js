@@ -1,12 +1,11 @@
 const { AzureOpenAI } = require("openai");
 
-// Load environment variables
 const openAIEndpoint = process.env.OPENAI_ENDPOINT;
 const openAIDeployment = process.env.OPENAI_DEPLOYMENT_ID;
 const openAIAPIKey = process.env.AZURE_OPENAI_API_KEY;
 
 if (!openAIEndpoint || !openAIDeployment) {
-  throw new Error("AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_DEPLOYMENT must be set.");
+  throw new Error("AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_DEPLOYMENT must be set as environment variables.");
 }
 
 const apiVersion = "2024-04-01-preview";
@@ -17,44 +16,21 @@ const client = new AzureOpenAI({
   apiVersion,
 });
 
-// In-memory cache for tickets
-const ticketCache = new Map();
-const CACHE_EXPIRY_MS = 10 * 60 * 1000; // 10 minutes
-
 let currentThread = null; // Store the thread for reuse
 
-// Cache wrapper: fetch from cache or API if not found
-async function getTicketData(ticketId, fetchFunction) {
-  const cached = ticketCache.get(ticketId);
-
-  if (cached && Date.now() < cached.expiry) {
-    console.log(`Cache hit for ticket ID: ${ticketId}`);
-    return cached.data;
-  }
-
-  console.log(`Cache miss for ticket ID: ${ticketId}. Fetching from API...`);
-  const data = await fetchFunction(ticketId);
-
-  // Store data in cache with expiry
-  ticketCache.set(ticketId, { data, expiry: Date.now() + CACHE_EXPIRY_MS });
-
-  return data;
-}
-
-async function summarizeJSON(context, ticketId, fetchFunction) {
+async function summarizeJSON(context, jsonData) {
   try {
     console.log("Starting summarizeJSON function");
 
-    // Fetch ticket data from cache or API
-    const ticketData = await getTicketData(ticketId, fetchFunction);
-
-    const simplifiedEntries = ticketData.map(entry =>
+    // Batch entries into a concise format
+    const simplifiedEntries = jsonData.map(entry =>
       `ID: ${entry.id}\nNotes: ${entry._info.notes || 'No notes'}`
     ).join('\n\n');
 
     const promptMessage = `Summarize these entries:\n\n${simplifiedEntries}`;
     console.log("Prompt message created: ", promptMessage);
 
+    // Reuse existing thread if available, or create a new one
     if (!currentThread) {
       currentThread = await retryWithBackoff(() => client.beta.threads.create());
       console.log("Thread created: ", currentThread);
@@ -71,8 +47,8 @@ async function summarizeJSON(context, ticketId, fetchFunction) {
     const runResponse = await retryWithBackoff(() =>
       client.beta.threads.runs.create(currentThread.id, {
         assistant_id: "asst_2siYL2u8sZy9PhFDZQvlyKOi",
-        max_completion_tokens: 500,
-        temperature: 0.3,
+        max_completion_tokens: 500, // Limit response length
+        temperature: 0.3, // Control verbosity
       })
     );
     console.log("Run started: ", runResponse);
@@ -81,13 +57,14 @@ async function summarizeJSON(context, ticketId, fetchFunction) {
     let runStatus = runResponse.status;
     while (runStatus === 'queued' || runStatus === 'in_progress') {
       console.log(`Current run status: ${runStatus}`);
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await new Promise(resolve => setTimeout(resolve, 3000)); // Poll less frequently
       const runStatusResponse = await client.beta.threads.runs.retrieve(currentThread.id, runResponse.id);
       runStatus = runStatusResponse.status;
       console.log(`Updated run status: ${runStatus}`);
     }
 
     if (runStatus === 'completed') {
+      console.log("Run completed successfully");
       const messagesResponse = await client.beta.threads.messages.list(currentThread.id);
       const messageContent = extractMessageContent(messagesResponse);
       console.log("Message Content: ", messageContent);
@@ -119,15 +96,16 @@ function extractMessageContent(messagesResponse) {
 
 // Retry with exponential backoff
 async function retryWithBackoff(fn, retries = 3) {
-  let delay = 1000;
+  let delay = 1000; // 1 second
   for (let i = 0; i < retries; i++) {
     try {
       return await fn();
     } catch (error) {
       if (i === retries - 1) throw error;
       console.log(`Retrying in ${delay / 1000} seconds...`);
+      await context.sendActivity(`Retrying in ${delay / 1000} seconds...`);
       await new Promise(resolve => setTimeout(resolve, delay));
-      delay *= 2;
+      delay *= 2; // Exponential backoff
     }
   }
 }
