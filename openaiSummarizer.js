@@ -52,14 +52,25 @@ async function retryWithBackoff(fn, retries = 5, delay = 1000) {
   }
 }
 
-// Function: Summarize JSON data
 async function summarizeJSON(jsonData) {
   try {
     console.log("Starting summarizeJSON function");
 
+    // Validate jsonData and ensure it's an array
+    if (!Array.isArray(jsonData)) {
+      console.warn("jsonData is not an array. Attempting to parse...");
+      jsonData = tryParseArray(jsonData);
+      if (!Array.isArray(jsonData)) {
+        throw new Error("Invalid input: Expected an array of time entries.");
+      }
+    }
+
     // Simplify and split large data into smaller chunks
     const simplifiedEntries = jsonData
-      .map((entry) => `* Time Entry ID: ${entry.id}\nNotes: ${entry._info.notes || 'No notes'}`)
+      .map((entry) => {
+        const notes = entry._info?.notes || "No notes";
+        return `* Time Entry ID: ${entry.id}\nNotes: ${notes}`;
+      })
       .join("\n\n");
 
     const chunks = splitDataIntoChunks(simplifiedEntries, 3000);
@@ -78,6 +89,21 @@ async function summarizeJSON(jsonData) {
     throw new Error("Failed to summarize JSON data.");
   }
 }
+
+// Helper function to parse potential JSON strings or single objects into an array
+function tryParseArray(data) {
+  try {
+    if (typeof data === "string") {
+      return JSON.parse(data);
+    } else if (typeof data === "object" && data !== null) {
+      return Array.isArray(data) ? data : [data]; // Wrap in array if it's a single object
+    }
+  } catch (error) {
+    console.error("Error parsing data:", error);
+  }
+  return [];
+}
+
 
 // Function: Process each chunk with API calls
 async function processChunk(chunk) {
