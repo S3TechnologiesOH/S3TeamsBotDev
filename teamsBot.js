@@ -102,7 +102,7 @@ class TeamsBot extends TeamsActivityHandler {
       //console.log("Debug Log: Combined data being passed to OpenAI:", combinedData);
   
       // Summarize the combined data
-      const combinedSummary = await summarizeJSON(timeEntries);
+      const combinedSummary = await summarizeJSON(context, timeEntries);
   
       // Send the formatted details back to the user
       const formattedTicketDetails = 
