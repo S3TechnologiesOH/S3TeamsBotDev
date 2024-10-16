@@ -197,7 +197,7 @@ async sendWelcomeCard(context) {
 
 // Handle the user input and command action
 async onAdaptiveCardSubmit(context) {
-  const submittedData = context.activity.value.replace("#", "");
+  const submittedData = context.activity.value;
 
   // Check if the action is to run the /ticket command
   if (submittedData && submittedData.action === 'runTicketCommand') {
@@ -206,7 +206,8 @@ async onAdaptiveCardSubmit(context) {
       // Ensure the ticket number is defined and not empty
       if (ticketNumber && ticketNumber.trim() !== "") {
           // Directly call the handleTicketRequest method with the ticket number
-          const ticketId = parseInt(ticketNumber.trim(), 10); // Parse ticket number into an integer
+          const ticket = ticketNumber.toString().replace("#", "");
+          const ticketId = parseInt(ticket.trim(), 10); // Parse ticket number into an integer
 
           if (!isNaN(ticketId)) {
               // Call the handleTicketRequest to process the ticket ID
