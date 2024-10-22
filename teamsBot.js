@@ -3,7 +3,7 @@ const { getOpenAIResponse } = require("./OpenAI/openaiService"); // OpenAI logic
 const { fetch_ticket_by_id, fetch_time_entries_for_ticket } = require("./ConnectWise/connectwiseAPI"); // ConnectWise API logic
 const { summarizeJSON } = require('./OpenAI/openaiSummarizer');
 const { get_attr_or_key } = require('./ConnectWise/connectwiseHelpers');
-//const graphHelper = require('./MSGraph/graphHelper');
+const graphHelper = require('./MSGraph/graphHelper');
 const axios = require('axios');
 const qs = require('qs');
 
