@@ -3,7 +3,7 @@ const { getOpenAIResponse } = require("./OpenAI/openaiService"); // OpenAI logic
 const { fetch_ticket_by_id, fetch_time_entries_for_ticket } = require("./ConnectWise/connectwiseAPI"); // ConnectWise API logic
 const { summarizeJSON } = require('./OpenAI/openaiSummarizer');
 const { get_attr_or_key } = require('./ConnectWise/connectwiseHelpers');
-const graphHelper = require('./MSGraph/graphHelper');
+//const graphHelper = require('./MSGraph/graphHelper');
 const axios = require('axios');
 const qs = require('qs');
 
@@ -75,7 +75,7 @@ class TeamsBot extends TeamsActivityHandler {
       await next();
     });
   }
-
+/*
   //MSGraph Authentication
   initializeGraph(settings, context) {
     graphHelper.initializeGraphForUserAuth(settings, async (info) => {
@@ -88,16 +88,17 @@ class TeamsBot extends TeamsActivityHandler {
     });
   }
   async greetUserAsync(context) {
-  try {
-    const user = await graphHelper.getUserAsync();
-    await context.sendActivity(`Hello, ${user?.displayName}!`);
-    // For Work/school accounts, email is in mail property
-    // Personal accounts, email is in userPrincipalName
-   await context.sendActivity(`Email: ${user?.mail ?? user?.userPrincipalName ?? ''}`);
-  } catch (err) {
-    await context.sendActivity(`Error getting user: ${err}`);
+    try {
+      const user = await graphHelper.getUserAsync();
+      await context.sendActivity(`Hello, ${user?.displayName}!`);
+      // For Work/school accounts, email is in mail property
+      // Personal accounts, email is in userPrincipalName
+    await context.sendActivity(`Email: ${user?.mail ?? user?.userPrincipalName ?? ''}`);
+    } catch (err) {
+      await context.sendActivity(`Error getting user: ${err}`);
+    }
   }
-}
+  */
   // Handle OpenAI request when the user sends a /prompt message
   async handleOpenAIRequest(context, promptMessage) {
     if (!promptMessage) {
