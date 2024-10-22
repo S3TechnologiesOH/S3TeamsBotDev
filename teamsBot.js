@@ -16,7 +16,7 @@ class TeamsBot extends TeamsActivityHandler {
     super();
 
     this.onMessage(async (context, next) => {
-      //await greetUserAsync();
+      await greetUserAsync();
 
       // Check if this is an Adaptive Card submit action
       this.getAccessToken();
@@ -75,7 +75,7 @@ class TeamsBot extends TeamsActivityHandler {
       await next();
     });
   }
-/*
+
   //MSGraph Authentication
   initializeGraph(settings, context) {
     graphHelper.initializeGraphForUserAuth(settings, async (info) => {
@@ -98,7 +98,7 @@ class TeamsBot extends TeamsActivityHandler {
       await context.sendActivity(`Error getting user: ${err}`);
     }
   }
-  */
+  
   // Handle OpenAI request when the user sends a /prompt message
   async handleOpenAIRequest(context, promptMessage) {
     if (!promptMessage) {
