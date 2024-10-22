@@ -16,13 +16,15 @@ class TeamsBot extends TeamsActivityHandler {
   constructor() {
     super();
 
+
     this.onMessage(async (context, next) => {
+
       this.initializeGraph(config.settings, context);
-      //await this.greetUserAsync();
+
+      await this.greetUserAsync();
 
       // Check if this is an Adaptive Card submit action
-      this.getAccessToken();
-      console.log("Access Token: ", this.getAccessToken());
+
       
       if (context.activity.value) {
           // Handle the Adaptive Card submission
@@ -89,7 +91,17 @@ class TeamsBot extends TeamsActivityHandler {
       return;
     });
   }
-
+  async greetUserAsync() {
+    try {
+      const user = await graphHelper.getUserAsync();
+      console.log(`Hello, ${user?.displayName}!`);
+      // For Work/school accounts, email is in mail property
+      // Personal accounts, email is in userPrincipalName
+      console.log(`Email: ${user?.mail ?? user?.userPrincipalName ?? ''}`);
+    } catch (err) {
+      console.log(`Error getting user: ${err}`);
+    }
+  }
   async getUserAsync() {
     if (!_userClient) throw new Error('Graph has not been initialized for user auth');
   
@@ -253,34 +265,6 @@ async onAdaptiveCardSubmit(context) {
       await context.sendActivity("Please enter a valid ticket number.");
   }
 }
-
-async getAccessToken() {
-  const tenantId = process.env.GRAPH_TENANT_ID;
-  const clientId = process.env.GRAPH_CLIENT_ID;
-  const clientSecret = process.env.GRAPH_CLIENT_SECRET;
-
-  const tokenUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
-
-  const requestBody = {
-    client_id: clientId,
-    client_secret: clientSecret,
-    scope: 'https://graph.microsoft.com/.default',
-    grant_type: 'client_credentials',
-  };
-
-  try {
-    const response = await axios.post(tokenUrl, qs.stringify(requestBody), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
-
-    console.log('Graph Access Token:', response.data.access_token);
-    return response.data.access_token;
-  } catch (error) {
-    console.error('Error fetching Graph token:', error);
-    throw new Error('Failed to get Microsoft Graph access token.');
-  }
-}
-
 }
 
 module.exports.TeamsBot = TeamsBot;
