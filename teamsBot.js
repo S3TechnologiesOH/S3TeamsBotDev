@@ -90,15 +90,16 @@ class TeamsBot extends TeamsActivityHandler {
     });
   }
 
-  async greetUserAsync(context) {
+  async getUserAsync() {
+    if (!_userClient) throw new Error('Graph has not been initialized for user auth');
+  
     try {
-      const user = await graphHelper.getUserAsync();
-      await context.sendActivity(`Hello, ${user?.displayName}!`);
-      // For Work/school accounts, email is in mail property
-      // Personal accounts, email is in userPrincipalName
-    await context.sendActivity(`Email: ${user?.mail ?? user?.userPrincipalName ?? ''}`);
-    } catch (err) {
-      await context.sendActivity(`Error getting user: ${err}`);
+      return await _userClient.api('/me')
+        .select(['displayName', 'mail', 'userPrincipalName'])
+        .get();
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      throw new Error("Failed to fetch user data from Microsoft Graph.");
     }
   }
   
@@ -253,27 +254,29 @@ async onAdaptiveCardSubmit(context) {
   }
 }
 
-// Function to get access token for Graph API
 async getAccessToken() {
   const tokenUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
+
   const requestBody = {
-      client_id: clientId,
-      scope: 'https://graph.microsoft.com/.default',
-      client_secret: clientSecret,
-      grant_type: 'client_credentials',
+    client_id: clientId,
+    client_secret: clientSecret,
+    scope: 'https://graph.microsoft.com/.default',
+    grant_type: 'client_credentials',
   };
 
   try {
-      const response = await axios.post(tokenUrl, qs.stringify(requestBody), {
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      });
+    const response = await axios.post(tokenUrl, qs.stringify(requestBody), {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    });
 
-      return response.data.access_token;
+    console.log("Access Token fetched successfully");
+    return response.data.access_token;
   } catch (error) {
-      console.error("Error fetching access token:", error);
-      throw new Error("Failed to retrieve access token.");
+    console.error("Error fetching access token:", error);
+    throw new Error("Failed to retrieve access token.");
   }
 }
+
 
 }
 

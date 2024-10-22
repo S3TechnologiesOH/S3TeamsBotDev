@@ -14,31 +14,23 @@ let _deviceCodeCredential = undefined;
 let _userClient = undefined;
 
 function initializeGraphForUserAuth(settings, deviceCodePrompt) {
-  // Ensure settings isn't null
-  if (!settings) {
-    throw new Error('Settings cannot be undefined');
-  }
-  console.log(" ------ Starting initializeGraphForUserAuth------ ");
+  if (!settings) throw new Error('Settings cannot be undefined');
 
+  console.log("Initializing Graph for user auth...");
   _settings = settings;
 
+  // Ensure the environment variables are correctly loaded
   _deviceCodeCredential = new azure.DeviceCodeCredential({
-    clientId: settings.clientId,
-    tenantId: settings.tenantId,
+    clientId: process.env.BOT_ID,
+    tenantId: process.env.AZURE_TENANT_ID,  // From .env or App Settings
     userPromptCallback: deviceCodePrompt
   });
-  console.log("------ Device Code Credential: ", _deviceCodeCredential)
 
   const authProvider = new authProviders.TokenCredentialAuthenticationProvider(
-    _deviceCodeCredential, {
-      scopes: settings.graphUserScopes
-    });
-  console.log("------ Auth Provider: ", authProvider)
+    _deviceCodeCredential, { scopes: settings.graphUserScopes }
+  );
 
-  _userClient = graph.Client.initWithMiddleware({
-    authProvider: authProvider
-  });
-  console.log("------ User Client: ", _userClient)
+  _userClient = graph.Client.initWithMiddleware({ authProvider });
 }
 module.exports.initializeGraphForUserAuth = initializeGraphForUserAuth;
 // </UserAuthConfigSnippet>
