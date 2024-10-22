@@ -16,7 +16,7 @@ class TeamsBot extends TeamsActivityHandler {
     super();
 
     this.onMessage(async (context, next) => {
-      await greetUserAsync();
+      await greetUserAsync(context);
 
       // Check if this is an Adaptive Card submit action
       this.getAccessToken();
@@ -87,17 +87,19 @@ class TeamsBot extends TeamsActivityHandler {
       return;
     });
   }
+
   async greetUserAsync(context) {
-  try {
-    const user = await graphHelper.getUserAsync();
-    await context.sendActivity(`Hello, ${user?.displayName}!`);
-    // For Work/school accounts, email is in mail property
-    // Personal accounts, email is in userPrincipalName
-   await context.sendActivity(`Email: ${user?.mail ?? user?.userPrincipalName ?? ''}`);
-  } catch (err) {
-    await context.sendActivity(`Error getting user: ${err}`);
-  }
-}
+    try {
+      const user = await graphHelper.getUserAsync();
+      await context.sendActivity(`Hello, ${user?.displayName}!`);
+      // For Work/school accounts, email is in mail property
+      // Personal accounts, email is in userPrincipalName
+    await context.sendActivity(`Email: ${user?.mail ?? user?.userPrincipalName ?? ''}`);
+    } catch (err) {
+      await context.sendActivity(`Error getting user: ${err}`);
+    }
+  } 
+  
   // Handle OpenAI request when the user sends a /prompt message
   async handleOpenAIRequest(context, promptMessage) {
     if (!promptMessage) {
