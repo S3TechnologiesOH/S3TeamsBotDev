@@ -89,7 +89,7 @@ class TeamsBot extends TeamsActivityHandler {
       // code to use.
       await context.sendActivity(info.message);
       return;
-    });
+    }, context);
   }
   async greetUserAsync() {
     try {

@@ -13,7 +13,7 @@ let _graphClient = undefined;
 /**
  * Initializes the Microsoft Graph client using client credentials flow.
  */
-function initializeGraphClient() {
+function initializeGraphForUserAuth(settings, deviceCodePrompt) {
   const tenantId = process.env.GRAPH_TENANT_ID;
   const clientId = process.env.GRAPH_CLIENT_ID;
   const clientSecret = process.env.GRAPH_CLIENT_SECRET;
