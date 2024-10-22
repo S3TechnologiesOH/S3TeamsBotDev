@@ -11,4 +11,4 @@ const settings = {
     'mail.send'
   ]
 };
-module.exports = config, settings;
+module.exports = {config, settings};
