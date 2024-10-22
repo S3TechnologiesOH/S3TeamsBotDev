@@ -13,4 +13,4 @@ const settings = {
 };
 
 
-module.exports = config, settings;
+module.exports = {config, settings};
