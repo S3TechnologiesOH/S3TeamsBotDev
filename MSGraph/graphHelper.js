@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 // <UserAuthConfigSnippet>
+/*
 require('isomorphic-fetch');
 const azure = require('@azure/identity');
 const graph = require('@microsoft/microsoft-graph-client');
@@ -132,3 +133,4 @@ async function makeGraphCallAsync() {
 }
 module.exports.makeGraphCallAsync = makeGraphCallAsync;
 // </MakeGraphCallSnippet>
+*/
