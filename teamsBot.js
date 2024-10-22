@@ -4,6 +4,7 @@ const { fetch_ticket_by_id, fetch_time_entries_for_ticket } = require("./Connect
 const { summarizeJSON } = require('./OpenAI/openaiSummarizer');
 const { get_attr_or_key } = require('./ConnectWise/connectwiseHelpers');
 const graphHelper = require('./MSGraph/graphHelper');
+const config = require('./config');
 const axios = require('axios');
 const qs = require('qs');
 
@@ -16,7 +17,8 @@ class TeamsBot extends TeamsActivityHandler {
     super();
 
     this.onMessage(async (context, next) => {
-      await this.greetUserAsync();
+      this.initializeGraph(config.settings, context);
+      //await this.greetUserAsync();
 
       // Check if this is an Adaptive Card submit action
       this.getAccessToken();
@@ -87,6 +89,7 @@ class TeamsBot extends TeamsActivityHandler {
       return;
     });
   }
+
   async greetUserAsync(context) {
     try {
       const user = await graphHelper.getUserAsync();
