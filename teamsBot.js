@@ -18,7 +18,7 @@ class TeamsBot extends TeamsActivityHandler {
 
     this.onMessage(async (context, next) => {
 
-      this.initializeGraph(config.settings, context);
+      this.initializeGraph(config.graphSettings, context);
       await this.greetUserAsync(context);
 
       // Check if this is an Adaptive Card submit action
