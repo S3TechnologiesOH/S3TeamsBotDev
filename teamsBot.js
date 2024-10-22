@@ -81,6 +81,7 @@ class TeamsBot extends TeamsActivityHandler {
 
   //MSGraph Authentication
   initializeGraph(settings, context) {
+    console.log("initialize graph");
     graphHelper.initializeGraphForUserAuth(settings, async (info) => {
       // Display the device code message to
       // the user. This tells them
@@ -90,7 +91,7 @@ class TeamsBot extends TeamsActivityHandler {
       return;
     });
   }
-
+/*
   async greetUserAsync(context) {
     try {
       const user = await graphHelper.getUserAsync();
@@ -102,7 +103,7 @@ class TeamsBot extends TeamsActivityHandler {
       await context.sendActivity(`Error getting user: ${err}`);
     }
   } 
-  
+  */
   // Handle OpenAI request when the user sends a /prompt message
   async handleOpenAIRequest(context, promptMessage) {
     if (!promptMessage) {
