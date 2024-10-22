@@ -17,6 +17,7 @@ function initializeGraphForUserAuth(settings, deviceCodePrompt) {
   if (!settings) {
     throw new Error('Settings cannot be undefined');
   }
+  console.log(" ------ Starting initializeGraphForUserAuth------ ");
 
   _settings = settings;
 
@@ -25,15 +26,18 @@ function initializeGraphForUserAuth(settings, deviceCodePrompt) {
     tenantId: settings.tenantId,
     userPromptCallback: deviceCodePrompt
   });
+  console.log("------ Device Code Credential: ", _deviceCodeCredential)
 
   const authProvider = new authProviders.TokenCredentialAuthenticationProvider(
     _deviceCodeCredential, {
       scopes: settings.graphUserScopes
     });
+  console.log("------ Auth Provider: ", authProvider)
 
   _userClient = graph.Client.initWithMiddleware({
     authProvider: authProvider
   });
+  console.log("------ User Client: ", _userClient)
 }
 module.exports.initializeGraphForUserAuth = initializeGraphForUserAuth;
 // </UserAuthConfigSnippet>
