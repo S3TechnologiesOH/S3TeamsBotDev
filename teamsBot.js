@@ -4,7 +4,6 @@ const { fetch_ticket_by_id, fetch_time_entries_for_ticket } = require("./Connect
 const { summarizeJSON } = require('./OpenAI/openaiSummarizer');
 const { get_attr_or_key } = require('./ConnectWise/connectwiseHelpers');
 const graphHelper = require('./MSGraph/graphHelper');
-const config = require('./config');
 const axios = require('axios');
 const qs = require('qs');
 
@@ -17,13 +16,11 @@ class TeamsBot extends TeamsActivityHandler {
     super();
 
     this.onMessage(async (context, next) => {
-
-      //this.initializeGraph(config.graphSettings, context);
-      //await this.greetUserAsync(context);
+      await greetUserAsync();
 
       // Check if this is an Adaptive Card submit action
       this.getAccessToken();
-      //console.log("Access Token: ", this.getAccessToken());
+      console.log("Access Token: ", this.getAccessToken());
       
       if (context.activity.value) {
           // Handle the Adaptive Card submission
@@ -81,7 +78,6 @@ class TeamsBot extends TeamsActivityHandler {
 
   //MSGraph Authentication
   initializeGraph(settings, context) {
-    console.log("initialize graph");
     graphHelper.initializeGraphForUserAuth(settings, async (info) => {
       // Display the device code message to
       // the user. This tells them
@@ -91,19 +87,17 @@ class TeamsBot extends TeamsActivityHandler {
       return;
     });
   }
-/*
   async greetUserAsync(context) {
-    try {
-      const user = await graphHelper.getUserAsync();
-      await context.sendActivity(`Hello, ${user?.displayName}!`);
-      // For Work/school accounts, email is in mail property
-      // Personal accounts, email is in userPrincipalName
-    await context.sendActivity(`Email: ${user?.mail ?? user?.userPrincipalName ?? ''}`);
-    } catch (err) {
-      await context.sendActivity(`Error getting user: ${err}`);
-    }
-  } 
-  */
+  try {
+    const user = await graphHelper.getUserAsync();
+    await context.sendActivity(`Hello, ${user?.displayName}!`);
+    // For Work/school accounts, email is in mail property
+    // Personal accounts, email is in userPrincipalName
+   await context.sendActivity(`Email: ${user?.mail ?? user?.userPrincipalName ?? ''}`);
+  } catch (err) {
+    await context.sendActivity(`Error getting user: ${err}`);
+  }
+}
   // Handle OpenAI request when the user sends a /prompt message
   async handleOpenAIRequest(context, promptMessage) {
     if (!promptMessage) {

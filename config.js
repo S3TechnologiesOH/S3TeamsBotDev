@@ -2,8 +2,8 @@ const config = {
   botId: process.env.BOT_ID,
   botPassword: process.env.BOT_PASSWORD,
 };
-const graphSettings = {
-  'clientId': '9ee35f94-3e6a-45f7-bc7a-701e02af3167',
+const settings = {
+  'clientId': '0442a905-ae27-4988-8ade-18259ba352fa',
   'tenantId': 'common',
   'graphUserScopes': [
     'user.read',
@@ -11,6 +11,4 @@ const graphSettings = {
     'mail.send'
   ]
 };
-
-
-module.exports = {config, graphSettings};
+module.exports = config, settings;
