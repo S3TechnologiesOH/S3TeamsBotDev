@@ -9,11 +9,11 @@ const clientId = process.env.CW_CLIENTID;
 const authKey = process.env.CW_AUTHKEY;
 
 // Authenticate with ConnectWise using a basic auth header
-console.log(`Auth Key: ${authKey}`);
+//console.log(`Auth Key: ${authKey}`);
 // Initialize the Tickets API
 let cwService;
-console.log(`Company ID: ${process.env.CW_COMPANY_ID}`);
-console.log(`Public Key: ${process.env.CW_PUBLIC_KEY}`);
+//console.log(`Company ID: ${process.env.CW_COMPANY_ID}`);
+//console.log(`Public Key: ${process.env.CW_PUBLIC_KEY}`);
 try {
   cwService = new TicketsApi(`${connectwiseUrl}`);  // Initialize API without version path in the base URL
   cwService.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
