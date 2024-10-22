@@ -1,127 +1,149 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-// <UserAuthConfigSnippet>
-
 require('isomorphic-fetch');
-const azure = require('@azure/identity');
+const axios = require('axios');
+const qs = require('qs');
 const graph = require('@microsoft/microsoft-graph-client');
-const authProviders =
-  require('@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials');
+const { ClientSecretCredential } = require('@azure/identity');
 
-let _settings = undefined;
-let _deviceCodeCredential = undefined;
-let _userClient = undefined;
+let _graphClient = undefined;
 
-function initializeGraphForUserAuth(settings, deviceCodePrompt) {
-  if (!settings) throw new Error('Settings cannot be undefined');
+// <GraphClientConfigSnippet>
+/**
+ * Initializes the Microsoft Graph client using client credentials flow.
+ */
+function initializeGraphClient() {
+  const tenantId = process.env.GRAPH_TENANT_ID;
+  const clientId = process.env.GRAPH_CLIENT_ID;
+  const clientSecret = process.env.GRAPH_CLIENT_SECRET;
 
-  console.log("Initializing Graph for user auth...");
-  _settings = settings;
+  if (!tenantId || !clientId || !clientSecret) {
+    throw new Error('Missing environment variables for Graph authentication');
+  }
 
-  // Ensure the environment variables are correctly loaded
-  _deviceCodeCredential = new azure.DeviceCodeCredential({
-    clientId: process.env.BOT_ID,
-    tenantId: process.env.AZURE_TENANT_ID,  // From .env or App Settings
-    userPromptCallback: deviceCodePrompt
+  // Initialize ClientSecretCredential for app-only access
+  const credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
+
+  // Set up Microsoft Graph client with middleware
+  _graphClient = graph.Client.initWithMiddleware({
+    authProvider: {
+      getAccessToken: async () => {
+        const token = await credential.getToken('https://graph.microsoft.com/.default');
+        console.log('Graph Token Acquired:', token.token);
+        return token.token;
+      },
+    },
   });
 
-  const authProvider = new authProviders.TokenCredentialAuthenticationProvider(
-    _deviceCodeCredential, { scopes: settings.graphUserScopes }
-  );
-
-  _userClient = graph.Client.initWithMiddleware({ authProvider });
+  console.log('Microsoft Graph Client initialized successfully.');
 }
-module.exports.initializeGraphForUserAuth = initializeGraphForUserAuth;
-// </UserAuthConfigSnippet>
-
-// <GetUserTokenSnippet>
-async function getUserTokenAsync() {
-  // Ensure credential isn't undefined
-  if (!_deviceCodeCredential) {
-    throw new Error('Graph has not been initialized for user auth');
-  }
-
-  // Ensure scopes isn't undefined
-  if (!_settings?.graphUserScopes) {
-    throw new Error('Setting "scopes" cannot be undefined');
-  }
-
-  // Request token with given scopes
-  const response = await _deviceCodeCredential.getToken(_settings?.graphUserScopes);
-  return response.token;
-}
-module.exports.getUserTokenAsync = getUserTokenAsync;
-// </GetUserTokenSnippet>
+module.exports.initializeGraphClient = initializeGraphClient;
+// </GraphClientConfigSnippet>
 
 // <GetUserSnippet>
+/**
+ * Retrieves the user's profile using Microsoft Graph.
+ */
 async function getUserAsync() {
-  // Ensure client isn't undefined
-  if (!_userClient) {
-    throw new Error('Graph has not been initialized for user auth');
+  if (!_graphClient) {
+    throw new Error('Graph client is not initialized');
   }
 
-  return _userClient.api('/me')
-    // Only request specific properties
-    .select(['displayName', 'mail', 'userPrincipalName'])
-    .get();
+  try {
+    const user = await _graphClient
+      .api('/me')
+      .select(['displayName', 'mail', 'userPrincipalName'])
+      .get();
+
+    console.log('User Profile:', user);
+    return user;
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    throw new Error('Failed to retrieve user profile.');
+  }
 }
 module.exports.getUserAsync = getUserAsync;
 // </GetUserSnippet>
 
 // <GetInboxSnippet>
+/**
+ * Retrieves the top 25 emails from the user's inbox.
+ */
 async function getInboxAsync() {
-  // Ensure client isn't undefined
-  if (!_userClient) {
-    throw new Error('Graph has not been initialized for user auth');
+  if (!_graphClient) {
+    throw new Error('Graph client is not initialized');
   }
 
-  return _userClient.api('/me/mailFolders/inbox/messages')
-    .select(['from', 'isRead', 'receivedDateTime', 'subject'])
-    .top(25)
-    .orderby('receivedDateTime DESC')
-    .get();
+  try {
+    const inbox = await _graphClient
+      .api('/me/mailFolders/inbox/messages')
+      .select(['from', 'isRead', 'receivedDateTime', 'subject'])
+      .top(25)
+      .orderby('receivedDateTime DESC')
+      .get();
+
+    console.log('Inbox Messages:', inbox);
+    return inbox;
+  } catch (error) {
+    console.error('Error fetching inbox:', error);
+    throw new Error('Failed to retrieve inbox messages.');
+  }
 }
 module.exports.getInboxAsync = getInboxAsync;
 // </GetInboxSnippet>
 
 // <SendMailSnippet>
+/**
+ * Sends an email using Microsoft Graph.
+ */
 async function sendMailAsync(subject, body, recipient) {
-  // Ensure client isn't undefined
-  if (!_userClient) {
-    throw new Error('Graph has not been initialized for user auth');
+  if (!_graphClient) {
+    throw new Error('Graph client is not initialized');
   }
 
-  // Create a new message
   const message = {
     subject: subject,
     body: {
       content: body,
-      contentType: 'text'
+      contentType: 'text',
     },
     toRecipients: [
       {
         emailAddress: {
-          address: recipient
-        }
-      }
-    ]
+          address: recipient,
+        },
+      },
+    ],
   };
 
-  // Send the message
-  return _userClient.api('me/sendMail')
-    .post({
-      message: message
-    });
+  try {
+    await _graphClient.api('/me/sendMail').post({ message });
+    console.log('Email sent successfully.');
+  } catch (error) {
+    console.error('Error sending email:', error);
+    throw new Error('Failed to send email.');
+  }
 }
 module.exports.sendMailAsync = sendMailAsync;
 // </SendMailSnippet>
 
 // <MakeGraphCallSnippet>
-// This function serves as a playground for testing Graph snippets
-// or other code
+/**
+ * A placeholder function for testing custom Graph API calls.
+ */
 async function makeGraphCallAsync() {
-  // INSERT YOUR CODE HERE
+  if (!_graphClient) {
+    throw new Error('Graph client is not initialized');
+  }
+
+  try {
+    const response = await _graphClient.api('/me').get();
+    console.log('Graph API Response:', response);
+  } catch (error) {
+    console.error('Error making Graph API call:', error);
+    throw new Error('Failed to make Graph API call.');
+  }
 }
 module.exports.makeGraphCallAsync = makeGraphCallAsync;
 // </MakeGraphCallSnippet>

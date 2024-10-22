@@ -255,6 +255,10 @@ async onAdaptiveCardSubmit(context) {
 }
 
 async getAccessToken() {
+  const tenantId = process.env.GRAPH_TENANT_ID;
+  const clientId = process.env.GRAPH_CLIENT_ID;
+  const clientSecret = process.env.GRAPH_CLIENT_SECRET;
+
   const tokenUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
 
   const requestBody = {
@@ -266,17 +270,16 @@ async getAccessToken() {
 
   try {
     const response = await axios.post(tokenUrl, qs.stringify(requestBody), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     });
 
-    console.log("Access Token fetched successfully");
+    console.log('Graph Access Token:', response.data.access_token);
     return response.data.access_token;
   } catch (error) {
-    console.error("Error fetching access token:", error);
-    throw new Error("Failed to retrieve access token.");
+    console.error('Error fetching Graph token:', error);
+    throw new Error('Failed to get Microsoft Graph access token.');
   }
 }
-
 
 }
 

@@ -6,9 +6,7 @@ const settings = {
   'clientId': '0442a905-ae27-4988-8ade-18259ba352fa',
   'tenantId': 'common',
   'graphUserScopes': [
-    'user.read',
-    'mail.read',
-    'mail.send'
+    'user.read'
   ]
 };
 module.exports = {config, settings};
