@@ -255,7 +255,7 @@ async onAdaptiveCardSubmit(context) {
 }
 
 // Function to get access token for Graph API
-async getAccessToken() {
+/* async getAccessToken() {
   const tokenUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
   const requestBody = {
       client_id: clientId,
@@ -275,7 +275,7 @@ async getAccessToken() {
       throw new Error("Failed to retrieve access token.");
   }
 }
-
+*/
 }
 
 module.exports.TeamsBot = TeamsBot;
