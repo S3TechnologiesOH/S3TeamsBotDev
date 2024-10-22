@@ -3,7 +3,7 @@ const config = {
   botPassword: process.env.BOT_PASSWORD,
 };
 const settings = {
-  'clientId': process.env.BOT_ID,
+  'clientId': '0442a905-ae27-4988-8ade-18259ba352fa',
   'tenantId': 'common',
   'graphUserScopes': [
     'user.read',
@@ -11,4 +11,4 @@ const settings = {
     'mail.send'
   ]
 };
-module.exports = {config, settings};
+module.exports = config, settings;
