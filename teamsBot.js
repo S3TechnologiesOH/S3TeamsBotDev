@@ -22,10 +22,10 @@ class TeamsBot extends TeamsActivityHandler {
       if(!this.userIsAuthenticated) {
 
         await this.initializeGraph(settings, context);
+        await this.greetUserAsync();
 
       } else {
 
-        await this.greetUserAsync();
               
         if (context.activity.value) {
           await this.onAdaptiveCardSubmit(context);
@@ -123,8 +123,6 @@ class TeamsBot extends TeamsActivityHandler {
       this.lastLoginMessageId = response.id; // Store the message ID for future deletion
     });
   }
-
-
 
   async greetUserAsync() {
     try {
