@@ -14,25 +14,28 @@ class TeamsBot extends TeamsActivityHandler {
   constructor() {
     super();
 
+    this.lastLoginMessageId = null; // Store the last login message ID
+    this.userIsAuthenticated = false; // Track whether the user is authenticated
 
     this.onMessage(async (context, next) => {
 
-      await this.initializeGraph(settings, context);
+      if(!this.userIsAuthenticated) {
 
-      await this.greetUserAsync();
+        await this.initializeGraph(settings, context);
 
-      // Check if this is an Adaptive Card submit action
+      } else {
 
-      
-      if (context.activity.value) {
-          // Handle the Adaptive Card submission
+        await this.greetUserAsync();
+              
+        if (context.activity.value) {
           await this.onAdaptiveCardSubmit(context);
-      } 
-      else if (context.activity.text) {
+        } 
+        else if (context.activity.text) 
+        {
           // Remove bot mention and handle the message
           const removedMentionText = TurnContext.removeRecipientMention(context.activity);
           const userMessage = (removedMentionText || "").toLowerCase().replace(/\n|\r/g, "").trim();
-  
+
           // Check if the message starts with a slash ("/")
           if (userMessage.startsWith("/")) {
               if (userMessage.startsWith("/prompt")) {
@@ -43,7 +46,7 @@ class TeamsBot extends TeamsActivityHandler {
                   // Handle ConnectWise ticket request
                   const ticketIdString = userMessage.replace("/ticket", "").trim().replace("#", "");
                   const ticketId = parseInt(ticketIdString, 10);  // Convert the ticketId string to an integer
-  
+
                   if (!isNaN(ticketId)) {
                       await this.handleTicketRequest(context, ticketId); // Pass the ticketId (number)
                   } else {
@@ -55,12 +58,17 @@ class TeamsBot extends TeamsActivityHandler {
           } else {
               // If it's not a command, send the welcome card
               await this.sendWelcomeCard(context);
-
           }
-      } else {
-          // If no valid text is present, log or send a default message
-          await context.sendActivity("I didn't understand your message. Please use `/prompt` or `/ticket` commands.");
+        } else {
+            // If no valid text is present, log or send a default message
+            await context.sendActivity("I didn't understand your message. Please use `/prompt` or `/ticket` commands.");
+        }
       }
+
+
+      // Check if this is an Adaptive Card submit action
+
+
   
       await next();
   });
@@ -68,13 +76,21 @@ class TeamsBot extends TeamsActivityHandler {
 
   async initializeGraph(settings, context) {
     console.log("Attempting to initialize graph for user auth...");
+
     await graphHelper.initializeGraphForUserAuth(settings, async (info) => {
       const { message } = info;
-  
-      // Extract the login link and code from the message (assuming consistent message format)
       const [_, url, code] = message.match(/(https:\/\/\S+) and enter the code (\S+)/);
-  
-      // Create an Adaptive Card with a button for login
+
+      // Delete the previous login message if it exists
+      if (this.lastLoginMessageId) {
+        try {
+          await context.deleteActivity(this.lastLoginMessageId);
+        } catch (err) {
+          console.log(`Failed to delete previous login message: ${err}`);
+        }
+      }
+
+      // Create an Adaptive Card with the login link and code
       const card = CardFactory.adaptiveCard({
         type: "AdaptiveCard",
         body: [
@@ -101,36 +117,26 @@ class TeamsBot extends TeamsActivityHandler {
         "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
         version: "1.2"
       });
-  
-      // Send the Adaptive Card to the user
-      await context.sendActivity({ attachments: [card] });
+
+      // Send the login card to the user and store the activity ID
+      const response = await context.sendActivity({ attachments: [card] });
+      this.lastLoginMessageId = response.id; // Store the message ID for future deletion
     });
   }
 
-  async greetUserAsync() {
-    try {
-      const user = await graphHelper.getUserAsync();
-      console.log(`Hello, ${user?.displayName}!`);
-      // For Work/school accounts, email is in mail property
-      // Personal accounts, email is in userPrincipalName
-      console.log(`Email: ${user?.mail ?? user?.userPrincipalName ?? ''}`);
-    } catch (err) {
-      console.log(`Error getting user: ${err}`);
-    }
-  }
+
 
   async greetUserAsync() {
     try {
       const user = await graphHelper.getUserAsync();
       console.log(`Hello, ${user?.displayName}!`);
-      // For Work/school accounts, email is in mail property
-      // Personal accounts, email is in userPrincipalName
       console.log(`Email: ${user?.mail ?? user?.userPrincipalName ?? ''}`);
+      this.userIsAuthenticated = true; // Mark the user as authenticated
     } catch (err) {
       console.log(`Error getting user: ${err}`);
     }
   }
-    
+
   // Handle OpenAI request when the user sends a /prompt message
   async handleOpenAIRequest(context, promptMessage) {
     if (!promptMessage) {
