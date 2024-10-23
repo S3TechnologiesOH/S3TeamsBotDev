@@ -5,8 +5,8 @@ require('isomorphic-fetch');
 const axios = require('axios');
 const qs = require('qs');
 const graph = require('@microsoft/microsoft-graph-client');
-const { ClientSecretCredential } = require('@azure/identity');
-
+const azure = require('@azure/identity');
+const authProviders = require('@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials');
 let _graphClient = undefined;
 
 // <GraphClientConfigSnippet>

@@ -19,7 +19,7 @@ class TeamsBot extends TeamsActivityHandler {
 
     this.onMessage(async (context, next) => {
 
-      this.initializeGraph(config.settings, context);
+      this.initializeGraph(config.settings);
 
       await this.greetUserAsync();
 
@@ -82,7 +82,8 @@ class TeamsBot extends TeamsActivityHandler {
 
   //MSGraph Authentication
   initializeGraph(settings) {
-    graphHelper.initializeGraphForUserAuth(settings, async (info) => {
+    console.log("Attempting to initialize graph for user auth...");
+    graphHelper.initializeGraphForUserAuth(settings, (info) => {
       // Display the device code message to
       // the user. This tells them
       // where to go to sign in and provides the
@@ -90,6 +91,7 @@ class TeamsBot extends TeamsActivityHandler {
       console.log(info.message);
     });
   }
+
   async greetUserAsync() {
     try {
       const user = await graphHelper.getUserAsync();
