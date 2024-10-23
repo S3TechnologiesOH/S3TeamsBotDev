@@ -16,7 +16,7 @@ const settings = require("./appSettings");
 const axios = require("axios");
 const qs = require("qs");
 const { start } = require("repl");
-
+const dataManager = require("./Data/dataManager");
 class TeamsBot extends TeamsActivityHandler {
   constructor() {
     super();
@@ -149,6 +149,7 @@ class TeamsBot extends TeamsActivityHandler {
   async greetUserAsync() {
     try {
       const user = await graphHelper.getUserAsync();
+      dataManager.userEmail = user.mail ?? user.userPrincipalName;
       console.log(`Hello, ${user?.displayName}!`);
       console.log(`Email: ${user?.mail ?? user?.userPrincipalName ?? ""}`);
       this.userIsAuthenticated = true; // Mark the user as authenticated
@@ -227,7 +228,7 @@ class TeamsBot extends TeamsActivityHandler {
       body: [
         {
           type: "TextBlock",
-          text: "Welcome to the Teams Bot!",
+          text: `Welcome to the Teams Bot ${dataManager.userEmail}!`,
           weight: "Bolder",
           size: "Large",
           wrap: true,
