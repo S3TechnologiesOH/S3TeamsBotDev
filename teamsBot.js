@@ -78,11 +78,44 @@ class TeamsBot extends TeamsActivityHandler {
     });
   }
 
-  //MSGraph Authentication
   initializeGraph(settings, context) {
     console.log("Attempting to initialize graph for user auth...");
     graphHelper.initializeGraphForUserAuth(settings, async (info) => {
-      await context.sendActivity(info.message);
+      const { message } = info;
+  
+      // Extract the login link and code from the message (assuming consistent message format)
+      const [_, url, code] = message.match(/(https:\/\/\S+) and enter the code (\S+)/);
+  
+      // Create an Adaptive Card with a button for login
+      const card = CardFactory.adaptiveCard({
+        type: "AdaptiveCard",
+        body: [
+          {
+            type: "TextBlock",
+            text: "To sign in, click the button below and enter the provided code:",
+            wrap: true
+          },
+          {
+            type: "TextBlock",
+            text: `Code: **${code}**`,
+            wrap: true,
+            weight: "Bolder",
+            size: "Medium"
+          }
+        ],
+        actions: [
+          {
+            type: "Action.OpenUrl",
+            title: "Sign in with Device Code",
+            url: url
+          }
+        ],
+        "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+        version: "1.2"
+      });
+  
+      // Send the Adaptive Card to the user
+      await context.sendActivity({ attachments: [card] });
     });
   }
 
