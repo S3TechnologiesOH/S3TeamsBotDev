@@ -22,11 +22,11 @@ const client = new AzureOpenAI({
 let currentThread = null; // Store the thread for reuse
 
 // Fetch ticket data directly from the API
-async function getTicketData(ticketId, jsonEntries) {
+async function getTicketData(ticketId) {
   try {
     console.log(`Fetching data for ticket ID: ${ticketId}`);
 
-    const data = jsonEntries
+    const data = ticketId;
 
     if (!data || !Array.isArray(data)) {
       console.error("Invalid data received:", data);
