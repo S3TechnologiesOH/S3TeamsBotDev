@@ -45,14 +45,7 @@ async function summarizeJSON(context, ticketId, fetchFunction) {
   try {
     console.log("Starting summarizeJSON function");
 
-    var ticketData = undefined;
-    try
-    {
-      ticketData = await getTicketData(ticketId, fetchFunction);
-    } catch (error) {
-      console.error("Error fetching ticket data:", error);
-      throw new Error("Failed to fetch ticket data.");
-    }
+    const ticketData = await getTicketData(ticketId, fetchFunction);
 
     const simplifiedEntries = ticketData.map(entry =>
       `ID: ${entry.id}\nNotes: ${entry._info.notes || 'No notes'}`
