@@ -46,7 +46,7 @@ class TeamsBot extends TeamsActivityHandler {
 
       } else {
         if (context.activity.value) {
-          await this.onAdaptiveCardSubmit(context);
+          await this.onAdaptiveCardSubmit(context, authState);
         }
         else 
         {
@@ -63,39 +63,6 @@ class TeamsBot extends TeamsActivityHandler {
     await this.sendWelcomeCard(context, authState);
   }
 
-  // Send a welcome card with an input field for the ticket number
-  async sendWelcomeCard(context) {
-    const adaptiveCard = {
-      $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
-      type: "AdaptiveCard",
-      version: "1.4",
-      body: [
-        {
-          type: "TextBlock",
-          text: "Welcome! Please use the following commands:",
-          weight: "Bolder",
-          size: "Large",
-          wrap: true,
-        },
-        {
-          type: "TextBlock",
-          text: "/prompt [message]",
-          wrap: true,
-          fontType: "Monospace",
-        },
-        {
-          type: "TextBlock",
-          text: "/ticket [id]",
-          wrap: true,
-          fontType: "Monospace",
-        },
-      ],
-    };
-
-    await context.sendActivity({
-      attachments: [CardFactory.adaptiveCard(adaptiveCard)],
-    });
-  }
 
   async initializeGraph(settings, context, authState) {
     console.log("Attempting to initialize graph for user auth...");
@@ -343,7 +310,7 @@ async showTicketInformationCard(context) {
 }
 
 // Handle the user input and command actions
-async onAdaptiveCardSubmit(context) {
+async onAdaptiveCardSubmit(context, authState) {
   const submittedData = context.activity.value;
 
   if (!submittedData || !submittedData.action) {
@@ -384,7 +351,7 @@ async onAdaptiveCardSubmit(context) {
       break;
 
     case "showWelcomeCard":
-      await this.sendWelcomeCard(context); // Back to the main menu
+      await this.sendWelcomeCard(context, authState); // Back to the main menu
       break;
 
     default:
