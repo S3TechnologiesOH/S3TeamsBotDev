@@ -33,7 +33,7 @@ async function getTicketData(ticketId, fetchFunction) {
   }
 
   console.log(`Cache miss for ticket ID: ${ticketId}. Fetching from API...`);
-  const data = await fetchFunction(ticketId);
+  const data = fetchFunction;
 
   // Store data in cache with expiry
   ticketCache.set(ticketId, { data, expiry: Date.now() + CACHE_EXPIRY_MS });

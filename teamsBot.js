@@ -21,7 +21,6 @@ const qs = require("qs");
 const { start } = require("repl");
 const dataManager = require("./Data/dataManager");
 
-
 class TeamsBot extends TeamsActivityHandler {
   
   constructor(userState) {
