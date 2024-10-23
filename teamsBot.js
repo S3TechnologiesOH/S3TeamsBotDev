@@ -291,36 +291,108 @@ async sendWelcomeCard(context, authState) {
   });
 }
 
-  // Handle the user input and command action
-  async onAdaptiveCardSubmit(context) {
-    const submittedData = context.activity.value;
+async showTicketInformationCard(context) {
+  const ticketInfoCard = {
+    $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
+    type: "AdaptiveCard",
+    version: "1.4",
+    body: [
+      {
+        type: "TextBlock",
+        text: "Ticket Information Commands",
+        weight: "Bolder",
+        size: "Large",
+        wrap: true,
+      },
+      {
+        type: "TextBlock",
+        text: "Here are the available commands:",
+        wrap: true,
+        spacing: "Medium",
+      },
+      {
+        type: "TextBlock",
+        text: "/ticket {ticket_id}",
+        wrap: true,
+        fontType: "Monospace",
+        spacing: "Small",
+        weight: "Bolder",
+      },
+      {
+        type: "TextBlock",
+        text: "Use the command above to retrieve details about a specific ticket.",
+        wrap: true,
+        spacing: "Small",
+      },
+    ],
+    actions: [
+      {
+        type: "Action.Submit",
+        title: "Back to Main Menu",
+        data: {
+          action: "showWelcomeCard",
+        },
+      },
+    ],
+  };
 
-    // Check if the action is to run the /ticket command
-    if (submittedData && submittedData.action === "runTicketCommand") {
+  // Send the Ticket Information card
+  await context.sendActivity({
+    attachments: [CardFactory.adaptiveCard(ticketInfoCard)],
+  });
+}
+
+// Handle the user input and command actions
+async onAdaptiveCardSubmit(context) {
+  const submittedData = context.activity.value;
+
+  if (!submittedData || !submittedData.action) {
+    await context.sendActivity("Invalid action. Please try again.");
+    return;
+  }
+
+  switch (submittedData.action) {
+    case "showTicketInformationCard":
+      // Show the card listing ticket-related commands
+      await this.showTicketInformationCard(context);
+      break;
+
+    case "runTicketCommand":
+      // Handle the /ticket {ticket_id} command
       const ticketNumber = submittedData.ticketNumber;
 
-      // Ensure the ticket number is defined and not empty
       if (ticketNumber && ticketNumber.trim() !== "") {
-        // Directly call the handleTicketRequest method with the ticket number
         const ticket = ticketNumber.toString().replace("#", "");
-        const ticketId = parseInt(ticket.trim(), 10); // Parse ticket number into an integer
+        const ticketId = parseInt(ticket.trim(), 10); // Convert ticket number to integer
 
         if (!isNaN(ticketId)) {
-          // Call the handleTicketRequest to process the ticket ID
-          await this.handleTicketRequest(context, ticketId);
+          await this.handleTicketRequest(context, ticketId); // Process the ticket
         } else {
-          await context.sendActivity(
-            "Please enter a valid numeric ticket number."
-          );
+          await context.sendActivity("Please enter a valid numeric ticket number.");
         }
       } else {
-        // If no valid ticket number is entered
         await context.sendActivity("Please enter a valid ticket number.");
       }
-    } else {
-      await context.sendActivity("Please enter a valid ticket number.");
-    }
+      break;
+
+    case "wipCommand1":
+      await context.sendActivity("WIP Command 1 is not implemented yet.");
+      break;
+
+    case "wipCommand2":
+      await context.sendActivity("WIP Command 2 is not implemented yet.");
+      break;
+
+    case "showWelcomeCard":
+      await this.sendWelcomeCard(context); // Back to the main menu
+      break;
+
+    default:
+      await context.sendActivity("Unknown action. Please try again.");
+      break;
   }
+}
+
 }
 
 module.exports.TeamsBot = TeamsBot;
