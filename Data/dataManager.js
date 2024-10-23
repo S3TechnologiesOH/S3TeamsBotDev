@@ -1,7 +1,7 @@
 const userEmail = undefined;
 const userDisplayName = undefined;
-const permissions = ["Ticket.Read", "Ticket.Write"];
-const userPermissions = [["catwell@mys3tech.com", "Ticket.Read"], ["jlowry@mys3tech.com", ""]];
+const permissions = ["Ticket.Read", "Ticket.Write", "WIP"];
+const userPermissions = [["catwell@mys3tech.com", "Ticket.Read"], ["jlowry@mys3tech.com", "Ticket.Write"], ["catwell@mys3tech.com", "Ticket.Write"]];
 module.exports = {userEmail, userDisplayName, permissions, userPermissions};
 
 async function hasCommandPermission(email, permIndex){
