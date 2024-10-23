@@ -81,15 +81,14 @@ class TeamsBot extends TeamsActivityHandler {
   }
 
   //MSGraph Authentication
-  initializeGraph(settings, context) {
+  initializeGraph(settings) {
     graphHelper.initializeGraphForUserAuth(settings, async (info) => {
       // Display the device code message to
       // the user. This tells them
       // where to go to sign in and provides the
       // code to use.
-      await context.sendActivity(info.message);
-      return;
-    }, context);
+      console.log(info.message);
+    });
   }
   async greetUserAsync() {
     try {
@@ -102,19 +101,19 @@ class TeamsBot extends TeamsActivityHandler {
       console.log(`Error getting user: ${err}`);
     }
   }
-  async getUserAsync() {
-    if (!_userClient) throw new Error('Graph has not been initialized for user auth');
-  
+
+  async greetUserAsync() {
     try {
-      return await _userClient.api('/me')
-        .select(['displayName', 'mail', 'userPrincipalName'])
-        .get();
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      throw new Error("Failed to fetch user data from Microsoft Graph.");
+      const user = await graphHelper.getUserAsync();
+      console.log(`Hello, ${user?.displayName}!`);
+      // For Work/school accounts, email is in mail property
+      // Personal accounts, email is in userPrincipalName
+      console.log(`Email: ${user?.mail ?? user?.userPrincipalName ?? ''}`);
+    } catch (err) {
+      console.log(`Error getting user: ${err}`);
     }
   }
-  
+    
   // Handle OpenAI request when the user sends a /prompt message
   async handleOpenAIRequest(context, promptMessage) {
     if (!promptMessage) {

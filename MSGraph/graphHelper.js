@@ -14,31 +14,29 @@ let _graphClient = undefined;
  * Initializes the Microsoft Graph client using client credentials flow.
  */
 function initializeGraphForUserAuth(settings, deviceCodePrompt) {
-  const tenantId = process.env.GRAPH_TENANT_ID;
-  const clientId = process.env.GRAPH_CLIENT_ID;
-  const clientSecret = process.env.GRAPH_CLIENT_SECRET;
-
-  if (!tenantId || !clientId || !clientSecret) {
-    throw new Error('Missing environment variables for Graph authentication');
+  // Ensure settings isn't null
+  if (!settings) {
+    throw new Error('Settings cannot be undefined');
   }
 
-  // Initialize ClientSecretCredential for app-only access
-  const credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
+  _settings = settings;
 
-  // Set up Microsoft Graph client with middleware
-  _graphClient = graph.Client.initWithMiddleware({
-    authProvider: {
-      getAccessToken: async () => {
-        const token = await credential.getToken('https://graph.microsoft.com/.default');
-        console.log('Graph Token Acquired:', token.token);
-        return token.token;
-      },
-    },
+  _deviceCodeCredential = new azure.DeviceCodeCredential({
+    clientId: settings.clientId,
+    tenantId: settings.tenantId,
+    userPromptCallback: deviceCodePrompt
   });
 
-  console.log('Microsoft Graph Client initialized successfully.');
+  const authProvider = new authProviders.TokenCredentialAuthenticationProvider(
+    _deviceCodeCredential, {
+      scopes: settings.graphUserScopes
+    });
+
+  _userClient = graph.Client.initWithMiddleware({
+    authProvider: authProvider
+  });
 }
-module.exports.initializeGraphClient = initializeGraphClient;
+module.exports.initializeGraphForUserAuth = initializeGraphForUserAuth;
 // </GraphClientConfigSnippet>
 
 // <GetUserSnippet>
