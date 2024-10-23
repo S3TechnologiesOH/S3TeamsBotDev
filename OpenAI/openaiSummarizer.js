@@ -45,7 +45,7 @@ async function summarizeJSON(context, ticketId, fetchFunction) {
   try {
     console.log("Starting summarizeJSON function");
 
-    const ticketData = undefined;
+    var ticketData = undefined;
     try
     {
       ticketData = await getTicketData(ticketId, fetchFunction);
