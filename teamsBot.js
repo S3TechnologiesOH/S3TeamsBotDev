@@ -43,8 +43,10 @@ class TeamsBot extends TeamsActivityHandler {
       if (!authState.isAuthenticated) {
         await this.initializeGraph(settings, context, authState);
         await this.greetUserAsync(context, authState);
+        await this.startCard(context, authState);
+
       } else {
-        await this.startCard(context);
+        await this.startCard(context, authState);
       }
 
       await this.userState.saveChanges(context);
@@ -53,8 +55,8 @@ class TeamsBot extends TeamsActivityHandler {
   }
 
   // Handle start card or welcome card
-  async startCard(context) {
-    await this.sendWelcomeCard(context);
+  async startCard(context, authState) {
+    await this.sendWelcomeCard(context, authState);
   }
 
   // Send a welcome card with an input field for the ticket number
@@ -224,7 +226,7 @@ class TeamsBot extends TeamsActivityHandler {
   }
 
   // Send a welcome card with an input field for the ticket number
-  async sendWelcomeCard(context) {
+  async sendWelcomeCard(context, authState) {
     const adaptiveCard = {
       $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
       type: "AdaptiveCard",
@@ -232,7 +234,7 @@ class TeamsBot extends TeamsActivityHandler {
       body: [
         {
           type: "TextBlock",
-          text: `Welcome to the Teams Bot ${dataManager.userDisplayName}!`,
+          text: `Welcome to the Teams Bot ${authState.userDisplayName}!`,
           weight: "Bolder",
           size: "Large",
           wrap: true,
