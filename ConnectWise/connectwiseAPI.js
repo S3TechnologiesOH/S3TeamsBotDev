@@ -39,7 +39,6 @@ async function fetch_ticket_by_id(ticketId) {
 // Fetch time entries related to a specific ticket
 async function fetch_time_entries_for_ticket(ticketId) {
   try {
-    // You can use the appropriate ConnectWise API endpoint here for time entries
     // Assuming `serviceTicketsIdGetTimeEntries` is a valid endpoint in your API:
     const response = await cwService.serviceTicketsIdTimeentriesGet( { id : ticketId });
     return response; // The time entries will be returned as an array
