@@ -31,7 +31,7 @@ class TeamsBot extends TeamsActivityHandler {
         await this.startCard(context);
       } else {
 
-        await startCard(context);
+        await this.startCard(context);
 
       }
 
