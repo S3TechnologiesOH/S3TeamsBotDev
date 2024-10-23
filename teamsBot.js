@@ -229,70 +229,67 @@ class TeamsBot extends TeamsActivityHandler {
     }
   }
 
-  // Send a welcome card with an input field for the ticket number
-  async sendWelcomeCard(context, authState) {
-    const adaptiveCard = {
-      $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
-      type: "AdaptiveCard",
-      version: "1.4",
-      body: [
-        {
-          type: "TextBlock",
-          text: `Welcome to the Teams Bot ${authState.userDisplayName}!`,
-          weight: "Bolder",
-          size: "Large",
-          wrap: true,
-        },
-        {
-          type: "TextBlock",
-          text: "Here are the available commands:",
-          wrap: true,
-          spacing: "Medium",
-        },
-        {
-          type: "TextBlock",
-          text: "/prompt [message]",
-          spacing: "Small",
-          wrap: true,
-          fontType: "Monospace",
-          weight: "Bolder",
-        },
-        {
-          type: "TextBlock",
-          text: "/ticket [id]",
-          spacing: "Small",
-          wrap: true,
-          fontType: "Monospace",
-          weight: "Bolder",
-        },
-        {
-          type: "TextBlock",
-          text: "Enter a ticket number below to start:",
-          wrap: true,
-          spacing: "Medium",
-        },
-        {
-          type: "Input.Text",
-          id: "ticketNumber", // The input field ID to reference the input value
-          placeholder: "Enter ticket number",
-          style: "text",
-        },
-      ],
-      actions: [
-        {
-          type: "Action.Submit",
-          title: "Start",
-          data: {
-            action: "runTicketCommand",
-          },
-        },
-      ],
-    };
+// Send a welcome card with buttons for commands
+async sendWelcomeCard(context, authState) {
+  const adaptiveCard = {
+    $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
+    type: "AdaptiveCard",
+    version: "1.4",
+    body: [
+      {
+        type: "TextBlock",
+        text: `Welcome to the Teams Bot ${authState.userDisplayName}!`,
+        weight: "Bolder",
+        size: "Large",
+        wrap: true,
+      },
+      {
+        type: "TextBlock",
+        text: "Choose a command category to continue:",
+        wrap: true,
+        spacing: "Medium",
+      },
+    ],
+    actions: [],
+  };
 
-    await context.sendActivity({
-      attachments: [CardFactory.adaptiveCard(adaptiveCard)],
+  // Add the "Ticket Information" button if the user has permission
+  if (await this.hasCommandPermissions(0)) {
+    adaptiveCard.actions.push({
+      type: "Action.Submit",
+      title: "Ticket Information",
+      data: {
+        action: "showTicketInformationCard",
+      },
     });
   }
+
+  // Add two filler buttons with "WIP" as the title (for future commands)
+  if (await this.hasCommandPermissions(1)) {
+    adaptiveCard.actions.push({
+      type: "Action.Submit",
+      title: "WIP Command 1",
+      data: {
+        action: "wipCommand1",
+      },
+    });
+  }
+
+  if (await this.hasCommandPermissions(2)) {
+    adaptiveCard.actions.push({
+      type: "Action.Submit",
+      title: "WIP Command 2",
+      data: {
+        action: "wipCommand2",
+      },
+    });
+  }
+
+  // Send the Adaptive Card
+  await context.sendActivity({
+    attachments: [CardFactory.adaptiveCard(adaptiveCard)],
+  });
+}
 
   // Handle the user input and command action
   async onAdaptiveCardSubmit(context) {
