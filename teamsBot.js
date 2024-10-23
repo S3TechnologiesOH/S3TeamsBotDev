@@ -149,7 +149,10 @@ class TeamsBot extends TeamsActivityHandler {
   async greetUserAsync() {
     try {
       const user = await graphHelper.getUserAsync();
+
       dataManager.userEmail = user.mail ?? user.userPrincipalName;
+      dataManager.userDisplayName = user.displayName;
+
       console.log(`Hello, ${user?.displayName}!`);
       console.log(`Email: ${user?.mail ?? user?.userPrincipalName ?? ""}`);
       this.userIsAuthenticated = true; // Mark the user as authenticated
@@ -228,7 +231,7 @@ class TeamsBot extends TeamsActivityHandler {
       body: [
         {
           type: "TextBlock",
-          text: `Welcome to the Teams Bot ${dataManager.userEmail}!`,
+          text: `Welcome to the Teams Bot ${dataManager.userDisplayName}!`,
           weight: "Bolder",
           size: "Large",
           wrap: true,

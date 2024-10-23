@@ -1,3 +1,3 @@
 const userEmail = undefined;
-
-module.exports = {userEmail};
+const userDisplayName = undefined;
+module.exports = {userEmail, userDisplayName};
