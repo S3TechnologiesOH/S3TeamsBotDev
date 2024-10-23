@@ -7,7 +7,10 @@ const qs = require('qs');
 const graph = require('@microsoft/microsoft-graph-client');
 const azure = require('@azure/identity');
 const authProviders = require('@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials');
-let _graphClient = undefined;
+
+let _settings = undefined;
+let _deviceCodeCredential = undefined;
+let _userClient = undefined;
 
 // <GraphClientConfigSnippet>
 /**
@@ -44,12 +47,12 @@ module.exports.initializeGraphForUserAuth = initializeGraphForUserAuth;
  * Retrieves the user's profile using Microsoft Graph.
  */
 async function getUserAsync() {
-  if (!_graphClient) {
+  if (!_userClient) {
     throw new Error('Graph client is not initialized');
   }
 
   try {
-    const user = await _graphClient
+    const user = await _userClient
       .api('/me')
       .select(['displayName', 'mail', 'userPrincipalName'])
       .get();

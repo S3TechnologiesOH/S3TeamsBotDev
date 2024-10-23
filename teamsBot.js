@@ -82,10 +82,6 @@ class TeamsBot extends TeamsActivityHandler {
   initializeGraph(settings) {
     console.log("Attempting to initialize graph for user auth...");
     graphHelper.initializeGraphForUserAuth(settings, (info) => {
-      // Display the device code message to
-      // the user. This tells them
-      // where to go to sign in and provides the
-      // code to use.
       console.log(info.message);
     });
   }
