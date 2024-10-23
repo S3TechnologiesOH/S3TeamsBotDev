@@ -19,7 +19,7 @@ const settings = require("./appSettings");
 const axios = require("axios");
 const qs = require("qs");
 const { start } = require("repl");
-const dataManager = require("./Data/dataManager");
+const {dataManager} = require("./Data/dataManager");
 
 class TeamsBot extends TeamsActivityHandler {
   
@@ -254,7 +254,7 @@ async sendWelcomeCard(context, authState) {
   };
 
   // Add the "Ticket Information" button if the user has permission
-  if (await this.hasCommandPermissions(0)) {
+  if (await dataManager.hasCommandPermissions(0)) {
     adaptiveCard.actions.push({
       type: "Action.Submit",
       title: "Ticket Information",
@@ -265,7 +265,7 @@ async sendWelcomeCard(context, authState) {
   }
 
   // Add two filler buttons with "WIP" as the title (for future commands)
-  if (await this.hasCommandPermissions(1)) {
+  if (await dataManager.hasCommandPermissions(1)) {
     adaptiveCard.actions.push({
       type: "Action.Submit",
       title: "WIP Command 1",
@@ -275,7 +275,7 @@ async sendWelcomeCard(context, authState) {
     });
   }
 
-  if (await this.hasCommandPermissions(2)) {
+  if (await dataManager.hasCommandPermissions(2)) {
     adaptiveCard.actions.push({
       type: "Action.Submit",
       title: "WIP Command 2",
