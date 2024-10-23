@@ -14,8 +14,7 @@ const { TeamsBot } = require("./teamsBot");
 const config = require("./config");
 const { MemoryStorage, UserState } = require("botbuilder");
 
-const memoryStorage = new MemoryStorage();
-const userState = new UserState(memoryStorage);
+
 
 // Create adapter.
 // See https://aka.ms/about-bot-adapter to learn more about adapters.

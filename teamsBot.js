@@ -10,6 +10,7 @@ const {
   fetch_ticket_by_id,
   fetch_time_entries_for_ticket,
 } = require("./ConnectWise/connectwiseAPI"); // ConnectWise API logic
+const entry = require("./index");
 const { summarizeJSON } = require("./OpenAI/openaiSummarizer");
 const { get_attr_or_key } = require("./ConnectWise/connectwiseHelpers");
 const graphHelper = require("./MSGraph/graphHelper");
@@ -20,7 +21,9 @@ const qs = require("qs");
 const { start } = require("repl");
 const dataManager = require("./Data/dataManager");
 
+const userState = entry.userState;
 class TeamsBot extends TeamsActivityHandler {
+  
   constructor() {
     super();
 
