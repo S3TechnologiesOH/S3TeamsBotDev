@@ -23,7 +23,6 @@ const CACHE_EXPIRY_MS = 10 * 60 * 1000; // 10 minutes
 
 let currentThread = null; // Store the thread for reuse
 
-// Cache wrapper: fetch from cache or API if not found
 async function getTicketData(ticketId, fetchFunction) {
   const cached = ticketCache.get(ticketId);
 
@@ -32,14 +31,29 @@ async function getTicketData(ticketId, fetchFunction) {
     return cached.data;
   }
 
-  console.log(`Cache miss for ticket ID: ${ticketId}. Fetching from API...`);
-  const data = fetchFunction;
+  try {
+    console.log(`Cache miss for ticket ID: ${ticketId}. Fetching from API...`);
 
-  // Store data in cache with expiry
-  ticketCache.set(ticketId, { data, expiry: Date.now() + CACHE_EXPIRY_MS });
+    // Call the fetch function and wait for its result
+    const data = await fetchFunction(ticketId);
 
-  return data;
+    if (!data || !Array.isArray(data)) {
+      console.error("Invalid data received:", data);
+      throw new Error("Invalid data format. Expected an array.");
+    }
+
+    // Store data in cache with expiry
+    ticketCache.set(ticketId, { data, expiry: Date.now() + CACHE_EXPIRY_MS });
+
+    console.log("Data stored in cache: ", data);
+    return data;
+
+  } catch (error) {
+    console.error("Error fetching ticket data:", error);
+    throw new Error("Failed to fetch ticket data.");
+  }
 }
+
 
 async function summarizeJSON(context, ticketId, fetchFunction) {
   try {
