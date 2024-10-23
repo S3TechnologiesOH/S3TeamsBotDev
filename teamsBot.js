@@ -21,7 +21,7 @@ const qs = require("qs");
 const { start } = require("repl");
 const dataManager = require("./Data/dataManager");
 
-const userState = entry.userState;
+
 class TeamsBot extends TeamsActivityHandler {
   
   constructor(userState) {
@@ -91,7 +91,7 @@ class TeamsBot extends TeamsActivityHandler {
     });
   }
 
-  async initializeGraph(settings, context) {
+  async initializeGraph(settings, context, authState) {
     console.log("Attempting to initialize graph for user auth...");
 
     await graphHelper.initializeGraphForUserAuth(settings, async (info) => {
