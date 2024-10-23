@@ -12,6 +12,10 @@ const {
 } = require("botbuilder");
 const { TeamsBot } = require("./teamsBot");
 const config = require("./config");
+const { MemoryStorage, UserState } = require("botbuilder");
+
+const memoryStorage = new MemoryStorage();
+const userState = new UserState(memoryStorage);
 
 // Create adapter.
 // See https://aka.ms/about-bot-adapter to learn more about adapters.
@@ -44,7 +48,7 @@ adapter.onTurnError = async (context, error) => {
 };
 
 // Create the bot that will handle incoming messages.
-const bot = new TeamsBot();
+const bot = new TeamsBot(userState);
 
 // Create HTTP server.
 const server = restify.createServer();

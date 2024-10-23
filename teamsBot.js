@@ -2,6 +2,8 @@ const {
   TeamsActivityHandler,
   TurnContext,
   CardFactory,
+  UserState,
+  MemoryStorage,
 } = require("botbuilder");
 const { getOpenAIResponse } = require("./OpenAI/openaiService"); // OpenAI logic
 const {
@@ -17,6 +19,7 @@ const axios = require("axios");
 const qs = require("qs");
 const { start } = require("repl");
 const dataManager = require("./Data/dataManager");
+
 class TeamsBot extends TeamsActivityHandler {
   constructor() {
     super();
@@ -24,74 +27,65 @@ class TeamsBot extends TeamsActivityHandler {
     this.lastLoginMessageId = null; // Store the last login message ID
     this.userIsAuthenticated = false; // Track whether the user is authenticated
 
+    this.userState = userState;
+    this.userAuthState = this.userState.createProperty("userAuthState");
+
     this.onMessage(async (context, next) => {
-      if (!this.userIsAuthenticated) {
-        await this.initializeGraph(settings, context);
-        await this.greetUserAsync();
-        await this.startCard(context);
+
+      const authState = await this.userAuthState.get(context, {
+        isAuthenticated: false,
+        lastLoginMessageId: null,
+      });
+
+      if (!authState.isAuthenticated) {
+        await this.initializeGraph(settings, context, authState);
+        await this.greetUserAsync(context, authState);
       } else {
-
         await this.startCard(context);
-
       }
 
+      await this.userState.saveChanges(context);
       await next();
     });
   }
 
+  // Handle start card or welcome card
   async startCard(context) {
+    await this.sendWelcomeCard(context);
+  }
 
-    if (context.activity.value) {
+  // Send a welcome card with an input field for the ticket number
+  async sendWelcomeCard(context) {
+    const adaptiveCard = {
+      $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
+      type: "AdaptiveCard",
+      version: "1.4",
+      body: [
+        {
+          type: "TextBlock",
+          text: "Welcome! Please use the following commands:",
+          weight: "Bolder",
+          size: "Large",
+          wrap: true,
+        },
+        {
+          type: "TextBlock",
+          text: "/prompt [message]",
+          wrap: true,
+          fontType: "Monospace",
+        },
+        {
+          type: "TextBlock",
+          text: "/ticket [id]",
+          wrap: true,
+          fontType: "Monospace",
+        },
+      ],
+    };
 
-      await this.onAdaptiveCardSubmit(context);
-
-    } else if (context.activity.text) {
-
-      // Remove bot mention and handle the message
-      const removedMentionText = TurnContext.removeRecipientMention(
-        context.activity
-      );
-      const userMessage = (removedMentionText || "")
-        .toLowerCase()
-        .replace(/\n|\r/g, "")
-        .trim();
-
-      // Check if the message starts with a slash ("/")
-      if (userMessage.startsWith("/")) {
-        if (userMessage.startsWith("/prompt")) {
-          // Handle OpenAI prompt
-          const promptMessage = userMessage.replace("/prompt", "").trim();
-          await this.handleOpenAIRequest(context, promptMessage);
-        } else if (userMessage.startsWith("/ticket")) {
-          // Handle ConnectWise ticket request
-          const ticketIdString = userMessage
-            .replace("/ticket", "")
-            .trim()
-            .replace("#", "");
-          const ticketId = parseInt(ticketIdString, 10); // Convert the ticketId string to an integer
-
-          if (!isNaN(ticketId)) {
-            await this.handleTicketRequest(context, ticketId); // Pass the ticketId (number)
-          } else {
-            await context.sendActivity(
-              "Please provide a valid numeric ticket ID after `/ticket`."
-            );
-          }
-        } else {
-          await context.sendActivity(
-            "Unknown command. Use `/prompt [message]` or `/ticket [id]`."
-          );
-        }
-      } else {
-        // If it's not a command, send the welcome card
-        await this.sendWelcomeCard(context);
-      }
-    } else {
-      // If no valid text is present, log or send a default message
-      await context.sendActivity(
-        "I didn't understand your message. Please use `/prompt` or `/ticket` commands."
-      );
-    }
+    await context.sendActivity({
+      attachments: [CardFactory.adaptiveCard(adaptiveCard)],
+    });
   }
 
   async initializeGraph(settings, context) {
@@ -106,7 +100,7 @@ class TeamsBot extends TeamsActivityHandler {
       // Delete the previous login message if it exists
       if (this.lastLoginMessageId) {
         try {
-          await context.deleteActivity(this.lastLoginMessageId);
+          await context.deleteActivity(authState.lastLoginMessageId);
         } catch (err) {
           console.log(`Failed to delete previous login message: ${err}`);
         }
@@ -140,24 +134,24 @@ class TeamsBot extends TeamsActivityHandler {
         version: "1.2",
       });
 
-      // Send the login card to the user and store the activity ID
       const response = await context.sendActivity({ attachments: [card] });
-      this.lastLoginMessageId = response.id; // Store the message ID for future deletion
+      authState.lastLoginMessageId = response.id; // Store message ID in user state
     });
   }
 
-  async greetUserAsync() {
+  async greetUserAsync(context, authState) {
     try {
+
       const user = await graphHelper.getUserAsync();
+      authState.userDisplayName = user.displayName;
+      authState.userEmail = user.mail ?? user.userPrincipalName;
+      authState.isAuthenticated = true; // Set user as authenticated
+      console.log(`Email: ${user.mail ?? user.userPrincipalName}`);
 
-      dataManager.userEmail = user.mail ?? user.userPrincipalName;
-      dataManager.userDisplayName = user.displayName;
-
-      console.log(`Hello, ${user?.displayName}!`);
-      console.log(`Email: ${user?.mail ?? user?.userPrincipalName ?? ""}`);
-      this.userIsAuthenticated = true; // Mark the user as authenticated
     } catch (err) {
+
       console.log(`Error getting user: ${err}`);
+
     }
   }
 
