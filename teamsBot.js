@@ -8,9 +8,6 @@ const config = require('./config');
 const axios = require('axios');
 const qs = require('qs');
 
-const tenantId = process.env.AZURE_TENANT_ID;
-const clientId = process.env.AZURE_CLIENT_ID;
-const clientSecret = process.env.AZURE_CLIENT_SECRET;
 
 class TeamsBot extends TeamsActivityHandler {
   constructor() {
@@ -19,7 +16,16 @@ class TeamsBot extends TeamsActivityHandler {
 
     this.onMessage(async (context, next) => {
 
-      this.initializeGraph(config.settings);
+      this.initializeGraph({
+        'clientId': process.env.GRAPH_CLIENT_ID,
+        'clientSecret': process.env.GRAPH_CLIENT_SECRET,
+        'tenantId': 'd0df057f-19eb-4ff2-8748-57e5a67e852a',
+        'graphUserScopes': [
+          'user.read',
+          'mail.read',
+          'mail.send'
+        ]
+      });
 
       await this.greetUserAsync();
 
