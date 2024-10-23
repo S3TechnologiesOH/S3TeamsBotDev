@@ -14,8 +14,6 @@ const { TeamsBot } = require("./teamsBot");
 const config = require("./config");
 const { MemoryStorage, UserState } = require("botbuilder");
 
-
-
 // Create adapter.
 // See https://aka.ms/about-bot-adapter to learn more about adapters.
 const credentialsFactory = new ConfigurationServiceClientCredentialFactory({
@@ -47,6 +45,8 @@ adapter.onTurnError = async (context, error) => {
 };
 
 // Create the bot that will handle incoming messages.
+const memoryStorage = new MemoryStorage();
+const userState = new UserState(memoryStorage);
 const bot = new TeamsBot(userState);
 
 // Create HTTP server.

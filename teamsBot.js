@@ -24,7 +24,7 @@ const dataManager = require("./Data/dataManager");
 const userState = entry.userState;
 class TeamsBot extends TeamsActivityHandler {
   
-  constructor() {
+  constructor(userState) {
     super();
 
     this.lastLoginMessageId = null; // Store the last login message ID
