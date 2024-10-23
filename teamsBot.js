@@ -138,7 +138,11 @@ class TeamsBot extends TeamsActivityHandler {
       });
 
       const response = await context.sendActivity({ attachments: [card] });
-      authState.lastLoginMessageId = response.id; // Store message ID in user state
+      try{
+        authState.lastLoginMessageId = response.id; // Store message ID in user state
+      } catch (err) {
+        console.log(`Failed to store last login message ID: ${err}`)
+      };
     });
   }
 
