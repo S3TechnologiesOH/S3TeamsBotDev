@@ -17,7 +17,7 @@ class TeamsBot extends TeamsActivityHandler {
 
     this.onMessage(async (context, next) => {
 
-      this.initializeGraph(settings, context);
+      await this.initializeGraph(settings, context);
 
       await this.greetUserAsync();
 
@@ -64,23 +64,11 @@ class TeamsBot extends TeamsActivityHandler {
   
       await next();
   });
-  
-    // Handle MembersAdded event for welcoming new users and sending the command list
-    this.onMembersAdded(async (context, next) => {
-      const membersAdded = context.activity.membersAdded;
-      for (let member of membersAdded) {
-        if (member.id !== context.activity.recipient.id) {
-          await this.sendWelcomeCard(context);
-          break; // Only send one welcome message
-        }
-      }
-      await next();
-    });
   }
 
-  initializeGraph(settings, context) {
+  async initializeGraph(settings, context) {
     console.log("Attempting to initialize graph for user auth...");
-    graphHelper.initializeGraphForUserAuth(settings, async (info) => {
+    await graphHelper.initializeGraphForUserAuth(settings, async (info) => {
       const { message } = info;
   
       // Extract the login link and code from the message (assuming consistent message format)
