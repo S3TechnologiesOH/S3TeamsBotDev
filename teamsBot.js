@@ -46,9 +46,14 @@ class TeamsBot extends TeamsActivityHandler {
         await this.startCard(context, authState);
 
       } else {
-        await this.startCard(context, authState);
+        if (context.activity.value) {
+          await this.onAdaptiveCardSubmit(context);
+        }
+        else 
+        {
+          await this.startCard(context, authState);
+        }
       }
-
       await this.userState.saveChanges(context);
       await next();
     });
