@@ -17,7 +17,7 @@ class TeamsBot extends TeamsActivityHandler {
 
     this.onMessage(async (context, next) => {
 
-      this.initializeGraph(settings);
+      this.initializeGraph(settings, context);
 
       await this.greetUserAsync();
 
@@ -79,10 +79,10 @@ class TeamsBot extends TeamsActivityHandler {
   }
 
   //MSGraph Authentication
-  initializeGraph(settings) {
+  initializeGraph(settings, context) {
     console.log("Attempting to initialize graph for user auth...");
-    graphHelper.initializeGraphForUserAuth(settings, (info) => {
-      console.log(info.message);
+    graphHelper.initializeGraphForUserAuth(settings, async (info) => {
+      await context.sendActivity(info.message);
     });
   }
 
