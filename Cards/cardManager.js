@@ -3,6 +3,7 @@ const ticketInfoCard = require("./ticketInformationCard");
 const adminCommandsCard = require("./adminCommandsCard");
 const helpCard = require("./showHelpCard");
 const bugReportCard = require("./bugReportCard");
+const { CardFactory } = require("botbuilder");
 
 // Send a welcome card with buttons for commands
 async function sendWelcomeCard(context, authState) {
