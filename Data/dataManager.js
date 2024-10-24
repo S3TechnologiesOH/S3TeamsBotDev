@@ -15,7 +15,7 @@ const { roles, rolePermissions } = permissionsConfig;
 /**
  * Check if a user has permission to access a command group.
  * @param {string} email - The email of the user.
- * @param {string} commandGroup - The group the user wants to access.
+ * @param {string} commandGroup - The command group the user wants to access.
  * @returns {boolean} - True if the user has permission, false otherwise.
  */
 async function hasCommandPermission(email, commandGroup) {
@@ -26,23 +26,16 @@ async function hasCommandPermission(email, commandGroup) {
     return true;
   }
 
-  // Get the user's role
-  const userRole = findUserRole(email);
-  if (!userRole) {
-    console.error(`No role found for user: ${email}`);
+  // Get all roles for the user
+  const userRoles = findUserRoles(email);
+  if (userRoles.length === 0) {
+    console.error(`No roles found for user: ${email}`);
     return false;
   }
 
-  // Check if the user's role has access to the command group
-  const roleHasAccess = rolePermissions[userRole]?.includes(commandGroup);
-  if (roleHasAccess) {
-    return true;
-  }
-
-  // Fallback: Check if the user has guest access
-  const guestUsers = roles.guest || [];
-  if (guestUsers.includes(email)) {
-    console.log(`Guest access: ${email} has fallback guest permission.`);
+  // Check if any of the user's roles allow access to the command group
+  const hasAccess = userRoles.some(role => rolePermissions[role]?.includes(commandGroup));
+  if (hasAccess) {
     return true;
   }
 
@@ -51,17 +44,18 @@ async function hasCommandPermission(email, commandGroup) {
 }
 
 /**
- * Find the user's role based on their email.
+ * Find all roles a user belongs to based on their email.
  * @param {string} email - The email of the user.
- * @returns {string|null} - The role if found, otherwise null.
+ * @returns {string[]} - An array of roles the user belongs to.
  */
-function findUserRole(email) {
+function findUserRoles(email) {
+  const userRoles = [];
   for (const [role, users] of Object.entries(roles)) {
     if (users.includes(email)) {
-      return role;
+      userRoles.push(role);
     }
   }
-  return null;
+  return userRoles;
 }
 
 module.exports = { hasCommandPermission };
