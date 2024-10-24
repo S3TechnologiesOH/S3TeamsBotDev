@@ -167,19 +167,29 @@ class TeamsBot extends TeamsActivityHandler {
 
   async greetUserAsync(context, authState) {
     try {
-
       const user = await graphHelper.getUserAsync();
       authState.userDisplayName = user.displayName;
       authState.userEmail = user.mail ?? user.userPrincipalName;
+  
+      // Check if the user is already in the 'guest' role
+      const data = fs.readFileSync(permissionsPath, 'utf8');
+      const permissionsConfig = JSON.parse(data);
+  
+      const guestRole = permissionsConfig.roles.guest || [];
+  
+      if (!guestRole.includes(authState.userEmail)) {
+        // If not in the guest role, assign them using assignUserRole
+        await assignUserRole(context, "guest", authState.userEmail, false);
+      }
+      
       authState.isAuthenticated = true; // Set user as authenticated
-      console.log(`Email: ${user.mail ?? user.userPrincipalName}`);
+      console.log(`Email: ${authState.userEmail}`);
 
     } catch (err) {
-
-      console.log(`Error getting user: ${err}`);
-
+      console.error(`Error getting user or assigning guest role: ${err}`);
     }
   }
+  
 
   // Handle OpenAI request when the user sends a /prompt message
   async handleOpenAIRequest(context, promptMessage) {
@@ -361,7 +371,7 @@ async onAdaptiveCardSubmit(context, authState) {
           return;
         }
   
-        await assignUserRole(context, roleName.trim(), userEmail.trim().toLowerCase());
+        await assignUserRole(context, roleName.trim(), userEmail.trim().toLowerCase(), true);
         break;
 
     case "wipCommand2":

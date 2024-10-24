@@ -49,22 +49,28 @@ async function hasCommandPermission(email, commandGroup) {
 }
 
 
-async function assignUserRole(context, role, email) {
+async function assignUserRole(context, role, email, notify) {
   try {
     const data = fs.readFileSync(permissionsPath, 'utf8');
     const permissionsConfig = JSON.parse(data);
 
     if (!permissionsConfig.roles[role]) {
-      await context.sendActivity(`Role '${role}' does not exist.`);
+      if(notify){
+        await context.sendActivity(`Role '${role}' does not exist.`);
+      }
       return;
     }
 
     if (!permissionsConfig.roles[role].includes(email)) {
       permissionsConfig.roles[role].push(email);
       fs.writeFileSync(permissionsPath, JSON.stringify(permissionsConfig, null, 2));
-      await context.sendActivity(`Successfully assigned ${email} to the role '${role}'.`);
+      if(notify){
+        await context.sendActivity(`Successfully assigned ${email} to the role '${role}'.`);
+      }
     } else {
-      await context.sendActivity(`${email} is already assigned to the role '${role}'.`);
+      if(notify){
+        await context.sendActivity(`${email} is already assigned to the role '${role}'.`);
+      }
     }
   } catch (error) {
     console.error("Error updating permissions:", error);
