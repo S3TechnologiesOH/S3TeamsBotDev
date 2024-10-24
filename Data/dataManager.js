@@ -20,7 +20,9 @@ const { roles, commandGroups, rolePermissions } = permissionsConfig;
  */
 async function hasCommandPermission(email, commandGroup) {
   const normalizedEmail = email.trim().toLowerCase();
-
+  console.log("Roles: ", roles);
+  console.log("Command Groups: ", commandGroups);
+  console.log("Role Permissions: ", rolePermissions);
   // Admin override: Check if the user is in the admin role
   const adminUsers = roles.admin || [];
   if (adminUsers.includes(normalizedEmail)) {
