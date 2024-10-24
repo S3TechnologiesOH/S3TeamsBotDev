@@ -108,4 +108,4 @@ async function hasCommandPermission(email, commandGroup) {
   console.error(`Permission denied for ${email} to access ${commandGroup}.`);
   return false;
 }
-module.exports = { hasCommandPermission, updatePermissions, assignUserRole };
+module.exports = { hasCommandPermission, updatePermissions, assignUserRole, permissionsPath };
