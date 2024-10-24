@@ -1,6 +1,6 @@
 const graphHelper = require("./graphHelper");
 const { CardFactory } = require("botbuilder");
-
+const fs = require("fs");
 async function initializeGraph(settings, context, authState) {
     console.log("Attempting to initialize graph for user auth...");
 
