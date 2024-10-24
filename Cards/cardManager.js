@@ -1,8 +1,8 @@
-const {dataManager, hasCommandPermission, assignUserRole, permissionsPath} = require("./Data/dataManager");
-const ticketInfoCard = require("./Cards/ticketInformationCard");
-const adminCommandsCard = require("./Cards/adminCommandsCard");
-const helpCard = require("./Cards/showHelpCard");
-const bugReportCard = require("./Cards/bugReportCard");
+const {dataManager, hasCommandPermission, assignUserRole, permissionsPath} = require("../Data/dataManager");
+const ticketInfoCard = require("./ticketInformationCard");
+const adminCommandsCard = require("./adminCommandsCard");
+const helpCard = require("./showHelpCard");
+const bugReportCard = require("./bugReportCard");
 
 // Send a welcome card with buttons for commands
 async function sendWelcomeCard(context, authState) {
