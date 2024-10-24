@@ -1,5 +1,5 @@
 const fs = require('fs');
-
+const path = require('path');
 // Load the permissions configuration from JSON
 const permissionsPath = path.join(__dirname, 'permissions.json');
 
