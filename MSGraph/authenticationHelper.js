@@ -1,3 +1,5 @@
+const graphHelper = require("./graphHelper");
+
 async function initializeGraph(settings, context, authState) {
     console.log("Attempting to initialize graph for user auth...");
 
