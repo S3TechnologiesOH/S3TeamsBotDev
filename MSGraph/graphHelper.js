@@ -25,6 +25,7 @@ async function getAuthenticatedClient() {
     },
   });
 }
+
 function initializeGraphForUserAuth(settings, deviceCodePrompt) {
   // Ensure settings isn't null
   if (!settings) {
@@ -48,7 +49,7 @@ function initializeGraphForUserAuth(settings, deviceCodePrompt) {
     authProvider: authProvider
   });
 }
-module.exports.initializeGraphForUserAuth = initializeGraphForUserAuth;
+module.exports = { initializeGraphForUserAuth };
 // </GraphClientConfigSnippet>
 
 // <GetUserSnippet>
