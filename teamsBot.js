@@ -47,23 +47,27 @@ class TeamsBot extends TeamsActivityHandler {
         await authenticationHelper.initializeGraph(settings, context, authState);
         await authenticationHelper.greetUserAsync(context, authState);
         await sendWelcomeCard(context, authState);
+        console.log("Sent first welcome");
       } else {
         const userInput = context.activity.text?.trim().toLowerCase();
-    
+        console.log("User input: ", userInput);
         if (userInput) {
           const isCommandHandled = await this.handleUserCommand(context, userInput, authState);
-    
+          console.log("Command handled: ", isCommandHandled);
           if (!isCommandHandled) {
             await sendWelcomeCard(context, authState); // Show the welcome card if no valid command
+            console.log("Sent welcome card due to false handling");
           }
         } else if (context.activity.value) {
           await onAdaptiveCardSubmit(context, authState); // Handle adaptive card submission
+          console.log("Handled adaptive card submission");
         } else {
           await sendWelcomeCard(context, authState); // Show the welcome card
+          console.log("Sent welcome card due to no input");
         }
       }
     
-      await this.deleteUserMessage(context); // Delete the user's message
+      //await this.deleteUserMessage(context); // Delete the user's message
       await this.userState.saveChanges(context);
       await next();
     });
