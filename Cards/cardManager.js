@@ -7,7 +7,7 @@ const { CardFactory } = require("botbuilder");
 
 // Send a welcome card with buttons for commands
 async function sendWelcomeCard(context, authState) {
-    await this.deletePreviousWelcomeCard(context);
+    await deletePreviousWelcomeCard(context);
     const adaptiveCard = {
       $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
       type: "AdaptiveCard",
