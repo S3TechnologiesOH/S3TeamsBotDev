@@ -30,6 +30,9 @@ class TeamsBot extends TeamsActivityHandler {
   constructor(userState) {
     super();
 
+    this.welcomeCardMessageId = null; // Track the last welcome card message ID
+    this.userMessageId = null; // Track the last user message ID    
+
     this.lastLoginMessageId = null; // Store the last login message ID
     this.userIsAuthenticated = false; // Track whether the user is authenticated
 
@@ -37,38 +40,39 @@ class TeamsBot extends TeamsActivityHandler {
     this.userAuthState = this.userState.createProperty("userAuthState");
 
     this.onMessage(async (context, next) => {
-
       const authState = await this.userAuthState.get(context, {
         isAuthenticated: false,
         lastLoginMessageId: null,
       });
-
+    
+      // Store the user message ID to delete it later
+      this.userMessageId = context.activity.id;
+    
       if (!authState.isAuthenticated) {
         await this.initializeGraph(settings, context, authState);
         await this.greetUserAsync(context, authState);
-        await this.startCard(context, authState);
-
+        await this.sendWelcomeCard(context, authState);
       } else {
-        const userInput = context.activity.text?.trim().toLowerCase(); // Get the user input
-
+        const userInput = context.activity.text?.trim().toLowerCase();
+    
         if (userInput) {
           const isCommandHandled = await this.handleUserCommand(context, userInput, authState);
     
           if (!isCommandHandled) {
-            // If no valid command, show the start card again
-            await this.startCard(context, authState);
+            await this.sendWelcomeCard(context, authState); // Show the welcome card if no valid command
           }
         } else if (context.activity.value) {
-          // Handle adaptive card submissions
-          await this.onAdaptiveCardSubmit(context, authState);
+          await this.onAdaptiveCardSubmit(context, authState); // Handle adaptive card submission
         } else {
-          await this.startCard(context, authState);
+          await this.sendWelcomeCard(context, authState); // Show the welcome card
         }
       }
+    
+      await this.deleteUserMessage(context); // Delete the user's message
       await this.userState.saveChanges(context);
       await next();
     });
-  }
+  }    
 
   async handleUserCommand(context, userInput, authState) {
     const ticketRegex = /^\/ticket (\d+)$/;
@@ -94,6 +98,17 @@ class TeamsBot extends TeamsActivityHandler {
     await this.sendWelcomeCard(context, authState);
   }
 
+  async deleteUserMessage(context) {
+    if (this.userMessageId) {
+      try {
+        await context.deleteActivity(this.userMessageId);
+        this.userMessageId = null; // Clear the stored message ID after deleting
+      } catch (error) {
+        console.error(`Failed to delete user message: ${error}`);
+      }
+    }
+  }
+  
 
   async initializeGraph(settings, context, authState) {
     console.log("Attempting to initialize graph for user auth...");
@@ -229,6 +244,7 @@ class TeamsBot extends TeamsActivityHandler {
 
 // Send a welcome card with buttons for commands
 async sendWelcomeCard(context, authState) {
+  await this.deletePreviousWelcomeCard(context);
   const adaptiveCard = {
     $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
     type: "AdaptiveCard",
@@ -288,6 +304,16 @@ async sendWelcomeCard(context, authState) {
     attachments: [CardFactory.adaptiveCard(adaptiveCard)],
   });
 }
+async deletePreviousWelcomeCard(context) {
+  if (this.welcomeCardMessageId) {
+    try {
+      await context.deleteActivity(this.welcomeCardMessageId);
+      this.welcomeCardMessageId = null; // Clear the stored message ID after deleting
+    } catch (error) {
+      console.error(`Failed to delete previous welcome card: ${error}`);
+    }
+  }
+}
 
 // Handle the user input and command actions
 async onAdaptiveCardSubmit(context, authState) {
@@ -327,9 +353,16 @@ async onAdaptiveCardSubmit(context, authState) {
       }
       break;
 
-    case "assignRoleCommand":
-      await context.sendActivity("assignRoleCommand is not implemented yet.");
-      break;
+      case "assignRoleCommand":
+        const { roleName, userEmail } = submittedData;
+  
+        if (!roleName || !userEmail) {
+          await context.sendActivity("Please provide both a role and a user email.");
+          return;
+        }
+  
+        await this.assignUserRole(context, roleName.trim(), userEmail.trim().toLowerCase());
+        break;
 
     case "wipCommand2":
       await context.sendActivity("WIP Command 2 is not implemented yet.");
