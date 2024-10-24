@@ -7,7 +7,7 @@ const qs = require('qs');
 const graph = require('@microsoft/microsoft-graph-client');
 const azure = require('@azure/identity');
 const authProviders = require('@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials');
-const emailRecipients = require("./Data/bugReportRecipients");
+const emailRecipients = require("../Data/bugReportRecipients");
 
 let _settings = undefined;
 let _deviceCodeCredential = undefined;
