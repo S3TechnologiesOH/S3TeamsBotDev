@@ -1,29 +1,67 @@
-const userEmail = undefined;
-const userDisplayName = undefined;
+const fs = require('fs');
 
-const permissions = ["Ticket.Read", "Ticket.Write", "WIP"];
-const userPermissions = {
-  "catwell@mys3tech.com": ["Ticket.Read", "Ticket.Write"],
-  "jlowry@mys3tech.com": ["", "Ticket.Write"], // Fixed the spaces issue
-};
+// Load the permissions configuration from JSON
+let permissionsConfig;
+try {
+  const data = fs.readFileSync('./permissions.json', 'utf8');
+  permissionsConfig = JSON.parse(data);
+} catch (error) {
+  console.error('Failed to load permissions.json:', error);
+  permissionsConfig = { roles: {}, rolePermissions: {} };
+}
 
-module.exports = { userEmail, userDisplayName, permissions, userPermissions };
+const { roles, rolePermissions } = permissionsConfig;
 
-// Function to check if a user has a specific permission
-async function hasCommandPermission(email, permIndex) {
-  // Validate the permission index
-  if (permIndex < 0 || permIndex >= permissions.length) {
-    console.error(`Invalid permission index: ${permIndex}`);
+/**
+ * Check if a user has permission to access a command group.
+ * @param {string} email - The email of the user.
+ * @param {string} commandGroup - The group the user wants to access.
+ * @returns {boolean} - True if the user has permission, false otherwise.
+ */
+async function hasCommandPermission(email, commandGroup) {
+  // Admin override: Check if the user is in the admin role
+  const adminUsers = roles.admin || [];
+  if (adminUsers.includes(email)) {
+    console.log(`Admin override: ${email} has permission to access any group.`);
+    return true;
+  }
+
+  // Get the user's role
+  const userRole = findUserRole(email);
+  if (!userRole) {
+    console.error(`No role found for user: ${email}`);
     return false;
   }
 
-  const permissionToCheck = permissions[permIndex];
+  // Check if the user's role has access to the command group
+  const roleHasAccess = rolePermissions[userRole]?.includes(commandGroup);
+  if (roleHasAccess) {
+    return true;
+  }
 
-  // Get the user's permissions or an empty array, trimming spaces from each permission
-  const userPerms = (userPermissions[email] || []).map(perm => perm.trim());
+  // Fallback: Check if the user has guest access
+  const guestUsers = roles.guest || [];
+  if (guestUsers.includes(email)) {
+    console.log(`Guest access: ${email} has fallback guest permission.`);
+    return true;
+  }
 
-  // Check if the required permission exists
-  return userPerms.includes(permissionToCheck);
+  console.error(`Permission denied for ${email} to access ${commandGroup}.`);
+  return false;
+}
+
+/**
+ * Find the user's role based on their email.
+ * @param {string} email - The email of the user.
+ * @returns {string|null} - The role if found, otherwise null.
+ */
+function findUserRole(email) {
+  for (const [role, users] of Object.entries(roles)) {
+    if (users.includes(email)) {
+      return role;
+    }
+  }
+  return null;
 }
 
 module.exports = { hasCommandPermission };

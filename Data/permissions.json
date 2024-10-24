@@ -1,0 +1,19 @@
+{
+    "roles": {
+      "admin": ["catwell@mys3tech.com"],
+      "ticket_management": [],
+      "reporting": [],
+      "guest": []
+    },
+    "commandGroups": {
+      "ticket_commands": ["Ticket.Read", "Ticket.Write"],
+      "reporting_commands": ["Generate.Report"]
+    },
+    "rolePermissions": {
+      "admin": ["ticket_commands", "reporting_commands"],
+      "ticket_management": ["ticket_commands"],
+      "reporting": ["reporting_commands"],
+      "guest": ["ticket_commands"]
+    }
+  }
+  

@@ -221,7 +221,7 @@ async sendWelcomeCard(context, authState) {
   };
 
   // Add the "Ticket Information" button if the user has permission
-  if (await hasCommandPermission(authState.userEmail, 0)) {
+  if (await hasCommandPermission(authState.userEmail, "ticket_commands")) {
     adaptiveCard.actions.push({
       type: "Action.Submit",
       title: "Ticket Information",
@@ -232,7 +232,7 @@ async sendWelcomeCard(context, authState) {
   }
 
   // Add two filler buttons with "WIP" as the title (for future commands)
-  if (await hasCommandPermission(authState.userEmail, 1)) {
+  if (await hasCommandPermission(authState.userEmail, "reporting_commands")) {
     adaptiveCard.actions.push({
       type: "Action.Submit",
       title: "WIP Command 1",
@@ -242,7 +242,7 @@ async sendWelcomeCard(context, authState) {
     });
   }
 
-  if (await hasCommandPermission(authState.userEmail, 2)) {
+  if (await hasCommandPermission(authState.userEmail, "reporting_commands")) {
     adaptiveCard.actions.push({
       type: "Action.Submit",
       title: "WIP Command 2",
