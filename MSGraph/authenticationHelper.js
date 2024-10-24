@@ -1,5 +1,5 @@
 const {assignUserRole, permissionsPath} = require("../Data/dataManager");
-const {initializeGraphForUserAuth, getUserAsync} = require("./graphHelper");
+const { initializeGraphForUserAuth, getUserAsync } = require("./graphHelper");
 const { CardFactory } = require("botbuilder");
 const fs = require("fs");
 async function initializeGraph(settings, context, authState) {
