@@ -5,7 +5,7 @@ const fs = require("fs");
 async function initializeGraph(settings, context, authState) {
     console.log("Attempting to initialize graph for user auth...");
 
-    await graphHelper.initializeGraphForUserAuth(settings, async (info) => {
+    await initializeGraphForUserAuth(settings, async (info) => {
       const { message } = info;
       const [_, url, code] = message.match(
         /(https:\/\/\S+) and enter the code (\S+)/
@@ -47,7 +47,7 @@ async function initializeGraph(settings, context, authState) {
 
   async function greetUserAsync(context, authState) {
     try {
-      const user = await graphHelper.getUserAsync();
+      const user = await getUserAsync();
       authState.userDisplayName = user.displayName;
       authState.userEmail = user.mail ?? user.userPrincipalName;
       console.log(`User: ${authState.userDisplayName} (${authState.userEmail})`);
