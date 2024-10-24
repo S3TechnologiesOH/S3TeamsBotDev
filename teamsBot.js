@@ -361,7 +361,7 @@ async onAdaptiveCardSubmit(context, authState) {
           return;
         }
   
-        await this.assignUserRole(context, roleName.trim(), userEmail.trim().toLowerCase());
+        await assignUserRole(context, roleName.trim(), userEmail.trim().toLowerCase());
         break;
 
     case "wipCommand2":
