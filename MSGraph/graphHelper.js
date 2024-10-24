@@ -59,7 +59,7 @@ async function getUserAsync() {
   if (!_userClient) {
     throw new Error('Graph client is not initialized');
   }
-  
+
   try {
     const user = await _userClient
       .api('/me')
@@ -130,6 +130,7 @@ async function sendBugReportEmail(title, summary) {
     throw error;
   }
 }
+module.exports = { sendBugReportEmail };
 
 async function sendMail(email) {
   try {

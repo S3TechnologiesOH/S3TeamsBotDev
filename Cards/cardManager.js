@@ -1,4 +1,4 @@
-const {dataManager, hasCommandPermission, assignUserRole, permissionsPath} = require("../Data/dataManager");
+const {dataManager, hasCommandPermission, assignUserRole, permissionsPath, sendBugReportEmail} = require("../Data/dataManager");
 const ticketManager = require("../ConnectWise/ticketManager");
 const ticketInfoCard = require("./ticketInformationCard");
 const adminCommandsCard = require("./adminCommandsCard");
@@ -147,7 +147,7 @@ async function onAdaptiveCardSubmit(context, authState) {
          return;
         }
         try {
-          await this.sendBugReportEmail(bugTitle, bugSummary);
+          await sendBugReportEmail(bugTitle, bugSummary);
           await context.sendActivity("Bug report submitted successfully!");
         } catch (error) {
           console.error("Error submitting bug report:", error);
