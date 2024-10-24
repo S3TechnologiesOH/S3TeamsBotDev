@@ -1,7 +1,6 @@
 
 // --------------- Setup ---------------
 const {TeamsActivityHandler, TurnContext, CardFactory, UserState, MemoryStorage} = require("botbuilder");
-const {dataManager, hasCommandPermission, assignUserRole, permissionsPath} = require("./Data/dataManager");
 const entry = require("./index");
 const config = require("./config");
 const settings = require("./appSettings");
@@ -9,6 +8,11 @@ const axios = require("axios");
 const qs = require("qs");
 const { start } = require("repl");
 const fs = require("fs");
+
+// --------------- Data ---------------
+const {dataManager, hasCommandPermission, assignUserRole, permissionsPath} = require("./Data/dataManager");
+const emailRecipients = require("./Data/emailRecipients");
+
 // --------------- Open AI ---------------
 const { getOpenAIResponse } = require("./OpenAI/openaiService"); // OpenAI logic
 const { summarizeJSON } = require("./OpenAI/openaiSummarizer");
@@ -325,6 +329,29 @@ async deletePreviousWelcomeCard(context) {
     }
   }
 }
+async sendBugReportEmail(title, summary) {
+  const email = {
+    message: {
+      subject: `Bug Report ~ ${title}`,
+      body: {
+        contentType: "Text",
+        content: summary,
+      },
+      toRecipients: BUG_REPORT_RECIPIENTS.map((email) => ({
+        emailAddress: { address: email },
+      })),
+    },
+    saveToSentItems: "false", // Optional: Don't save email to Sent Items
+  };
+
+  try {
+    await graphHelper.sendMail(email);
+    console.log("Bug report email sent successfully.");
+  } catch (error) {
+    console.error("Error sending bug report email:", error);
+    throw error;
+  }
+}
 
 // Handle the user input and command actions
 async onAdaptiveCardSubmit(context, authState) {
@@ -383,7 +410,19 @@ async onAdaptiveCardSubmit(context, authState) {
         break;
 
     case "submitBugReport":
-      await context.sendActivity("Submitting a bug report has not been implemented yet.");
+      const { bugTitle, bugSummary } = submittedData;
+
+      if (!bugTitle || !bugSummary) {
+       await context.sendActivity("Please provide both a title and a summary for the bug report.");
+       return;
+      }
+      try {
+        await this.sendBugReportEmail(bugTitle, bugSummary);
+        await context.sendActivity("Bug report submitted successfully!");
+      } catch (error) {
+        console.error("Error submitting bug report:", error);
+        await context.sendActivity("Failed to submit the bug report. Please try again later.");
+      }
       break;
 
     case "showWelcomeCard":

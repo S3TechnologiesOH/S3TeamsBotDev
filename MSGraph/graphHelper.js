@@ -98,6 +98,12 @@ module.exports.getInboxAsync = getInboxAsync;
 /**
  * Sends an email using Microsoft Graph.
  */
+async function sendMail(email) {
+  const client = getAuthenticatedClient(); // Ensure you have an authenticated MS Graph client
+  await client.api("/me/sendMail").post(email);
+}
+module.exports.sendMail = sendMail;
+
 async function sendMailAsync(subject, body, recipient) {
   if (!_graphClient) {
     throw new Error('Graph client is not initialized');
