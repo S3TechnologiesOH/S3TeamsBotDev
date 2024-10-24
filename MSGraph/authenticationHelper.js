@@ -40,6 +40,7 @@ async function initializeGraph(settings, context, authState) {
       });
 
       const response = await context.sendActivity({ attachments: [card] });
+      console.log("Sent login card");
     });
   }
 
@@ -48,7 +49,7 @@ async function initializeGraph(settings, context, authState) {
       const user = await graphHelper.getUserAsync();
       authState.userDisplayName = user.displayName;
       authState.userEmail = user.mail ?? user.userPrincipalName;
-  
+      console.log(`User: ${authState.userDisplayName} (${authState.userEmail})`);
       // Check if the user is already in the 'guest' role
       const data = fs.readFileSync(permissionsPath, 'utf8');
       const permissionsConfig = JSON.parse(data);
@@ -61,6 +62,7 @@ async function initializeGraph(settings, context, authState) {
       }
 
       authState.isAuthenticated = true; // Set user as authenticated
+      console.log("User authenticated");
       console.log(`Email: ${authState.userEmail}`);
 
     } catch (err) {
