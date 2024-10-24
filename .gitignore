@@ -1,0 +1,9 @@
+# Ignore the permissions.json file
+/Data/permissions.json
+
+# Optional: Ignore other JSON files in the Data directory (if needed)
+# /Data/*.json
+
+# Node.js specific ignores (optional, if not already present)
+node_modules/
+.env

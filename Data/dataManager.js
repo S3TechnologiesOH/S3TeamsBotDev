@@ -113,4 +113,4 @@ function findUserRoles(email) {
   return userRoles;
 }
 
-module.exports = { hasCommandPermission, updatePermissions, assignUserRole };
+module.exports = { hasCommandPermission, updatePermissions, assignUserRole, permissionsPath };

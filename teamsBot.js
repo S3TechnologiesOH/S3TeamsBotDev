@@ -1,7 +1,7 @@
 
 // --------------- Setup ---------------
 const {TeamsActivityHandler, TurnContext, CardFactory, UserState, MemoryStorage} = require("botbuilder");
-const {dataManager, hasCommandPermission, assignUserRole} = require("./Data/dataManager");
+const {dataManager, hasCommandPermission, assignUserRole, permissionsPath} = require("./Data/dataManager");
 const entry = require("./index");
 const config = require("./config");
 const settings = require("./appSettings");
