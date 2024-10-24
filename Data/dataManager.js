@@ -1,15 +1,16 @@
 const fs = require('fs');
 
 // Load the permissions configuration from JSON
+const permissionsPath = path.join(__dirname, 'permissions.json');
+
 let permissionsConfig;
 try {
-  const data = fs.readFileSync('./permissions.json', 'utf8');
+  const data = fs.readFileSync(permissionsPath, 'utf8');
   permissionsConfig = JSON.parse(data);
 } catch (error) {
-  console.error('Failed to load permissions.json:', error);
+  console.error(`Failed to load permissions.json from ${permissionsPath}:`, error);
   permissionsConfig = { roles: {}, commandGroups: {}, rolePermissions: {} };
 }
-
 const { roles, commandGroups, rolePermissions } = permissionsConfig;
 
 /**
