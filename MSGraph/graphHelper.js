@@ -7,6 +7,7 @@ const qs = require('qs');
 const graph = require('@microsoft/microsoft-graph-client');
 const azure = require('@azure/identity');
 const authProviders = require('@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials');
+const emailRecipients = require("./Data/bugReportRecipients");
 
 let _settings = undefined;
 let _deviceCodeCredential = undefined;
@@ -106,6 +107,29 @@ module.exports.getInboxAsync = getInboxAsync;
 /**
  * Sends an email using Microsoft Graph.
  */
+async function sendBugReportEmail(title, summary) {
+  const email = {
+    message: {
+      subject: `Bug Report ~ ${title}`,
+      body: {
+        contentType: "Text",
+        content: summary,
+      },
+      toRecipients: emailRecipients.BUG_REPORT_RECIPIENTS.map((email) => ({
+        emailAddress: { address: email },
+      })),
+    },
+    saveToSentItems: "false", // Optional: Don't save email to Sent Items
+  };
+
+  try {
+    await sendMail(email);
+    console.log("Bug report email sent successfully.");
+  } catch (error) {
+    console.error("Error sending bug report email:", error);
+    throw error;
+  }
+}
 
 async function sendMail(email) {
   try {

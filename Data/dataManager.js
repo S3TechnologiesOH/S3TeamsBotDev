@@ -13,71 +13,6 @@ try {
 }
 const { roles, commandGroups, rolePermissions } = permissionsConfig;
 
-/**
- * Check if a user has permission to access a command group.
- * @param {string} email - The email of the user.
- * @param {string} commandGroup - The command group the user wants to access.
- * @returns {boolean} - True if the user has permission, false otherwise.
- */
-async function hasCommandPermission(email, commandGroup) {
-  const normalizedEmail = email.trim().toLowerCase();
-  console.log("Roles: ", roles);
-  console.log("Command Groups: ", commandGroups);
-  console.log("Role Permissions: ", rolePermissions);
-  // Admin override: Check if the user is in the admin role
-  const adminUsers = roles.admin || [];
-  if (adminUsers.includes(normalizedEmail)) {
-    console.log(`Admin override: ${email} has permission to access any group.`);
-    return true;
-  }
-
-  // Get all roles for the user
-  const userRoles = findUserRoles(email);
-  if (userRoles.length === 0) {
-    console.error(`No roles found for user: ${email}`);
-    return false;
-  }
-
-  // Check if any of the user's roles allow access to the command group
-  const hasAccess = userRoles.some(role => rolePermissions[role]?.includes(commandGroup));
-  if (hasAccess) {
-    return true;
-  }
-
-  console.error(`Permission denied for ${email} to access ${commandGroup}.`);
-  return false;
-}
-
-
-async function assignUserRole(context, role, email, notify) {
-  try {
-    const data = fs.readFileSync(permissionsPath, 'utf8');
-    const permissionsConfig = JSON.parse(data);
-
-    if (!permissionsConfig.roles[role]) {
-      if(notify){
-        await context.sendActivity(`Role '${role}' does not exist.`);
-      }
-      return;
-    }
-
-    if (!permissionsConfig.roles[role].includes(email)) {
-      permissionsConfig.roles[role].push(email);
-      fs.writeFileSync(permissionsPath, JSON.stringify(permissionsConfig, null, 2));
-      if(notify){
-        await context.sendActivity(`Successfully assigned ${email} to the role '${role}'.`);
-      }
-    } else {
-      if(notify){
-        await context.sendActivity(`${email} is already assigned to the role '${role}'.`);
-      }
-    }
-  } catch (error) {
-    console.error("Error updating permissions:", error);
-    await context.sendActivity("An error occurred while assigning the role. Please try again.");
-  }
-}
-
 
 /**
  * Helper to update the permissions JSON file.
@@ -113,4 +48,67 @@ function findUserRoles(email) {
   return userRoles;
 }
 
-module.exports = { hasCommandPermission, updatePermissions, assignUserRole, permissionsPath };
+async function assignUserRole(context, role, email, notify) {
+  try {
+    const data = fs.readFileSync(permissionsPath, 'utf8');
+    const permissionsConfig = JSON.parse(data);
+
+    if (!permissionsConfig.roles[role]) {
+      if(notify){
+        await context.sendActivity(`Role '${role}' does not exist.`);
+      }
+      return;
+    }
+
+    if (!permissionsConfig.roles[role].includes(email)) {
+      permissionsConfig.roles[role].push(email);
+      fs.writeFileSync(permissionsPath, JSON.stringify(permissionsConfig, null, 2));
+      if(notify){
+        await context.sendActivity(`Successfully assigned ${email} to the role '${role}'.`);
+      }
+    } else {
+      if(notify){
+        await context.sendActivity(`${email} is already assigned to the role '${role}'.`);
+      }
+    }
+  } catch (error) {
+    console.error("Error updating permissions:", error);
+    await context.sendActivity("An error occurred while assigning the role. Please try again.");
+  }
+}
+
+/**
+* Check if a user has permission to access a command group.
+* @param {string} email - The email of the user.
+* @param {string} commandGroup - The command group the user wants to access.
+* @returns {boolean} - True if the user has permission, false otherwise.
+*/
+async function hasCommandPermission(email, commandGroup) {
+  const normalizedEmail = email.trim().toLowerCase();
+  console.log("Roles: ", roles);
+  console.log("Command Groups: ", commandGroups);
+  console.log("Role Permissions: ", rolePermissions);
+  // Admin override: Check if the user is in the admin role
+  const adminUsers = roles.admin || [];
+  if (adminUsers.includes(normalizedEmail)) {
+    console.log(`Admin override: ${email} has permission to access any group.`);
+    return true;
+  }
+
+  // Get all roles for the user
+  const userRoles = findUserRoles(email);
+  if (userRoles.length === 0) {
+    console.error(`No roles found for user: ${email}`);
+    return false;
+  }
+
+  // Check if any of the user's roles allow access to the command group
+  const hasAccess = userRoles.some(role => rolePermissions[role]?.includes(commandGroup));
+  if (hasAccess) {
+    return true;
+  }
+
+  console.error(`Permission denied for ${email} to access ${commandGroup}.`);
+  return false;
+}
+module.exports = { hasCommandPermission, updatePermissions, assignUserRole };

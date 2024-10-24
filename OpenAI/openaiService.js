@@ -43,7 +43,24 @@ async function getOpenAIResponse(promptMessage) {
     throw new Error("OpenAI request failed");
   }
 }
+  // Handle OpenAI request when the user sends a /prompt message
+  async function handleOpenAIRequest(context, promptMessage) {
+    if (!promptMessage) {
+      await context.sendActivity("Please provide a message after `/prompt`.");
+      return;
+    }
 
+    try {
+      // Call the OpenAI service to get a response
+      const botReply = await getOpenAIResponse(promptMessage);
+      await context.sendActivity(`**Assistant:** ${botReply}`);
+    } catch (error) {
+      await context.sendActivity(
+        "Sorry, I encountered an error while processing your request."
+      );
+      console.error(error);
+    }
+  }
 module.exports = {
-  getOpenAIResponse,
+  getOpenAIResponse, handleOpenAIRequest
 };
