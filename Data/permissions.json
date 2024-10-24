@@ -1,8 +1,8 @@
 {
     "roles": {
-      "admin": ["catwell@mys3tech.com"],
+      "admin": [],
       "ticket_management": ["jlowry@mys3tech.com"],
-      "reporting": [],
+      "reporting": ["catwell@mys3tech.com"],
       "guest": []
     },
     "commandGroups": {
