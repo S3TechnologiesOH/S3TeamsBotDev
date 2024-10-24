@@ -1,4 +1,3 @@
-
 // --------------- Setup ---------------
 const {TeamsActivityHandler} = require("botbuilder");
 const entry = require("./index");
