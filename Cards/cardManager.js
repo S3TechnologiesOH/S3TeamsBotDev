@@ -94,10 +94,12 @@ async function onAdaptiveCardSubmit(context, authState) {
   
       case "showTicketInformationCard":
         // Show the card listing ticket-related commands
+        console.log("showTicketInformationCard");
         await ticketInfoCard.showTicketInformationCard(context);
         break;
       case "showAdminCommandsCard":
         // Show the card listing admin commands
+        console.log("showAdminCommandsCard");
         await adminCommandsCard.showAdminCommandsCard(context);
         break;
       case "showHelpCard":
