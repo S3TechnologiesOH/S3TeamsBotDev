@@ -25,11 +25,7 @@ class TeamsBot extends TeamsActivityHandler {
   constructor(userState) {
     super();
 
-    this.welcomeCardMessageId = null; // Track the last welcome card message ID
     this.userMessageId = null; // Track the last user message ID    
-
-    this.lastLoginMessageId = null; // Store the last login message ID
-    this.userIsAuthenticated = false; // Track whether the user is authenticated
 
     this.userState = userState;
     this.userAuthState = this.userState.createProperty("userAuthState");

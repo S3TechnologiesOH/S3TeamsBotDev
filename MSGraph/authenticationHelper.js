@@ -10,14 +10,6 @@ async function initializeGraph(settings, context, authState) {
         /(https:\/\/\S+) and enter the code (\S+)/
       );
 
-      // Delete the previous login message if it exists
-      if (this.lastLoginMessageId) {
-        try {
-          await context.deleteActivity(authState.lastLoginMessageId);
-        } catch (err) {
-          console.log(`Failed to delete previous login message: ${err}`);
-        }
-      }
 
       // Create an Adaptive Card with the login link and code
       const card = CardFactory.adaptiveCard({
@@ -48,11 +40,6 @@ async function initializeGraph(settings, context, authState) {
       });
 
       const response = await context.sendActivity({ attachments: [card] });
-      try{
-        authState.lastLoginMessageId = response.id; // Store message ID in user state
-      } catch (err) {
-        console.log(`Failed to store last login message ID: ${err}`)
-      };
     });
   }
 

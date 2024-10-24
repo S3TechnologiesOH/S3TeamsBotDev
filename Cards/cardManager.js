@@ -5,6 +5,7 @@ const adminCommandsCard = require("./adminCommandsCard");
 const helpCard = require("./showHelpCard");
 const bugReportCard = require("./bugReportCard");
 const { CardFactory } = require("botbuilder");
+var welcomeCardMessageId = null; // Track the last welcome card message ID
 
 // Send a welcome card with buttons for commands
 async function sendWelcomeCard(context, authState) {
@@ -70,10 +71,10 @@ async function sendWelcomeCard(context, authState) {
   }
   
 async function deletePreviousWelcomeCard(context) {
-    if (this.welcomeCardMessageId) {
+    if (welcomeCardMessageId) {
       try {
-        await context.deleteActivity(this.welcomeCardMessageId);
-        this.welcomeCardMessageId = null; // Clear the stored message ID after deleting
+        await context.deleteActivity(welcomeCardMessageId);
+        welcomeCardMessageId = null; // Clear the stored message ID after deleting
       } catch (error) {
         console.error(`Failed to delete previous welcome card: ${error}`);
       }
