@@ -1,25 +1,24 @@
-const {
-  TeamsActivityHandler,
-  TurnContext,
-  CardFactory,
-  UserState,
-  MemoryStorage,
-} = require("botbuilder");
-const { getOpenAIResponse } = require("./OpenAI/openaiService"); // OpenAI logic
-const {
-  fetch_ticket_by_id,
-  fetch_time_entries_for_ticket,
-} = require("./ConnectWise/connectwiseAPI"); // ConnectWise API logic
+
+// --------------- Setup ---------------
+const {TeamsActivityHandler, TurnContext, CardFactory, UserState, MemoryStorage} = require("botbuilder");
+const {dataManager, hasCommandPermission, assignUserRole} = require("./Data/dataManager");
 const entry = require("./index");
-const { summarizeJSON } = require("./OpenAI/openaiSummarizer");
-const { get_attr_or_key } = require("./ConnectWise/connectwiseHelpers");
-const graphHelper = require("./MSGraph/graphHelper");
 const config = require("./config");
 const settings = require("./appSettings");
 const axios = require("axios");
 const qs = require("qs");
 const { start } = require("repl");
-const {dataManager, hasCommandPermission, assignUserRole} = require("./Data/dataManager");
+const fs = require("fs");
+// --------------- Open AI ---------------
+const { getOpenAIResponse } = require("./OpenAI/openaiService"); // OpenAI logic
+const { summarizeJSON } = require("./OpenAI/openaiSummarizer");
+
+// --------------- ConnectWise ---------------
+const {fetch_ticket_by_id, fetch_time_entries_for_ticket} = require("./ConnectWise/connectwiseAPI"); // ConnectWise API logic
+const { get_attr_or_key } = require("./ConnectWise/connectwiseHelpers");
+
+// --------------- MS Graph ---------------
+const graphHelper = require("./MSGraph/graphHelper");
 
 // --------------- Cards ---------------
 const ticketInfoCard = require("./Cards/ticketInformationCard");
@@ -181,7 +180,7 @@ class TeamsBot extends TeamsActivityHandler {
         // If not in the guest role, assign them using assignUserRole
         await assignUserRole(context, "guest", authState.userEmail, false);
       }
-      
+
       authState.isAuthenticated = true; // Set user as authenticated
       console.log(`Email: ${authState.userEmail}`);
 
