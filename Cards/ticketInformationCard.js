@@ -1,4 +1,5 @@
 
+const {CardFactory} = require("botbuilder");
 async function showTicketInformationCard(context) {
     const ticketInfoCard = {
       $schema: "http://adaptivecards.io/schemas/adaptive-card.json",

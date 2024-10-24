@@ -88,7 +88,7 @@ class TeamsBot extends TeamsActivityHandler {
   
     return false; // No valid command found
   }
-  
+
   // Handle start card or welcome card
   async startCard(context, authState) {
     await this.sendWelcomeCard(context, authState);
@@ -327,8 +327,8 @@ async onAdaptiveCardSubmit(context, authState) {
       }
       break;
 
-    case "wipCommand1":
-      await context.sendActivity("WIP Command 1 is not implemented yet.");
+    case "assignRoleCommand":
+      await context.sendActivity("assignRoleCommand is not implemented yet.");
       break;
 
     case "wipCommand2":
