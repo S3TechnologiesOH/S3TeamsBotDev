@@ -19,7 +19,7 @@ let _userClient = undefined;
 function getAuthenticatedClient() {
   const token = process.env.GRAPH_TOKEN; // Ensure you load your access token properly
 
-  return Client.init({
+  return graph.Client.init({
     authProvider: (done) => {
       done(null, token); // Pass the token to MS Graph
     },
