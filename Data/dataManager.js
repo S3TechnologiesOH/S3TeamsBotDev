@@ -7,10 +7,10 @@ try {
   permissionsConfig = JSON.parse(data);
 } catch (error) {
   console.error('Failed to load permissions.json:', error);
-  permissionsConfig = { roles: {}, rolePermissions: {} };
+  permissionsConfig = { roles: {}, commandGroups: {}, rolePermissions: {} };
 }
 
-const { roles, rolePermissions } = permissionsConfig;
+const { roles, commandGroups, rolePermissions } = permissionsConfig;
 
 /**
  * Check if a user has permission to access a command group.
@@ -19,9 +19,11 @@ const { roles, rolePermissions } = permissionsConfig;
  * @returns {boolean} - True if the user has permission, false otherwise.
  */
 async function hasCommandPermission(email, commandGroup) {
+  const normalizedEmail = email.trim().toLowerCase();
+
   // Admin override: Check if the user is in the admin role
   const adminUsers = roles.admin || [];
-  if (adminUsers.includes(email)) {
+  if (adminUsers.includes(normalizedEmail)) {
     console.log(`Admin override: ${email} has permission to access any group.`);
     return true;
   }
@@ -44,17 +46,20 @@ async function hasCommandPermission(email, commandGroup) {
 }
 
 /**
- * Find all roles a user belongs to based on their email.
+ * Find all roles a user belongs to based on their email (case-insensitive).
  * @param {string} email - The email of the user.
  * @returns {string[]} - An array of roles the user belongs to.
  */
 function findUserRoles(email) {
+  const normalizedEmail = email.trim().toLowerCase();
   const userRoles = [];
+
   for (const [role, users] of Object.entries(roles)) {
-    if (users.includes(email)) {
+    if (users.some(user => user.trim().toLowerCase() === normalizedEmail)) {
       userRoles.push(role);
     }
   }
+
   return userRoles;
 }
 
