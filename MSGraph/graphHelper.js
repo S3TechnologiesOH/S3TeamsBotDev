@@ -16,12 +16,11 @@ let _userClient = undefined;
 /**
  * Initializes the Microsoft Graph client using client credentials flow.
  */
-function getAuthenticatedClient() {
-  const token = process.env.GRAPH_TOKEN; // Ensure you load your access token properly
-
-  return graph.Client.init({
+async function getAuthenticatedClient() {
+  const tokenResponse = await _deviceCodeCredential.getToken('https://graph.microsoft.com/.default');
+  return Client.init({
     authProvider: (done) => {
-      done(null, token); // Pass the token to MS Graph
+      done(null, tokenResponse.token); // Pass the valid token to MS Graph
     },
   });
 }
