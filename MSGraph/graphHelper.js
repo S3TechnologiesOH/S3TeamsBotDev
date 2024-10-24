@@ -108,8 +108,14 @@ module.exports.getInboxAsync = getInboxAsync;
  */
 
 async function sendMail(email) {
-  const client = getAuthenticatedClient(); // Ensure you have an authenticated MS Graph client
-  await client.api("/me/sendMail").post(email);
+  try {
+    const client = await getAuthenticatedClient(); // Await the client
+    await client.api("/me/sendMail").post(email);
+    console.log("Bug report email sent successfully.");
+  } catch (error) {
+    console.error("Error sending bug report email:", error);
+    throw new Error("Failed to send bug report email.");
+  }
 }
 module.exports.sendMail = sendMail;
 
