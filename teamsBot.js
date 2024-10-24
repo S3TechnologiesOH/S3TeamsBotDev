@@ -19,7 +19,11 @@ const settings = require("./appSettings");
 const axios = require("axios");
 const qs = require("qs");
 const { start } = require("repl");
-const {dataManager, hasCommandPermission} = require("./Data/dataManager");
+const {dataManager, hasCommandPermission, assignUserRole} = require("./Data/dataManager");
+
+// --------------- Cards ---------------
+const ticketInfoCard = require("./Cards/ticketInformationCard");
+const adminCommandsCard = require("./Cards/adminCommandsCard");
 
 class TeamsBot extends TeamsActivityHandler {
   
@@ -45,11 +49,19 @@ class TeamsBot extends TeamsActivityHandler {
         await this.startCard(context, authState);
 
       } else {
-        if (context.activity.value) {
+        const userInput = context.activity.text?.trim().toLowerCase(); // Get the user input
+
+        if (userInput) {
+          const isCommandHandled = await this.handleUserCommand(context, userInput, authState);
+    
+          if (!isCommandHandled) {
+            // If no valid command, show the start card again
+            await this.startCard(context, authState);
+          }
+        } else if (context.activity.value) {
+          // Handle adaptive card submissions
           await this.onAdaptiveCardSubmit(context, authState);
-        }
-        else 
-        {
+        } else {
           await this.startCard(context, authState);
         }
       }
@@ -58,6 +70,25 @@ class TeamsBot extends TeamsActivityHandler {
     });
   }
 
+  async handleUserCommand(context, userInput, authState) {
+    const ticketRegex = /^\/ticket (\d+)$/;
+    const roleAssignRegex = /^\/role assign (\w+) (\S+)$/;
+  
+    if (ticketRegex.test(userInput)) {
+      const ticketId = userInput.match(ticketRegex)[1];
+      await this.handleTicketRequest(context, parseInt(ticketId, 10));
+      return true;
+    }
+  
+    if (roleAssignRegex.test(userInput)) {
+      const [, role, email] = userInput.match(roleAssignRegex);
+      await assignUserRole(context, role, email.trim().toLowerCase());
+      return true;
+    }
+  
+    return false; // No valid command found
+  }
+  
   // Handle start card or welcome card
   async startCard(context, authState) {
     await this.sendWelcomeCard(context, authState);
@@ -220,6 +251,17 @@ async sendWelcomeCard(context, authState) {
     actions: [],
   };
 
+  // ADMIN COMMANDS
+  if (await hasCommandPermission(authState.userEmail, "admin")) {
+    adaptiveCard.actions.push({
+      type: "Action.Submit",
+      title: "Admin Commands",
+      data: {
+        action: "showAdminCommandsCard",
+      },
+    });
+  }
+
   // Add the "Ticket Information" button if the user has permission
   if (await hasCommandPermission(authState.userEmail, "ticket_commands")) {
     adaptiveCard.actions.push({
@@ -227,17 +269,6 @@ async sendWelcomeCard(context, authState) {
       title: "Ticket Information",
       data: {
         action: "showTicketInformationCard",
-      },
-    });
-  }
-
-  // Add two filler buttons with "WIP" as the title (for future commands)
-  if (await hasCommandPermission(authState.userEmail, "reporting_commands")) {
-    adaptiveCard.actions.push({
-      type: "Action.Submit",
-      title: "WIP Command 1",
-      data: {
-        action: "wipCommand1",
       },
     });
   }
@@ -258,57 +289,6 @@ async sendWelcomeCard(context, authState) {
   });
 }
 
-async showTicketInformationCard(context) {
-  const ticketInfoCard = {
-    $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
-    type: "AdaptiveCard",
-    version: "1.4",
-    body: [
-      {
-        type: "TextBlock",
-        text: "Ticket Information Commands",
-        weight: "Bolder",
-        size: "Large",
-        wrap: true,
-      },
-      {
-        type: "TextBlock",
-        text: "Here are the available commands:",
-        wrap: true,
-        spacing: "Medium",
-      },
-      {
-        type: "TextBlock",
-        text: "/ticket {ticket_id}",
-        wrap: true,
-        fontType: "Monospace",
-        spacing: "Small",
-        weight: "Bolder",
-      },
-      {
-        type: "TextBlock",
-        text: "Use the command above to retrieve details about a specific ticket.",
-        wrap: true,
-        spacing: "Small",
-      },
-    ],
-    actions: [
-      {
-        type: "Action.Submit",
-        title: "Back to Main Menu",
-        data: {
-          action: "showWelcomeCard",
-        },
-      },
-    ],
-  };
-
-  // Send the Ticket Information card
-  await context.sendActivity({
-    attachments: [CardFactory.adaptiveCard(ticketInfoCard)],
-  });
-}
-
 // Handle the user input and command actions
 async onAdaptiveCardSubmit(context, authState) {
   const submittedData = context.activity.value;
@@ -319,9 +299,14 @@ async onAdaptiveCardSubmit(context, authState) {
   }
 
   switch (submittedData.action) {
+
     case "showTicketInformationCard":
       // Show the card listing ticket-related commands
-      await this.showTicketInformationCard(context);
+      await ticketInfoCard.showTicketInformationCard(context);
+      break;
+    case "showAdminCommandsCard":
+      // Show the card listing admin commands
+      await adminCommandsCard.showAdminCommandsCard(context);
       break;
 
     case "runTicketCommand":

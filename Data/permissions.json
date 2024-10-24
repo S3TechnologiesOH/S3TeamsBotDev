@@ -1,11 +1,12 @@
 {
     "roles": {
-      "admin": [],
-      "ticket_management": ["jlowry@mys3tech.com"],
-      "reporting": ["catwell@mys3tech.com"],
+      "admin": ["catwell@mys3tech.com", "jlowry@mys3tech.com", "clarker@mys3tech.com"],
+      "ticket_management": [],
+      "reporting": [],
       "guest": []
     },
     "commandGroups": {
+      "admin": ["Permission.Read", "Permission.Write"],
       "ticket_commands": ["Ticket.Read", "Ticket.Write"],
       "reporting_commands": ["Generate.Report"]
     },

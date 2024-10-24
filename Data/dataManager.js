@@ -48,6 +48,47 @@ async function hasCommandPermission(email, commandGroup) {
   return false;
 }
 
+
+async function assignUserRole(context, role, email) {
+  try {
+    const data = fs.readFileSync(permissionsPath, 'utf8');
+    const permissionsConfig = JSON.parse(data);
+
+    if (!permissionsConfig.roles[role]) {
+      await context.sendActivity(`Role '${role}' does not exist.`);
+      return;
+    }
+
+    if (!permissionsConfig.roles[role].includes(email)) {
+      permissionsConfig.roles[role].push(email);
+      fs.writeFileSync(permissionsPath, JSON.stringify(permissionsConfig, null, 2));
+      await context.sendActivity(`Successfully assigned ${email} to the role '${role}'.`);
+    } else {
+      await context.sendActivity(`${email} is already assigned to the role '${role}'.`);
+    }
+  } catch (error) {
+    console.error("Error updating permissions:", error);
+    await context.sendActivity("An error occurred while assigning the role. Please try again.");
+  }
+}
+
+
+/**
+ * Helper to update the permissions JSON file.
+ */
+
+function updatePermissions(roles) {
+  let permissionsConfig;
+  try {
+    permissionsConfig = JSON.parse(fs.readFileSync(permissionsPath, 'utf8'));
+    permissionsConfig.roles = roles;
+    fs.writeFileSync(permissionsPath, JSON.stringify(permissionsConfig, null, 2));
+  } catch (error) {
+    console.error("Error updating permissions:", error);
+  }
+}
+
+
 /**
  * Find all roles a user belongs to based on their email (case-insensitive).
  * @param {string} email - The email of the user.
@@ -66,4 +107,4 @@ function findUserRoles(email) {
   return userRoles;
 }
 
-module.exports = { hasCommandPermission };
+module.exports = { hasCommandPermission, updatePermissions, assignUserRole };
