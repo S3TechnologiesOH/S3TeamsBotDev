@@ -1,4 +1,5 @@
 const {dataManager, hasCommandPermission, assignUserRole, permissionsPath} = require("../Data/dataManager");
+const ticketManager = require("../ConnectWise/ticketManager");
 const ticketInfoCard = require("./ticketInformationCard");
 const adminCommandsCard = require("./adminCommandsCard");
 const helpCard = require("./showHelpCard");
@@ -115,7 +116,7 @@ async function onAdaptiveCardSubmit(context, authState) {
           const ticketId = parseInt(ticket.trim(), 10); // Convert ticket number to integer
   
           if (!isNaN(ticketId)) {
-            await this.handleTicketRequest(context, ticketId); // Process the ticket
+            await ticketManager.handleTicketRequest(context, ticketId); // Process the ticket
           } else {
             await context.sendActivity("Please enter a valid numeric ticket number.");
           }
@@ -152,7 +153,7 @@ async function onAdaptiveCardSubmit(context, authState) {
         break;
   
       case "showWelcomeCard":
-        await this.sendWelcomeCard(context, authState); // Back to the main menu
+        await sendWelcomeCard(context, authState); // Back to the main menu
         break;
   
       default:
