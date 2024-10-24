@@ -11,7 +11,7 @@ const fs = require("fs");
 
 // --------------- Data ---------------
 const {dataManager, hasCommandPermission, assignUserRole, permissionsPath} = require("./Data/dataManager");
-const emailRecipients = require("./Data/emailRecipients");
+const emailRecipients = require("./Data/bugReportRecipients");
 
 // --------------- Open AI ---------------
 const { getOpenAIResponse } = require("./OpenAI/openaiService"); // OpenAI logic
@@ -337,7 +337,7 @@ async sendBugReportEmail(title, summary) {
         contentType: "Text",
         content: summary,
       },
-      toRecipients: BUG_REPORT_RECIPIENTS.map((email) => ({
+      toRecipients: emailRecipients.BUG_REPORT_RECIPIENTS.map((email) => ({
         emailAddress: { address: email },
       })),
     },
