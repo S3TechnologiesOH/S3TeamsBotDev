@@ -2,19 +2,17 @@
     "roles": {
       "admin": ["catwell@mys3tech.com", "jlowry@mys3tech.com", "clarker@mys3tech.com"],
       "ticket_management": [],
-      "reporting": [],
       "guest": []
     },
     "commandGroups": {
       "admin": ["Permission.Read", "Permission.Write"],
       "ticket_commands": ["Ticket.Read", "Ticket.Write"],
-      "reporting_commands": ["Generate.Report"]
+      "help_commands": ["Help.BugReport"]
     },
     "rolePermissions": {
-      "admin": ["ticket_commands", "reporting_commands"],
+      "admin": ["ticket_commands", "help_commands", "admin"],
       "ticket_management": ["ticket_commands"],
-      "reporting": ["reporting_commands"],
-      "guest": ["ticket_commands"]
+      "guest": ["ticket_commands", "help_commands"]
     }
   }
   

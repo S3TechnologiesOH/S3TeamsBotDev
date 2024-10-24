@@ -23,6 +23,8 @@ const graphHelper = require("./MSGraph/graphHelper");
 // --------------- Cards ---------------
 const ticketInfoCard = require("./Cards/ticketInformationCard");
 const adminCommandsCard = require("./Cards/adminCommandsCard");
+const helpCard = require("./Cards/showHelpCard");
+const bugReportCard = require("./Cards/bugReportCard");
 
 class TeamsBot extends TeamsActivityHandler {
   
@@ -298,12 +300,12 @@ async sendWelcomeCard(context, authState) {
     });
   }
 
-  if (await hasCommandPermission(authState.userEmail, "reporting_commands")) {
+  if (await hasCommandPermission(authState.userEmail, "help_commands")) {
     adaptiveCard.actions.push({
       type: "Action.Submit",
-      title: "WIP Command 2",
+      title: "Help",
       data: {
-        action: "wipCommand2",
+        action: "showHelpCard",
       },
     });
   }
@@ -343,7 +345,14 @@ async onAdaptiveCardSubmit(context, authState) {
       // Show the card listing admin commands
       await adminCommandsCard.showAdminCommandsCard(context);
       break;
-
+    case "showHelpCard":
+      // Show the card listing admin commands
+      await helpCard.showHelpCard(context);
+      break;
+    case "showBugReportCard":
+      // Show the card for submitting a bug report
+      await bugReportCard.showBugReportCard(context);
+      break;
     case "runTicketCommand":
       // Handle the /ticket {ticket_id} command
       const ticketNumber = submittedData.ticketNumber;
@@ -373,8 +382,8 @@ async onAdaptiveCardSubmit(context, authState) {
         await assignUserRole(context, roleName.trim(), userEmail.trim().toLowerCase(), true);
         break;
 
-    case "wipCommand2":
-      await context.sendActivity("WIP Command 2 is not implemented yet.");
+    case "submitBugReport":
+      await context.sendActivity("Submitting a bug report has not been implemented yet.");
       break;
 
     case "showWelcomeCard":
