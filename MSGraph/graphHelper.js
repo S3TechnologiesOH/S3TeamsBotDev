@@ -18,7 +18,7 @@ let _userClient = undefined;
  */
 async function getAuthenticatedClient() {
   const tokenResponse = await _deviceCodeCredential.getToken('https://graph.microsoft.com/.default');
-  return Client.init({
+  return graph.Client.init({
     authProvider: (done) => {
       done(null, tokenResponse.token); // Pass the valid token to MS Graph
     },
