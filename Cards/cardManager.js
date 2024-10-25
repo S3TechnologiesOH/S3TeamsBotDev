@@ -143,18 +143,11 @@ async function onAdaptiveCardSubmit(context, authState) {
   
       case "submitBugReport":
         const { bugTitle, bugSummary } = submittedData;
-
+  
         if (!bugTitle || !bugSummary) {
-          await context.sendActivity("Please provide both a title and a summary for the bug report.");
-          return;
+         await context.sendActivity("Please provide both a title and a summary for the bug report.");
+         return;
         }
-
-        await context.sendActivity("Please provide any screenshots as necessary or type 'NO' if you do not have one.");
-
-        if (context.activity.attachments && context.activity.attachments.length > 0) {
-          await handleIncomingAttachments(context);
-        }
-
         try {
           await sendBugReportEmail(bugTitle, bugSummary);
           await context.sendActivity("Bug report submitted successfully!");
@@ -163,7 +156,6 @@ async function onAdaptiveCardSubmit(context, authState) {
           await context.sendActivity("Failed to submit the bug report. Please try again later.");
         }
         break;
-
   
       case "showWelcomeCard":
         await sendWelcomeCard(context, authState); // Back to the main menu
@@ -174,17 +166,4 @@ async function onAdaptiveCardSubmit(context, authState) {
         break;
     }
   }
-  async function handleIncomingAttachments(context) {
-    const attachments = context.activity.attachments;
-    for (const attachment of attachments) {
-      const fileUrl = attachment.contentUrl;
-      const fileName = attachment.name;
-      const contentType = attachment.contentType;
-  
-      // Download or process the file as needed
-      // You may need to handle authentication to access the file URL
-      console.log(`Attachment: ${fileName} (${contentType}) - ${fileUrl}`);
-    }
-  }
-  
   module.exports = { sendWelcomeCard, deletePreviousWelcomeCard, onAdaptiveCardSubmit };
