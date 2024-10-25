@@ -1,10 +1,11 @@
-const {dataManager, hasCommandPermission, assignUserRole, permissionsPath, sendBugReportEmail} = require("../Data/dataManager");
+const {dataManager, hasCommandPermission, assignUserRole, permissionsPath} = require("../Data/dataManager");
 const ticketManager = require("../ConnectWise/ticketManager");
 const ticketInfoCard = require("./ticketInformationCard");
 const adminCommandsCard = require("./adminCommandsCard");
 const helpCard = require("./showHelpCard");
 const bugReportCard = require("./bugReportCard");
 const { CardFactory } = require("botbuilder");
+const { sendBugReportEmail } = require("../MSGraph/graphHelper");
 var welcomeCardMessageId = null; // Track the last welcome card message ID
 
 // Send a welcome card with buttons for commands
