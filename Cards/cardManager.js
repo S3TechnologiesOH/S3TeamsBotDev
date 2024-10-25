@@ -112,7 +112,7 @@ async function onAdaptiveCardSubmit(context, authState) {
         break;
       case "runTicketCommand":
         // Handle the /ticket {ticket_id} command
-        const ticketNumber = submittedData.ticketNumber;
+        const ticketNumber = submittedData.ticketId;
         console.log("runTicketCommand", ticketNumber);
         if (ticketNumber && ticketNumber.trim() !== "") {
           const ticket = ticketNumber.toString().replace("#", "");
