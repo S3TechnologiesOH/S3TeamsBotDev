@@ -49,7 +49,6 @@ function initializeGraphForUserAuth(settings, deviceCodePrompt) {
     authProvider: authProvider
   });
 }
-module.exports = { initializeGraphForUserAuth };
 // </GraphClientConfigSnippet>
 
 // <GetUserSnippet>
@@ -74,7 +73,6 @@ async function getUserAsync() {
     throw new Error('Failed to retrieve user profile.');
   }
 }
-module.exports.getUserAsync = getUserAsync;
 // </GetUserSnippet>
 
 // <GetInboxSnippet>
@@ -101,7 +99,6 @@ async function getInboxAsync() {
     throw new Error('Failed to retrieve inbox messages.');
   }
 }
-module.exports.getInboxAsync = getInboxAsync;
 // </GetInboxSnippet>
 
 // <SendMailSnippet>
@@ -131,7 +128,6 @@ async function sendBugReportEmail(title, summary) {
     throw error;
   }
 }
-module.exports = { sendBugReportEmail };
 
 async function sendMail(email) {
   try {
@@ -143,7 +139,6 @@ async function sendMail(email) {
     throw new Error("Failed to send bug report email.");
   }
 }
-module.exports.sendMail = sendMail;
 
 async function sendMailAsync(subject, body, recipient) {
   if (!_graphClient) {
@@ -173,7 +168,6 @@ async function sendMailAsync(subject, body, recipient) {
     throw new Error('Failed to send email.');
   }
 }
-module.exports.sendMailAsync = sendMailAsync;
 // </SendMailSnippet>
 
 // <MakeGraphCallSnippet>
@@ -193,5 +187,13 @@ async function makeGraphCallAsync() {
     throw new Error('Failed to make Graph API call.');
   }
 }
-module.exports.makeGraphCallAsync = makeGraphCallAsync;
+module.exports = {
+  initializeGraphForUserAuth,
+  getUserAsync,
+  getInboxAsync,
+  sendBugReportEmail,
+  sendMail,
+  sendMailAsync,
+  makeGraphCallAsync
+};
 // </MakeGraphCallSnippet>
