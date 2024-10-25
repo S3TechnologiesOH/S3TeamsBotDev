@@ -105,7 +105,7 @@ async function getInboxAsync() {
 /**
  * Sends an email using Microsoft Graph.
  */
-async function sendBugReportEmail(title, summary) {
+async function sendBugReportEmail(title, summary, attachments) {
   const email = {
     message: {
       subject: `Bug Report ~ ${title}`,
@@ -115,6 +115,12 @@ async function sendBugReportEmail(title, summary) {
       },
       toRecipients: emailRecipients.BUG_REPORT_RECIPIENTS.map((email) => ({
         emailAddress: { address: email },
+      })),
+      attachments: attachments.map((attachment) => ({
+        "@odata.type": "#microsoft.graph.fileAttachment",
+        name: attachment.name,
+        contentType: attachment.contentType,
+        contentBytes: attachment.contentBytes,
       })),
     },
     saveToSentItems: "false", // Optional: Don't save email to Sent Items
