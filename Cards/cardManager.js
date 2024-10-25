@@ -113,13 +113,14 @@ async function onAdaptiveCardSubmit(context, authState) {
       case "runTicketCommand":
         // Handle the /ticket {ticket_id} command
         const ticketNumber = submittedData.ticketNumber;
-  
+        console.log("runTicketCommand", ticketNumber);
         if (ticketNumber && ticketNumber.trim() !== "") {
           const ticket = ticketNumber.toString().replace("#", "");
           const ticketId = parseInt(ticket.trim(), 10); // Convert ticket number to integer
-  
+          console.log("Ticket ID:", ticketId);
           if (!isNaN(ticketId)) {
             await ticketManager.handleTicketRequest(context, ticketId); // Process the ticket
+            console.log("Ticket request handled");
           } else {
             await context.sendActivity("Please enter a valid numeric ticket number.");
           }
