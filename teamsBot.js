@@ -23,24 +23,26 @@ const { sendWelcomeCard, onAdaptiveCardSubmit } = require("./Cards/cardManager")
 
 const connectionString = process.env.MYSQLCONNSTR_localdb;
 
-// Function to parse the MySQL connection string
+// Function to parse the MySQL connection string safely
 const parseConnectionString = (connectionString) => {
   const config = {};
   const parts = connectionString.split(';');
 
   parts.forEach((part) => {
-    const [key, value] = part.split('=');
-    if (key && value) {
-      config[key.trim().toLowerCase()] = value.trim();
+    if (part.includes('=')) {  // Ensure it's a valid key-value pair
+      const [key, value] = part.split('=');
+      if (key && value) {  // Check that both key and value exist
+        config[key.trim().toLowerCase()] = value.trim();
+      }
     }
   });
 
   return {
-    host: config['data source'].split(':')[0],  // Extract host (e.g., 127.0.0.1)
-    port: parseInt(config['data source'].split(':')[1], 10) || 3306,  // Extract port
-    user: config['user id'],  // User ID (e.g., 'azure')
-    password: config['password'],  // Password
-    database: config['database'],  // Database name (e.g., 'localdb')
+    host: config['data source'].split(':')[0],
+    port: parseInt(config['data source'].split(':')[1], 10) || 3306,
+    user: config['user id'],
+    password: config['password'],
+    database: config['database'],
   };
 };
 const sqlconfig = parseConnectionString(connectionString);
@@ -138,7 +140,7 @@ class TeamsBot extends TeamsActivityHandler {
 
       // Example query
       const [rows] = await connection.execute('SELECT * FROM Users');
-      
+
       // Print each row and its values
       rows.forEach((row, index) => {
         console.log(`Row ${index + 1}:`);
