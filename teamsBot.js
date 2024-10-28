@@ -22,15 +22,27 @@ const { sendWelcomeCard, onAdaptiveCardSubmit } = require("./Cards/cardManager")
 
 const connectionString = process.env.MYSQLCONNSTR_localdb;
 
-// Extract MySQL credentials from the connection string
-//const params = new URL(connectionString);
+// Function to parse the MySQL connection string
+const parseConnectionString = (connectionString) => {
+  const config = {};
+  const parts = connectionString.split(';');
 
-/*const sqlconfig = {
-  host: params.hostname,
-  user: params.username,
-  password: params.password,
-  database: params.pathname.substring(1), // Remove leading '/' from pathname
-};*/
+  parts.forEach((part) => {
+    const [key, value] = part.split('=');
+    if (key && value) {
+      config[key.trim().toLowerCase()] = value.trim();
+    }
+  });
+
+  return {
+    host: config['data source'].split(':')[0],  // Extract host (e.g., 127.0.0.1)
+    port: parseInt(config['data source'].split(':')[1], 10) || 3306,  // Extract port
+    user: config['user id'],  // User ID (e.g., 'azure')
+    password: config['password'],  // Password
+    database: config['database'],  // Database name (e.g., 'localdb')
+  };
+};
+const sqlconfig = parseConnectionString(connectionString);
 
 class TeamsBot extends TeamsActivityHandler {
   
