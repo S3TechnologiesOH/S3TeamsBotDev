@@ -91,7 +91,29 @@ async function deletePreviousWelcomeCard(context) {
       }
     }
   }
-
+async function deleteAllMessages(context) {
+  try {
+    const conversationId = context.activity.conversation.id;
+    const activity = context.activity;
+  
+    // Fetch the conversation history (you may need to paginate if there are too many messages)
+    const messages = await context.adapter.getConversationMembers(activity);
+      
+    // Iterate through all messages and attempt to delete them
+    for (const message of messages) {
+      try {
+        console.log(`Deleting message: ${message.id}`);
+        await context.deleteActivity(message.id);
+      } catch (error) {
+        console.error(`Failed to delete message ${message.id}: ${error.message}`);
+      }
+    }
+  
+      console.log("Completed deletion of all messages.");
+    } catch (error) {
+      console.error(`Error deleting messages: ${error.message}`);
+    }
+  }
 // Handle the user input and command actions
 async function onAdaptiveCardSubmit(context, authState) {
     const submittedData = context.activity.value;
@@ -118,7 +140,7 @@ async function onAdaptiveCardSubmit(context, authState) {
         await helpCard.showHelpCard(context);
         break;
       case "clearChat":
-        await TeamsBot.deleteAllMessages(context);
+        await deleteAllMessages(context);
       case "showBugReportCard":
         // Show the card for submitting a bug report
         await bugReportCard.showBugReportCard(context);
