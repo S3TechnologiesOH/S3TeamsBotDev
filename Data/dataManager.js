@@ -83,6 +83,10 @@ async function assignUserRole(context, role, email, notify) {
 * @param {string} commandGroup - The command group the user wants to access.
 * @returns {boolean} - True if the user has permission, false otherwise.
 */
+async function returnAllPermissions(email){
+
+}
+
 async function hasCommandPermission(email, commandGroup) {
   const normalizedEmail = email.trim().toLowerCase();
   // Admin override: Check if the user is in the admin role
@@ -108,4 +112,4 @@ async function hasCommandPermission(email, commandGroup) {
   console.error(`Permission denied for ${email} to access ${commandGroup}.`);
   return false;
 }
-module.exports = { hasCommandPermission, updatePermissions, assignUserRole, permissionsPath };
+module.exports = { hasCommandPermission, returnAllPermissions, updatePermissions, assignUserRole, permissionsPath };
