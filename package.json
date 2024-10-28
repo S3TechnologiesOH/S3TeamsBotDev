@@ -26,6 +26,7 @@
         "botbuilder": "^4.20.0",
         "connectwise-rest-api": "^1.2.1",
         "microsoft": "^0.0.0",
+        "mysql2": "^3.11.3",
         "node": "^18.20.4",
         "openai": "^4.67.3",
         "restify": "^10.0.0"
