@@ -138,9 +138,12 @@ class TeamsBot extends TeamsActivityHandler {
       const connection = await mysql.createConnection(sqlconfig);
       console.log('Connected to MySQL In-App');
 
-      // Example query
-      const [rows] = await connection.execute('SELECT * FROM Users');
+      const [tables] = await connection.execute('SHOW TABLES');
+      console.log('Tables:', tables);
 
+      const [rows] = await connection.execute('SELECT COUNT(*) AS count FROM users');
+      console.log('Number of rows in Users:', rows[0].count);
+      
       // Print each row and its values
       rows.forEach((row, index) => {
         console.log(`Row ${index + 1}:`);
