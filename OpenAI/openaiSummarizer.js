@@ -79,7 +79,7 @@ async function summarizeJSON(context, ticketId, jsonEntries) {
     const runResponse = await retryWithBackoff(() =>
       client.beta.threads.runs.create(currentThread.id, {
         assistant_id: "asst_2siYL2u8sZy9PhFDZQvlyKOi",
-        max_completion_tokens: 500,
+        max_completion_tokens: 150,
         temperature: 0.3,
       })
     );
