@@ -36,6 +36,7 @@ class TeamsBot extends TeamsActivityHandler {
   
   constructor(userState) {
     super();
+    console.log("SQL URL: ", process.env.MYSQLCONNSTR_localdb)
     this.connectToMySQL();
     this.userMessageId = null; // Track the last user message ID    
 
