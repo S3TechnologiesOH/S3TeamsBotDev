@@ -138,7 +138,15 @@ class TeamsBot extends TeamsActivityHandler {
 
       // Example query
       const [rows] = await connection.execute('SELECT * FROM Users');
-      console.log(rows);
+      
+      // Print each row and its values
+      rows.forEach((row, index) => {
+        console.log(`Row ${index + 1}:`);
+        Object.entries(row).forEach(([key, value]) => {
+          console.log(`  ${key}: ${value}`);
+        });
+        console.log('-----------------------------');  // For readability
+      });
 
       // Close the connection
       await connection.end();
