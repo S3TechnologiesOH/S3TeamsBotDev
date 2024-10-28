@@ -26,7 +26,6 @@ class TeamsBot extends TeamsActivityHandler {
   
   constructor(userState) {
     super();
-    console.log("SQL URL: ", connectionString)
     this.userMessageId = null; // Track the last user message ID    
 
     this.userState = userState;
