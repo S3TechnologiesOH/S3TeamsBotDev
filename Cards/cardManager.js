@@ -141,6 +141,7 @@ async function onAdaptiveCardSubmit(context, authState) {
         break;
       case "clearChat":
         await deleteAllMessages(context);
+        break;
       case "showBugReportCard":
         // Show the card for submitting a bug report
         await bugReportCard.showBugReportCard(context);

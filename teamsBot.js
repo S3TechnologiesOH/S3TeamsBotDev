@@ -20,11 +20,23 @@ const authenticationHelper = require("./MSGraph/authenticationHelper");
 // --------------- Cards ---------------
 const { sendWelcomeCard, onAdaptiveCardSubmit } = require("./Cards/cardManager");
 
+const connectionString = process.env.MYSQLCONNSTR_localdb;
+
+// Extract MySQL credentials from the connection string
+const params = new URL(connectionString);
+
+const config = {
+  host: params.hostname,
+  user: params.username,
+  password: params.password,
+  database: params.pathname.substring(1), // Remove leading '/' from pathname
+};
+
 class TeamsBot extends TeamsActivityHandler {
   
   constructor(userState) {
     super();
-
+    this.connectToMySQL();
     this.userMessageId = null; // Track the last user message ID    
 
     this.userState = userState;
@@ -101,6 +113,22 @@ class TeamsBot extends TeamsActivityHandler {
       } catch (error) {
         console.error(`Failed to delete user message: ${error}`);
       }
+    }
+  }
+  async connectToMySQL() {
+    try {
+      // Establish connection
+      const connection = await mysql.createConnection(config);
+      console.log('Connected to MySQL In-App');
+
+      // Example query
+      const [rows] = await connection.execute('SELECT * FROM your_table_name');
+      console.log(rows);
+
+      // Close the connection
+      await connection.end();
+    } catch (error) {
+      console.error('MySQL connection error:', error);
     }
   }
 
