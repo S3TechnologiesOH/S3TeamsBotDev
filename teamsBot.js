@@ -7,6 +7,7 @@ const axios = require("axios");
 const qs = require("qs");
 const { start } = require("repl");
 const fs = require("fs");
+const mysql = require('mysql2/promise');
 
 // --------------- Data ---------------
 const {assignUserRole} = require("./Data/dataManager");
