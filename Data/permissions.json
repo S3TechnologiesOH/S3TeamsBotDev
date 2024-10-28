@@ -1,18 +1,43 @@
 {
-    "roles": {
-      "admin": ["catwell@mys3tech.com", "jlowry@mys3tech.com", "clarker@mys3tech.com"],
-      "ticket_management": [],
-      "guest": []
-    },
-    "commandGroups": {
-      "admin": ["Permission.Read", "Permission.Write"],
-      "ticket_commands": ["Ticket.Read", "Ticket.Write"],
-      "help_commands": ["Help.BugReport"]
-    },
-    "rolePermissions": {
-      "admin": ["ticket_commands", "help_commands", "admin"],
-      "ticket_management": ["ticket_commands"],
-      "guest": ["ticket_commands", "help_commands"]
-    }
+  "roles": {
+    "admin": [
+      "jlowry@mys3tech.com",
+      "clarker@mys3tech.com"
+    ],
+    "ticket_management": [],
+    "guest": [
+      "catwell@mys3tech.com",
+      "JLowry@mys3tech.com",
+      "randrews@mys3tech.com",
+      "kreolfi@mys3tech.com",
+      "jwagner@mys3tech.com"
+    ]
+  },
+  "commandGroups": {
+    "admin": [
+      "Permission.Read",
+      "Permission.Write"
+    ],
+    "ticket_commands": [
+      "Ticket.Read",
+      "Ticket.Write"
+    ],
+    "help_commands": [
+      "Help.BugReport"
+    ]
+  },
+  "rolePermissions": {
+    "admin": [
+      "ticket_commands",
+      "help_commands",
+      "admin"
+    ],
+    "ticket_management": [
+      "ticket_commands"
+    ],
+    "guest": [
+      "ticket_commands",
+      "help_commands"
+    ]
   }
-  
+}
