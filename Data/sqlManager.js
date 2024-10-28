@@ -27,7 +27,7 @@ const parseConnectionString = (connectionString) => {
 };
 const sqlconfig = parseConnectionString(connectionString);
 
-const connection = undefined;
+var connection = undefined;
 
 async function connectToMySQL() {
     try {
@@ -56,7 +56,7 @@ async function connectToMySQL() {
       console.error('MySQL connection error:', error);
     }
   }
-  
+
   async function insertSingleRow(name, email) {
     try {
             // Check if a user with the same name or email already exists
