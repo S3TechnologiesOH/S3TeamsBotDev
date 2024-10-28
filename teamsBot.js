@@ -129,4 +129,4 @@ class TeamsBot extends TeamsActivityHandler {
   
 }
 
-module.exports = {deleteAllMessages, TeamsBot};
+module.exports = {TeamsBot};

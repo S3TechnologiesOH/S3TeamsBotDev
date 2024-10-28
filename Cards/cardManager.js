@@ -5,7 +5,7 @@ const adminCommandsCard = require("./adminCommandsCard");
 const helpCard = require("./showHelpCard");
 const bugReportCard = require("./bugReportCard");
 const { CardFactory } = require("botbuilder");
-const { deleteAllMessages } = require("../teamsBot");
+const { TeamsBot } = require("../teamsBot");
 const { sendBugReportEmail } = require("../MSGraph/graphHelper");
 var welcomeCardMessageId = null; // Track the last welcome card message ID
 
@@ -118,7 +118,7 @@ async function onAdaptiveCardSubmit(context, authState) {
         await helpCard.showHelpCard(context);
         break;
       case "clearChat":
-        await deleteAllMessages(context);
+        await TeamsBot.deleteAllMessages(context);
       case "showBugReportCard":
         // Show the card for submitting a bug report
         await bugReportCard.showBugReportCard(context);
