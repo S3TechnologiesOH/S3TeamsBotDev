@@ -137,7 +137,7 @@ class TeamsBot extends TeamsActivityHandler {
       console.log('Connected to MySQL In-App');
 
       // Example query
-      const [rows] = await connection.execute('SELECT * FROM your_table_name');
+      const [rows] = await connection.execute('SELECT * FROM Users');
       console.log(rows);
 
       // Close the connection
