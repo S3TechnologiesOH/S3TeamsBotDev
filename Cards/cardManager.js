@@ -1,4 +1,5 @@
 const {dataManager, hasCommandPermission, assignUserRole, permissionsPath} = require("../Data/dataManager");
+const {logCommand} = require("../Data/sqlManager");
 const ticketManager = require("../ConnectWise/ticketManager");
 const ticketInfoCard = require("./ticketInformationCard");
 const adminCommandsCard = require("./adminCommandsCard");
@@ -33,7 +34,7 @@ async function sendWelcomeCard(context, authState) {
       ],
       actions: [],
     };
-  
+    
     // ADMIN COMMANDS
     if (await hasCommandPermission(authState.userEmail, "admin")) {
       adaptiveCard.actions.push({
@@ -66,15 +67,6 @@ async function sendWelcomeCard(context, authState) {
       });
     }
 
-    if (await hasCommandPermission(authState.userEmail, "help_commands")) {
-      adaptiveCard.actions.push({
-        type: "Action.Submit",
-        title: "Clear",
-        data: {
-          action: "clearChat",
-        },
-      });
-    }
     // Send the Adaptive Card
     await context.sendActivity({
       attachments: [CardFactory.adaptiveCard(adaptiveCard)],
@@ -91,29 +83,7 @@ async function deletePreviousWelcomeCard(context) {
       }
     }
   }
-async function deleteAllMessages(context) {
-  try {
-    const conversationId = context.activity.conversation.id;
-    const activity = context.activity;
-  
-    // Fetch the conversation history (you may need to paginate if there are too many messages)
-    const messages = await context.adapter.getConversationMembers(activity);
-      
-    // Iterate through all messages and attempt to delete them
-    for (const message of messages) {
-      try {
-        console.log(`Deleting message: ${message.id}`);
-        await context.deleteActivity(message.id);
-      } catch (error) {
-        console.error(`Failed to delete message ${message.id}: ${error.message}`);
-      }
-    }
-  
-      console.log("Completed deletion of all messages.");
-    } catch (error) {
-      console.error(`Error deleting messages: ${error.message}`);
-    }
-  }
+
 // Handle the user input and command actions
 async function onAdaptiveCardSubmit(context, authState) {
     const submittedData = context.activity.value;
@@ -122,7 +92,9 @@ async function onAdaptiveCardSubmit(context, authState) {
       await context.sendActivity("Invalid action. Please try again.");
       return;
     }
-  
+    
+    await logCommand(user, submittedData.action);
+
     switch (submittedData.action) {
   
       case "showTicketInformationCard":
@@ -139,9 +111,7 @@ async function onAdaptiveCardSubmit(context, authState) {
         // Show the card listing admin commands
         await helpCard.showHelpCard(context);
         break;
-      case "clearChat":
-        await deleteAllMessages(context);
-        break;
+
       case "showBugReportCard":
         // Show the card for submitting a bug report
         await bugReportCard.showBugReportCard(context);

@@ -85,5 +85,17 @@ async function insertSingleRow(name, email) {
       console.error('Error inserting single row:', error);
     }
   }
+  // Function to log each submission into the command_logs table
+async function logCommand(user, command) {
+    try {
+      const query = `INSERT INTO command_logs (user, command) VALUES (?, ?)`;
+      const values = [user, command];
   
-  module.exports = { pool, connectToMySQL, insertSingleRow };
+      const [result] = await pool.execute(query, values);
+      console.log('Command logged:', result);
+    } catch (error) {
+      console.error('Error logging command:', error);
+    }
+  }
+  
+  module.exports = { pool, connectToMySQL, insertSingleRow, logCommand};
