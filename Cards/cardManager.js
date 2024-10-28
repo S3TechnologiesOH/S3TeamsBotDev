@@ -92,8 +92,8 @@ async function onAdaptiveCardSubmit(context, authState) {
       await context.sendActivity("Invalid action. Please try again.");
       return;
     }
-    
-    await logCommand(user, submittedData.action);
+
+    await logCommand(authState.userDisplayName, submittedData.action);
 
     switch (submittedData.action) {
   
