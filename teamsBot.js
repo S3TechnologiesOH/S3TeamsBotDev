@@ -49,13 +49,14 @@ class TeamsBot extends TeamsActivityHandler {
   constructor(userState) {
     super();
     console.log("SQL URL: ", connectionString)
-    this.connectToMySQL();
     this.userMessageId = null; // Track the last user message ID    
 
     this.userState = userState;
     this.userAuthState = this.userState.createProperty("userAuthState");
 
     this.onMessage(async (context, next) => {
+      this.connectToMySQL();
+
       const authState = await this.userAuthState.get(context, {
         isAuthenticated: false,
         lastLoginMessageId: null,
