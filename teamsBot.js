@@ -23,7 +23,7 @@ const { sendWelcomeCard, onAdaptiveCardSubmit } = require("./Cards/cardManager")
 const connectionString = process.env.MYSQLCONNSTR_localdb;
 
 // Extract MySQL credentials from the connection string
-const params = new URL(connectionString);
+//const params = new URL(connectionString);
 
 const sqlconfig = {
   host: params.hostname,
@@ -36,7 +36,7 @@ class TeamsBot extends TeamsActivityHandler {
   
   constructor(userState) {
     super();
-    console.log("SQL URL: ", process.env.MYSQLCONNSTR_localdb)
+    console.log("SQL URL: ", connectionString)
     this.connectToMySQL();
     this.userMessageId = null; // Track the last user message ID    
 
