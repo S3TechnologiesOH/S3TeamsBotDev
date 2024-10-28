@@ -11,7 +11,7 @@ const mysql = require('mysql2/promise');
 
 // --------------- Data ---------------
 const {assignUserRole} = require("./Data/dataManager");
-
+const {connectToMySQL} = require("./Data/sqlManager");
 // --------------- ConnectWise ---------------
 const {handleTicketRequest} = require("./ConnectWise/ticketManager");
 
@@ -21,31 +21,6 @@ const authenticationHelper = require("./MSGraph/authenticationHelper");
 // --------------- Cards ---------------
 const { sendWelcomeCard, onAdaptiveCardSubmit } = require("./Cards/cardManager");
 
-const connectionString = process.env.MYSQLCONNSTR_localdb;
-
-// Function to parse the MySQL connection string safely
-const parseConnectionString = (connectionString) => {
-  const config = {};
-  const parts = connectionString.split(';');
-
-  parts.forEach((part) => {
-    if (part.includes('=')) {  // Ensure it's a valid key-value pair
-      const [key, value] = part.split('=');
-      if (key && value) {  // Check that both key and value exist
-        config[key.trim().toLowerCase()] = value.trim();
-      }
-    }
-  });
-
-  return {
-    host: config['data source'].split(':')[0],
-    port: parseInt(config['data source'].split(':')[1], 10) || 3306,
-    user: config['user id'],
-    password: config['password'],
-    database: config['database'],
-  };
-};
-const sqlconfig = parseConnectionString(connectionString);
 
 class TeamsBot extends TeamsActivityHandler {
   
@@ -58,7 +33,7 @@ class TeamsBot extends TeamsActivityHandler {
     this.userAuthState = this.userState.createProperty("userAuthState");
 
     this.onMessage(async (context, next) => {
-      this.connectToMySQL();
+      connectToMySQL();
 
       const authState = await this.userAuthState.get(context, {
         isAuthenticated: false,
@@ -132,35 +107,7 @@ class TeamsBot extends TeamsActivityHandler {
       }
     }
   }
-  async connectToMySQL() {
-    try {
-      // Establish connection
-      const connection = await mysql.createConnection(sqlconfig);
-      console.log('Connected to MySQL In-App');
 
-      const [tables] = await connection.execute('SHOW TABLES');
-      console.log('Tables:', tables);
-
-      const [rows] = await connection.execute('SELECT COUNT(*) AS count FROM users');
-      console.log('Number of rows in Users:', rows[0].count);
-      
-      // Print each row and its values
-      rows.forEach((row, index) => {
-        console.log(`Row ${index + 1}:`);
-        Object.entries(row).forEach(([key, value]) => {
-          console.log(`  ${key}: ${value}`);
-        });
-        console.log('-----------------------------');  // For readability
-      });
-
-      // Close the connection
-      await connection.end();
-    } catch (error) {
-      console.error('MySQL connection error:', error);
-    }
-  }
-
-  
 }
 
 module.exports = {TeamsBot};

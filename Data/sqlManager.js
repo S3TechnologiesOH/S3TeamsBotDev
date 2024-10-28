@@ -1,0 +1,81 @@
+
+mysql = require('mysql2/promise');
+
+const connectionString = process.env.MYSQLCONNSTR_localdb;
+
+// Function to parse the MySQL connection string safely
+const parseConnectionString = (connectionString) => {
+  const config = {};
+  const parts = connectionString.split(';');
+
+  parts.forEach((part) => {
+    if (part.includes('=')) {  // Ensure it's a valid key-value pair
+      const [key, value] = part.split('=');
+      if (key && value) {  // Check that both key and value exist
+        config[key.trim().toLowerCase()] = value.trim();
+      }
+    }
+  });
+
+  return {
+    host: config['data source'].split(':')[0],
+    port: parseInt(config['data source'].split(':')[1], 10) || 3306,
+    user: config['user id'],
+    password: config['password'],
+    database: config['database'],
+  };
+};
+const sqlconfig = parseConnectionString(connectionString);
+
+const connection = undefined;
+
+async function connectToMySQL() {
+    try {
+      // Establish connection
+      connection = await mysql.createConnection(sqlconfig);
+      console.log('Connected to MySQL In-App');
+
+      const [tables] = await connection.execute('SHOW TABLES');
+      console.log('Tables:', tables);
+
+      const [rows] = await connection.execute('SELECT COUNT(*) AS count FROM users');
+      console.log('Number of rows in Users:', rows[0].count);
+      
+      // Print each row and its values
+      rows.forEach((row, index) => {
+        console.log(`Row ${index + 1}:`);
+        Object.entries(row).forEach(([key, value]) => {
+          console.log(`  ${key}: ${value}`);
+        });
+        console.log('-----------------------------');  // For readability
+      });
+
+      // Close the connection
+      await connection.end();
+    } catch (error) {
+      console.error('MySQL connection error:', error);
+    }
+  }
+  
+  async function insertSingleRow(name, email) {
+    try {
+            // Check if a user with the same name or email already exists
+      const [existingRows] = await connection.execute('SELECT * FROM users WHERE name = ? OR email = ?', [name, email]);
+  
+      if (existingRows.length > 0) {
+        console.log(`User with name "${name}" or email "${email}" already exists. Skipping insertion.`);
+        return;  // Exit the function if a matching user is found
+      }
+      const query = `
+        INSERT INTO users (name, email) 
+        VALUES (?, ?)
+      `;
+      const values = [name, email];
+  
+      const [result] = await connection.execute(query, values);
+      console.log('Single row inserted:', result);
+    } catch (error) {
+      console.error('Error inserting single row:', error);
+    }
+  }
+  module.exports = { connectToMySQL, insertSingleRow };

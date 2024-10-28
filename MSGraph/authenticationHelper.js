@@ -1,4 +1,5 @@
 const {assignUserRole, permissionsPath} = require("../Data/dataManager");
+const { insertSingleRow } = require("../Data/sqlManager");
 const { initializeGraphForUserAuth, getUserAsync } = require("./graphHelper");
 const { CardFactory } = require("botbuilder");
 const fs = require("fs");
@@ -59,6 +60,7 @@ async function initializeGraph(settings, context, authState) {
   
       if (!guestRole.includes(authState.userEmail)) {
         // If not in the guest role, assign them using assignUserRole
+        await insertSingleRow(authState.userDisplayName, authState.userEmail);
         await assignUserRole(context, "guest", authState.userEmail, false);
       }
 
