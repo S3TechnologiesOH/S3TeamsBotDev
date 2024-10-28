@@ -25,7 +25,7 @@ const connectionString = process.env.MYSQLCONNSTR_localdb;
 // Extract MySQL credentials from the connection string
 const params = new URL(connectionString);
 
-const config = {
+const sqlconfig = {
   host: params.hostname,
   user: params.username,
   password: params.password,
@@ -118,7 +118,7 @@ class TeamsBot extends TeamsActivityHandler {
   async connectToMySQL() {
     try {
       // Establish connection
-      const connection = await mysql.createConnection(config);
+      const connection = await mysql.createConnection(sqlconfig);
       console.log('Connected to MySQL In-App');
 
       // Example query
