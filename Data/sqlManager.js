@@ -26,13 +26,14 @@ const parseConnectionString = (connectionString) => {
   };
 };
 const sqlconfig = parseConnectionString(connectionString);
+// Create a connection pool
+const pool = mysql.createPool(sqlconfig);
 
-var connection = undefined;
 
 async function connectToMySQL() {
     try {
       // Establish connection
-      connection = await mysql.createConnection(sqlconfig);
+      connection = await pool.createConnection(sqlconfig);
       console.log('Connected to MySQL In-App');
 
       const [tables] = await connection.execute('SHOW TABLES');
@@ -56,26 +57,33 @@ async function connectToMySQL() {
       console.error('MySQL connection error:', error);
     }
   }
-
-  async function insertSingleRow(name, email) {
+// Function to insert a single row with a uniqueness check
+async function insertSingleRow(name, email) {
     try {
-            // Check if a user with the same name or email already exists
-      const [existingRows] = await connection.execute('SELECT * FROM users WHERE name = ? OR email = ?', [name, email]);
+      const connection = await pool.getConnection(); // Get a connection from the pool
+  
+      // Check if the user already exists
+      const [existingRows] = await connection.execute(
+        'SELECT * FROM users WHERE name = ? OR email = ?',
+        [name, email]
+      );
   
       if (existingRows.length > 0) {
         console.log(`User with name "${name}" or email "${email}" already exists. Skipping insertion.`);
-        return;  // Exit the function if a matching user is found
+        connection.release(); // Release the connection back to the pool
+        return;
       }
-      const query = `
-        INSERT INTO users (name, email) 
-        VALUES (?, ?)
-      `;
+  
+      const query = 'INSERT INTO users (name, email) VALUES (?, ?)';
       const values = [name, email];
   
       const [result] = await connection.execute(query, values);
       console.log('Single row inserted:', result);
+  
+      connection.release(); // Release the connection back to the pool
     } catch (error) {
       console.error('Error inserting single row:', error);
     }
   }
-  module.exports = { connectToMySQL, insertSingleRow };
+  
+  module.exports = { pool, connectToMySQL, insertSingleRow };
