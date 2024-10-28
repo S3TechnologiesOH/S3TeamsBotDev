@@ -5,6 +5,7 @@ const adminCommandsCard = require("./adminCommandsCard");
 const helpCard = require("./showHelpCard");
 const bugReportCard = require("./bugReportCard");
 const { CardFactory } = require("botbuilder");
+const { deleteAllMessages } = require("../teamsBot");
 const { sendBugReportEmail } = require("../MSGraph/graphHelper");
 var welcomeCardMessageId = null; // Track the last welcome card message ID
 
@@ -64,7 +65,16 @@ async function sendWelcomeCard(context, authState) {
         },
       });
     }
-  
+
+    if (await hasCommandPermission(authState.userEmail, "help_commands")) {
+      adaptiveCard.actions.push({
+        type: "Action.Submit",
+        title: "Clear",
+        data: {
+          action: "clearChat",
+        },
+      });
+    }
     // Send the Adaptive Card
     await context.sendActivity({
       attachments: [CardFactory.adaptiveCard(adaptiveCard)],
@@ -107,6 +117,8 @@ async function onAdaptiveCardSubmit(context, authState) {
         // Show the card listing admin commands
         await helpCard.showHelpCard(context);
         break;
+      case "clearChat":
+        await deleteAllMessages(context);
       case "showBugReportCard":
         // Show the card for submitting a bug report
         await bugReportCard.showBugReportCard(context);

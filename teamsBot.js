@@ -103,7 +103,30 @@ class TeamsBot extends TeamsActivityHandler {
       }
     }
   }
+  async deleteAllMessages(context) {
+    try {
+      const conversationId = context.activity.conversation.id;
+      const activity = context.activity;
+  
+      // Fetch the conversation history (you may need to paginate if there are too many messages)
+      const messages = await context.adapter.getConversationMembers(activity);
+      
+      // Iterate through all messages and attempt to delete them
+      for (const message of messages) {
+        try {
+          console.log(`Deleting message: ${message.id}`);
+          await context.deleteActivity(message.id);
+        } catch (error) {
+          console.error(`Failed to delete message ${message.id}: ${error.message}`);
+        }
+      }
+  
+      console.log("Completed deletion of all messages.");
+    } catch (error) {
+      console.error(`Error deleting messages: ${error.message}`);
+    }
+  }
   
 }
 
-module.exports.TeamsBot = TeamsBot;
+module.exports = {deleteAllMessages, TeamsBot};
