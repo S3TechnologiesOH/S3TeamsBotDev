@@ -52,7 +52,7 @@ async function connectToMySQL() {
       });
 
       // Close the connection
-      await connection.end();
+      await connection.release();
     } catch (error) {
       console.error('MySQL connection error:', error);
     }
