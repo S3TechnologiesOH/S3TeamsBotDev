@@ -25,12 +25,12 @@ const connectionString = process.env.MYSQLCONNSTR_localdb;
 // Extract MySQL credentials from the connection string
 //const params = new URL(connectionString);
 
-const sqlconfig = {
+/*const sqlconfig = {
   host: params.hostname,
   user: params.username,
   password: params.password,
   database: params.pathname.substring(1), // Remove leading '/' from pathname
-};
+};*/
 
 class TeamsBot extends TeamsActivityHandler {
   
