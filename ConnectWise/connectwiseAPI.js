@@ -40,7 +40,7 @@ async function fetch_ticket_by_id(ticketId) {
 
 async function fetch_ticket_tasks_by_id(ticketId) {
   try {
-    const response = cwTasks.serviceTicketsIDTasksGet( { id: ticketId});
+    const response = cwTasks.serviceTicketsIdTasksGet( { id: ticketId});
     console.log("Task Response: ", response);
   }
   catch (error) {
