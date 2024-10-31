@@ -15,8 +15,8 @@ async function handleTicketRequest(context, ticketId) {
       //console.log("Debug Log: Combined data being passed to OpenAI:", combinedData);
 
       // Summarize the combined data
-      const combinedSummary = await summarizeJSON(context, timeEntries);
-      const taskSummary = await summarizeJSON(context, ticketTasks);
+      const combinedSummary = await summarizeJSON(context, ticketId, timeEntries, false);
+      const taskSummary = await summarizeJSON(context, 0, ticketTasks, true);
       // Send the formatted details back to the user
       const formattedTicketDetails =
         `**ID:** ${get_attr_or_key(ticketInfo, "id")}\n\n` +
