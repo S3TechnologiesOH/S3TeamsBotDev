@@ -11,12 +11,12 @@ async function handleTicketRequest(context, ticketId) {
       const timeEntries = await fetch_time_entries_for_ticket(ticketId);
       const ticketTasks = await fetch_ticket_tasks_by_id(ticketId);
       //const ticketTaskSummaries = ticketTasks.map((task) => task.resolution);
-      const combinedData = { ticketTasks, timeEntries };
       // Log the combined data to check if it's being passed correctly
       //console.log("Debug Log: Combined data being passed to OpenAI:", combinedData);
 
       // Summarize the combined data
-      const combinedSummary = await summarizeJSON(context, combinedData);
+      const combinedSummary = await summarizeJSON(context, ticketId, timeEntries);
+      const taskSummary = await summarizeJSON(context, ticketId, ticketTasks);
 
       // Send the formatted details back to the user
       const formattedTicketDetails =
@@ -30,7 +30,7 @@ async function handleTicketRequest(context, ticketId) {
         `**Assigned to:** ${get_attr_or_key(ticketInfo, "resources")}\n\n` +
         `**Actual Hours:** ${get_attr_or_key(ticketInfo, "actualHours")}\n\n`;
 
-      const fullMessage = `${formattedTicketDetails}\n\n**Time Entries Summary:**\n${combinedSummary}`;
+      const fullMessage = `${formattedTicketDetails}\n\n**Time Entries Summary:**\n${combinedSummary}\n\n**Task combinedSummary:** \n${taskSummary}`;
 
       // Split and send the message in chunks if too long
       const chunkSize = 2000;
