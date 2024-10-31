@@ -17,7 +17,8 @@ let cwService;
 try {
   cwService = new TicketsApi(`${connectwiseUrl}`);  // Initialize API without version path in the base URL
   cwTasks = new TicketTasksApi(`${connectwiseUrl}`); 
-  cwService.defaultHeaders, cwTasks.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
+  cwService.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
+  cwTasks.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
 } catch (error) {
   console.error("Error initializing ConnectWise API:", error);
   throw new Error("Failed to initialize ConnectWise API.");
