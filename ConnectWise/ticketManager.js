@@ -1,4 +1,4 @@
-const {fetch_ticket_by_id, fetch_time_entries_for_ticket} = require("./connectwiseAPI"); // ConnectWise API logic
+const {fetch_ticket_by_id, fetch_time_entries_for_ticket, fetch_ticket_tasks_by_id} = require("./connectwiseAPI"); // ConnectWise API logic
 const { get_attr_or_key } = require("./connectwiseHelpers");
 const { summarizeJSON } = require("../OpenAI/openaiSummarizer");
 
