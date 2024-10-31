@@ -16,7 +16,7 @@ async function handleTicketRequest(context, ticketId) {
 
       // Summarize the combined data
       const combinedSummary = await summarizeJSON(context, ticketId, timeEntries, false);
-      const taskSummary = await summarizeJSON(context, 0, ticketTasks, true);
+      const taskSummary = await summarizeJSON(context, ticketId, ticketTasks, true);
       // Send the formatted details back to the user
       const formattedTicketDetails =
         `**ID:** ${get_attr_or_key(ticketInfo, "id")}\n\n` +

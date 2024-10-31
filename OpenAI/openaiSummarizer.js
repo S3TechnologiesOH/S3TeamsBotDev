@@ -45,20 +45,25 @@ async function getTicketData(ticketId) {
 async function summarizeJSON(context, ticketId, jsonEntries, isTicket) {
   try {
     console.log("Starting summarizeJSON function");
-    var promptMessage = jsonEntries;
+    let promptMessage;
 
     if(isTicket){
       const ticketData = await getTicketData(ticketId, jsonEntries);
-
       const simplifiedEntries = ticketData
         .map(
           (entry) =>
             `ID: ${entry.id}\nNotes: ${entry._info.notes || "No notes"}`
         )
         .join("\n\n");
-  
       promptMessage = `Summarize these entries:\n\n${simplifiedEntries}`;
     }
+    else{
+      // If summarizing time entries
+      const taskEntryData = jsonEntries
+        .map((entry) => `taskEntryData Entry ID: ${entry.id}\nDescription: ${entry.resolution || "No description"}`)
+        .join("\n\n");
+        promptMessage = `Summarize these ticket tasks:\n\n${taskEntryData}`;
+      }
 
     console.log("Prompt message created: ", promptMessage);
 
