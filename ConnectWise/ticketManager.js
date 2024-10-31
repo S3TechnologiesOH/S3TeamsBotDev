@@ -10,8 +10,8 @@ async function handleTicketRequest(context, ticketId) {
       // Fetch related time entries
       const timeEntries = await fetch_time_entries_for_ticket(ticketId);
       const ticketTasks = await fetch_ticket_tasks_by_id(ticketId);
-      const ticketTaskSummaries = ticketTasks.map((task) => task.resolution);
-      const combinedData = { ticketTaskSummaries, timeEntries };
+      //const ticketTaskSummaries = ticketTasks.map((task) => task.resolution);
+      const combinedData = { ticketTasks, timeEntries };
       // Log the combined data to check if it's being passed correctly
       //console.log("Debug Log: Combined data being passed to OpenAI:", combinedData);
 
