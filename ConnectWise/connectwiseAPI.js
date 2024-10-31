@@ -1,4 +1,4 @@
-const { TicketsApi } = require('connectwise-rest-api/release/api/api');  // Ensure this is the correct import
+const { TicketsApi, TicketTasksApi } = require('connectwise-rest-api/release/api/api');  // Ensure this is the correct import
 
 // Set your ConnectWise configuration
 const connectwiseUrl = process.env.CW_URL;  // Your ConnectWise URL
@@ -16,7 +16,8 @@ let cwService;
 //console.log(`Public Key: ${process.env.CW_PUBLIC_KEY}`);
 try {
   cwService = new TicketsApi(`${connectwiseUrl}`);  // Initialize API without version path in the base URL
-  cwService.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
+  cwTasks = new TicketTasksApi(`${connectwiseUrl}`); 
+  cwService.defaultHeaders, cwTasks.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
 } catch (error) {
   console.error("Error initializing ConnectWise API:", error);
   throw new Error("Failed to initialize ConnectWise API.");
@@ -27,12 +28,23 @@ async function fetch_ticket_by_id(ticketId) {
   console.log(`Fetching ticket with ID: ${ticketId}`);
   try {
     const response = await cwService.serviceTicketsIdGet({ id: ticketId });  // Pass the id as part of an object
+    
     return response;  // The full ticket data will be returned as an object
   } catch (error) {
-    console.log(`Company ID: ${process.env.CW_COMPANY_ID}`);
-    console.log(`Public Key: ${process.env.CW_PUBLIC_KEY}`);
+
     console.error("Error fetching ticket:", error);
     throw new Error("Failed to fetch ticket.");
+  }
+}
+
+async function fetch_ticket_tasks_by_id(ticketId) {
+  try {
+    const response = cwTasks.serviceTicketsIDTasksGet( { id: ticketId});
+    console.log("Task Response: ", response);
+  }
+  catch (error) {
+    console.error("Error fetching ticket tasks:", error);
+    throw new Error("Failed to fetch ticket tasks.");
   }
 }
 
@@ -48,4 +60,4 @@ async function fetch_time_entries_for_ticket(ticketId) {
   }
 }
 
-module.exports = { fetch_ticket_by_id, fetch_time_entries_for_ticket };
+module.exports = { fetch_ticket_by_id, fetch_time_entries_for_ticket, fetch_ticket_tasks_by_id };
