@@ -28,11 +28,6 @@ async function getTicketData(ticketId) {
 
     const data = ticketId;
 
-    if (!data || !Array.isArray(data)) {
-      console.error("Invalid data received:", data);
-      throw new Error("Invalid data format. Expected an array.");
-    }
-
     console.log("Fetched data: ", data);
     return data;
 
