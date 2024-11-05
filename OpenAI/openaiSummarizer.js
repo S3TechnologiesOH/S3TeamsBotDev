@@ -37,31 +37,18 @@ async function getTicketData(ticketId) {
   }
 }
 
-async function summarizeJSON(context, ticketId, jsonEntries, isTicket) {
+async function summarizeJSON(context, ticketId, ticketData, taskData) {
   try {
     console.log("Starting summarizeJSON function");
-    let tasksString;
-    let ticketString;
-    let promptMessage;
 
-    if(isTicket){
-      //const ticketData = await getTicketData(ticketId, jsonEntries);
-      ticketString = JSON.stringify(jsonEntries, null, 2);
-      promptMessage = `Summarize these entries:\n\n${ticketString}`;
-      console.log("Prompt message created for ticket: ", ticketString);
-    }
-    else
-    {
-      // If summarizing time entries
-      const taskEntryData = jsonEntries
-      tasksString = JSON.stringify(taskEntryData, null, 2);
-      promptMessage = `Summarize these ticket tasks:\n\n${tasksString}`;
-      console.log("Prompt message created for task: ", ticketString);
+    // Convert ticket data and task data to strings
+    const ticketString = JSON.stringify(ticketData, null, 2);
+    const tasksString = JSON.stringify(taskData, null, 2);
 
-    }
+    // Combine both strings into one prompt message
+    const promptMessage = `Summarize the following information:\n\nTicket Data:\n${ticketString}\n\nTask Data:\n${tasksString}`;
+    console.log("Prompt message created: ", promptMessage);
 
-    console.log("Prompt message created: ", tasksString);
-    
     if (!currentThread) {
       currentThread = await retryWithBackoff(() =>
         client.beta.threads.create()
@@ -118,6 +105,7 @@ async function summarizeJSON(context, ticketId, jsonEntries, isTicket) {
     throw new Error("Failed to summarize JSON data.");
   }
 }
+
 
 // Extract message content from the response
 function extractMessageContent(messagesResponse) {
