@@ -40,6 +40,7 @@ async function getTicketData(ticketId) {
 async function summarizeJSON(context, ticketId, jsonEntries, isTicket) {
   try {
     console.log("Starting summarizeJSON function");
+    let tasksString;
     let promptMessage;
 
     if(isTicket){
@@ -51,12 +52,12 @@ async function summarizeJSON(context, ticketId, jsonEntries, isTicket) {
     else{
       // If summarizing time entries
       const taskEntryData = jsonEntries
-        promptMessage = `Summarize these ticket tasks:\n\n${taskEntryData}`;
-        console.log("Task Entry Data: ", taskEntryData);
+      tasksString = JSON.stringify(taskEntryData, null, 2);
+      promptMessage = `Summarize these ticket tasks:\n\n${tasksString}`;
       }
 
-    console.log("Prompt message created: ", promptMessage);
-
+    console.log("Prompt message created: ", tasksString);
+    
     if (!currentThread) {
       currentThread = await retryWithBackoff(() =>
         client.beta.threads.create()
