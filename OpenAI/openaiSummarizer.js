@@ -45,14 +45,14 @@ async function summarizeJSON(context, ticketId, jsonEntries, isTicket) {
     if(isTicket){
       const ticketData = await getTicketData(ticketId, jsonEntries);
       promptMessage = `Summarize these entries:\n\n${ticketData}`;
-      console.log("Ticket Data: ", ticketData.stringify());
+      console.log("Ticket Data: ", ticketData);
 
     }
     else{
       // If summarizing time entries
       const taskEntryData = jsonEntries
         promptMessage = `Summarize these ticket tasks:\n\n${taskEntryData}`;
-        console.log("Task Entry Data: ", taskEntryData.stringify());
+        console.log("Task Entry Data: ", taskEntryData);
       }
 
     console.log("Prompt message created: ", promptMessage);
