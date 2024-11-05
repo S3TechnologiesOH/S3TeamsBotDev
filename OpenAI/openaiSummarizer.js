@@ -50,7 +50,6 @@ async function summarizeJSON(context, jsonEntries, isTicket) {
       ticketString = JSON.stringify(jsonEntries, null, 2);
 
       promptMessage = `Summarize these entries:\n\n${ticketString}`;
-      console.log("Ticket Data: ", ticketData);
     }
     else{
       // If summarizing time entries
