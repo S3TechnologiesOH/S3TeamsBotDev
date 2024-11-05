@@ -49,8 +49,6 @@ async function summarizeJSON(context, ticketId, jsonEntries, isTicket) {
     else{
       // If summarizing time entries
       const taskEntryData = jsonEntries
-        .map((entry) => `taskEntryData Entry ID: ${entry.id}\nDescription: ${entry.resolution || "No description"}`)
-        .join("\n\n");
         promptMessage = `Summarize these ticket tasks:\n\n${taskEntryData}`;
       }
 
