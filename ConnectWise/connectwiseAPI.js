@@ -29,7 +29,7 @@ async function fetch_ticket_by_id(ticketId) {
   console.log(`Fetching ticket with ID: ${ticketId}`);
   try {
     const response = await cwService.serviceTicketsIdGet({ id: ticketId });  // Pass the id as part of an object
-    
+    console.log("Ticket Response: ", response);
     return response;  // The full ticket data will be returned as an object
   } catch (error) {
 
