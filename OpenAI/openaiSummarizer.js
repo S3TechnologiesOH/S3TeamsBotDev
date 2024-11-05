@@ -44,13 +44,7 @@ async function summarizeJSON(context, ticketId, jsonEntries, isTicket) {
 
     if(isTicket){
       const ticketData = await getTicketData(ticketId, jsonEntries);
-      const simplifiedEntries = ticketData
-        .map(
-          (entry) =>
-            `ID: ${entry.id}\nNotes: ${entry._info.notes || "No notes"}`
-        )
-        .join("\n\n");
-      promptMessage = `Summarize these entries:\n\n${simplifiedEntries}`;
+      promptMessage = `Summarize these entries:\n\n${ticketData}`;
     }
     else{
       // If summarizing time entries
