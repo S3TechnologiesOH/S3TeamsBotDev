@@ -40,10 +40,10 @@ async function fetch_ticket_by_id(ticketId) {
 
 async function fetch_ticket_tasks_by_id(ticketId) {
   try {
-    const response = cwTasks.serviceTicketsIdTasksGet( { id: ticketId});
+    const response = await cwTasks.serviceTicketsIdTasksGet({ id: ticketId });
     console.log("Task Response: ", response);
-  }
-  catch (error) {
+    return response;
+  } catch (error) {
     console.error("Error fetching ticket tasks:", error);
     throw new Error("Failed to fetch ticket tasks.");
   }
