@@ -37,7 +37,7 @@ async function getTicketData(ticketId) {
   }
 }
 
-async function summarizeJSON(context, jsonEntries, isTicket) {
+async function summarizeJSON(context, ticketId, jsonEntries, isTicket) {
   try {
     console.log("Starting summarizeJSON function");
     let tasksString;
@@ -48,7 +48,7 @@ async function summarizeJSON(context, jsonEntries, isTicket) {
       //const ticketData = await getTicketData(ticketId, jsonEntries);
       ticketString = JSON.stringify(jsonEntries, null, 2);
       promptMessage = `Summarize these entries:\n\n${ticketString}`;
-      console.log("Prompt message created: ", ticketString);
+      console.log("Prompt message created for ticket: ", ticketString);
     }
     else
     {
@@ -56,7 +56,7 @@ async function summarizeJSON(context, jsonEntries, isTicket) {
       const taskEntryData = jsonEntries
       tasksString = JSON.stringify(taskEntryData, null, 2);
       promptMessage = `Summarize these ticket tasks:\n\n${tasksString}`;
-      console.log("Prompt message created: ", ticketString);
+      console.log("Prompt message created for task: ", ticketString);
 
     }
 
