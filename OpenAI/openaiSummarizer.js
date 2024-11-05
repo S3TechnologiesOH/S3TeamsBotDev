@@ -41,13 +41,16 @@ async function summarizeJSON(context, ticketId, jsonEntries, isTicket) {
   try {
     console.log("Starting summarizeJSON function");
     let tasksString;
+    let ticketString;
     let promptMessage;
 
     if(isTicket){
-      const ticketData = await getTicketData(ticketId, jsonEntries);
-      promptMessage = `Summarize these entries:\n\n${ticketData}`;
-      console.log("Ticket Data: ", ticketData);
+      //const ticketData = await getTicketData(ticketId, jsonEntries);
 
+      ticketString = JSON.stringify(taskEntryData, null, 2);
+
+      promptMessage = `Summarize these entries:\n\n${ticketString}`;
+      console.log("Ticket Data: ", ticketData);
     }
     else{
       // If summarizing time entries
