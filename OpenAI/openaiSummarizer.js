@@ -37,7 +37,7 @@ async function getTicketData(ticketId) {
   }
 }
 
-async function summarizeJSON(context, ticketId, jsonEntries, isTicket) {
+async function summarizeJSON(context, jsonEntries, isTicket) {
   try {
     console.log("Starting summarizeJSON function");
     let tasksString;
@@ -47,7 +47,7 @@ async function summarizeJSON(context, ticketId, jsonEntries, isTicket) {
     if(isTicket){
       //const ticketData = await getTicketData(ticketId, jsonEntries);
 
-      ticketString = JSON.stringify(taskEntryData, null, 2);
+      ticketString = JSON.stringify(jsonEntries, null, 2);
 
       promptMessage = `Summarize these entries:\n\n${ticketString}`;
       console.log("Ticket Data: ", ticketData);
