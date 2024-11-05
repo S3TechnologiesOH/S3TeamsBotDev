@@ -28,7 +28,7 @@ async function handleTicketRequest(context, ticketId) {
         `**Assigned to:** ${get_attr_or_key(ticketInfo, "resources")}\n\n` +
         `**Actual Hours:** ${get_attr_or_key(ticketInfo, "actualHours")}\n\n`;
 
-        const fullMessage = `${formattedTicketDetails}\n\n**Time Entries Summary:**\n${combinedSummary}\n\n**Task Summary:** \n${taskSummary}`;
+        const fullMessage = `${formattedTicketDetails}\n\n**Time Entries Summary:**\n${combinedSummary}`;
       // Split and send the message in chunks if too long
       const chunkSize = 2000;
       for (let i = 0; i < fullMessage.length; i += chunkSize) {
