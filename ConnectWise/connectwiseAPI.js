@@ -30,7 +30,6 @@ async function fetch_ticket_by_id(ticketId) {
   try {
     var response = await cwService.serviceTicketsIdGet({ id: ticketId });  // Pass the id as part of an object
     console.log("Ticket Response: ", response);
-    response = JSON.stringify(response, null, 2);
     return response;  // The full ticket data will be returned as an object
   } catch (error) {
 
