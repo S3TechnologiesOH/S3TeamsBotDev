@@ -119,32 +119,32 @@ async function onAdaptiveCardSubmit(context, authState) {
         break;
 
         case "runTicketCommand":
-          // Handle the /ticket {ticket_id} or /quote {quoteNumber} command
           const ticketNumber = submittedData.ticketId;
           const quoteNumber = submittedData.quoteNumber;
         
-          if (quoteNumber && quoteNumber.trim() !== "") {
-            const quote = quoteNumber.toString().replace("#", "");
-            const quoteId = parseInt(quote.trim(), 10); // Convert quote number to integer
-            console.log("Quote ID:", quoteId);
-            if (!isNaN(quoteId)) {
-              await cpq.handleQuoteRequest(context, quoteId); // Process the quote
-              console.log("Quote request handled");
-            } else {
-              await context.sendActivity("Please enter a valid numeric quote number. Ex. 212");
-            }
-          } else if (ticketNumber && ticketNumber.trim() !== "") {
+          if (ticketNumber && ticketNumber.trim() !== "") {
+            // Handle ticket command
             const ticket = ticketNumber.toString().replace("#", "");
-            const ticketId = parseInt(ticket.trim(), 10); // Convert ticket number to integer
+            const ticketId = parseInt(ticket.trim(), 10);
             console.log("Ticket ID:", ticketId);
             if (!isNaN(ticketId)) {
-              await ticketManager.handleTicketRequest(context, ticketId); // Process the ticket
+              await ticketManager.handleTicketRequest(context, ticketId);
               console.log("Ticket request handled");
             } else {
               await context.sendActivity("Please enter a valid numeric ticket number.");
             }
+          } else if (quoteNumber && quoteNumber.trim() !== "") {
+            // Handle quote command
+            const quoteId = parseInt(quoteNumber.trim(), 10);
+            console.log("Quote Number:", quoteId);
+            if (!isNaN(quoteId)) {
+              await cpq.handleQuoteRequest(context, quoteId);
+              console.log("Quote request handled");
+            } else {
+              await context.sendActivity("Please enter a valid numeric quote number.");
+            }
           } else {
-            await context.sendActivity("Please enter a valid ticket or quote number.");
+            await context.sendActivity("Please enter either a ticket ID or a quote number.");
           }
           break;
         
