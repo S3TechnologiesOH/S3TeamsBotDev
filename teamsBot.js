@@ -33,7 +33,7 @@ class TeamsBot extends TeamsActivityHandler {
         exportQuotesToJson(quotes);
       }
     });
-
+    extractTermsAndConditions("quotes.json", 117);
     this.userMessageId = null; // Track the last user message ID    
 
     this.userState = userState;
