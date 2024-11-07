@@ -1,4 +1,4 @@
-const { TicketsApi, TicketTasksApi } = require('connectwise-rest-api/release/api/api');  // Ensure this is the correct import
+const { TicketsApi, TicketTasksApi, ProductsItemApi } = require('connectwise-rest-api/release/api/api');  // Ensure this is the correct import
 
 // Set your ConnectWise configuration
 const connectwiseUrl = process.env.CW_URL;  // Your ConnectWise URL
@@ -16,12 +16,22 @@ let cwService;
 //console.log(`Public Key: ${process.env.CW_PUBLIC_KEY}`);
 try {
   cwService = new TicketsApi(`${connectwiseUrl}`);  // Initialize API without version path in the base URL
-  cwTasks = new TicketTasksApi(`${connectwiseUrl}`); 
+  cwTasks = new TicketTasksApi(`${connectwiseUrl}`);
+  cwProductItems = new ProductsItemApi(`${connectwiseUrl}`);
+  
   cwService.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
   cwTasks.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
+  cwProductItems.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
 } catch (error) {
   console.error("Error initializing ConnectWise API:", error);
   throw new Error("Failed to initialize ConnectWise API.");
+}
+
+try{
+  cwProductItems.procurementProductsIdGet({id: 53357});
+}
+catch{
+  console.log("Error getting procurement products");
 }
 
 // Fetch a ticket by its ID
@@ -60,5 +70,7 @@ async function fetch_time_entries_for_ticket(ticketId) {
     throw new Error("Failed to fetch time entries.");
   }
 }
+
+
 
 module.exports = { fetch_ticket_by_id, fetch_time_entries_for_ticket, fetch_ticket_tasks_by_id };
