@@ -43,7 +43,4 @@ async function handleTicketRequest(context, ticketId) {
     }
   }
 
-async function handleQuoteRequest(context, ticketId){
-  
-}
 module.exports = { handleTicketRequest };

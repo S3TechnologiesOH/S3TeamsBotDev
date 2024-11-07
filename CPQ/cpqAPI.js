@@ -1,21 +1,6 @@
 // Import necessary modules
 const fs = require('fs');
 
-// Dynamically import fetch
-const fetchQuotes = async (baseUrl, headers) => {
-  const { default: fetch } = await import('node-fetch');
-
-  try {
-    const response = await fetch(baseUrl, { headers });
-    if (!response.ok) {
-      throw new Error(`Error fetching quotes: ${response.statusText}`);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error(`Error fetching quotes: ${error.message}`);
-    return null;
-  }
-};
 
 // Replace these values with your actual ConnectWise API credentials
 const accessKey = process.env.CPQ_ACCESS_KEY;
@@ -35,28 +20,34 @@ const headers = {
   'Accept': 'application/json'
 };
 
+const handleQuoteRequest = async (context, quoteNumber) => {
+  await fetchQuotes(baseUrl, headers);
+  const value = extractTermsAndConditions('./quotes.json', quoteNumber);
+  await context.sendActivity("Quote: ", value);
+}
+
 // Example function to get a list of quotes
 const getQuotes = async () => {
   return await fetchQuotes(baseUrl, headers);
 };
 
-const extractTermsAndConditions = (filename, quoteNumber) => {
+  // Function to extract and format termsAndConditions field from quotes.json by quote number
+  const extractTermsAndConditions = (filename, quoteNumber) => {
     try {
       const data = fs.readFileSync(filename, 'utf8');
       const quotes = JSON.parse(data);
       const quote = quotes.find((quote) => quote.quoteNumber === quoteNumber);
       if (quote && quote.termsAndConditions) {
-        const formattedText = quote.termsAndConditions
+        return quote.termsAndConditions
           .replace(/\r\n/g, '\n')
           .replace(/\t/g, '  ')
           .replace(/\s+/g, ' ') // Replace multiple spaces with a single space
           .trim();
-        console.log('Terms and Conditions for Quote Number', quoteNumber, ':', formattedText);
       } else {
-        console.log('Quote not found or Terms and Conditions not available for Quote Number', quoteNumber);
+        return `Quote not found or Terms and Conditions not available for Quote Number ${quoteNumber}`;
       }
     } catch (error) {
-      console.error(`Error reading or parsing file: ${error.message}`);
+      return `Error reading or parsing file: ${error.message}`;
     }
   };
 
@@ -70,4 +61,20 @@ const exportQuotesToJson = (quotes, filename = 'quotes.json') => {
   }
 };
 
-module.exports = { extractTermsAndConditions, getQuotes, exportQuotesToJson };
+// Dynamically import fetch
+const fetchQuotes = async (baseUrl, headers) => {
+  const { default: fetch } = await import('node-fetch');
+
+  try {
+    const response = await fetch(baseUrl, { headers });
+    if (!response.ok) {
+      throw new Error(`Error fetching quotes: ${response.statusText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error(`Error fetching quotes: ${error.message}`);
+    return null;
+  }
+};
+
+module.exports = { extractTermsAndConditions, getQuotes, exportQuotesToJson, handleQuoteRequest };

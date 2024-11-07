@@ -26,14 +26,6 @@ class TeamsBot extends TeamsActivityHandler {
   
   constructor(userState) {
     super();
-
-    // Call the function and export the response to a JSON file
-    getQuotes().then((quotes) => {
-      if (quotes) {
-        exportQuotesToJson(quotes);
-      }
-    });
-    extractTermsAndConditions("./quotes.json", 117);
     this.userMessageId = null; // Track the last user message ID    
 
     this.userState = userState;

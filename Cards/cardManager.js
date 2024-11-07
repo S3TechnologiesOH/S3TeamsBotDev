@@ -1,6 +1,7 @@
 const {dataManager, hasCommandPermission, assignUserRole, permissionsPath} = require("../Data/dataManager");
 const {logCommand} = require("../Data/sqlManager");
 const ticketManager = require("../ConnectWise/ticketManager");
+const cpq = require("../CPQ/cpqAPI");
 const ticketInfoCard = require("./ticketInformationCard");
 const adminCommandsCard = require("./adminCommandsCard");
 const helpCard = require("./showHelpCard");
@@ -116,25 +117,37 @@ async function onAdaptiveCardSubmit(context, authState) {
         // Show the card for submitting a bug report
         await bugReportCard.showBugReportCard(context);
         break;
-      case "runTicketCommand":
-        // Handle the /ticket {ticket_id} command
-        const ticketNumber = submittedData.ticketId;
-        console.log("runTicketCommand", ticketNumber);
-        if (ticketNumber && ticketNumber.trim() !== "") {
-          const ticket = ticketNumber.toString().replace("#", "");
-          const ticketId = parseInt(ticket.trim(), 10); // Convert ticket number to integer
-          console.log("Ticket ID:", ticketId);
-          if (!isNaN(ticketId)) {
-            await ticketManager.handleTicketRequest(context, ticketId); // Process the ticket
-            console.log("Ticket request handled");
+
+        case "runTicketCommand":
+          // Handle the /ticket {ticket_id} or /quote {quoteNumber} command
+          const ticketNumber = submittedData.ticketId;
+          const quoteNumber = submittedData.quoteNumber;
+        
+          if (quoteNumber && quoteNumber.trim() !== "") {
+            const quote = quoteNumber.toString().replace("#", "");
+            const quoteId = parseInt(quote.trim(), 10); // Convert quote number to integer
+            console.log("Quote ID:", quoteId);
+            if (!isNaN(quoteId)) {
+              await cpq.handleQuoteRequest(context, quoteId); // Process the quote
+              console.log("Quote request handled");
+            } else {
+              await context.sendActivity("Please enter a valid numeric quote number. Ex. 212");
+            }
+          } else if (ticketNumber && ticketNumber.trim() !== "") {
+            const ticket = ticketNumber.toString().replace("#", "");
+            const ticketId = parseInt(ticket.trim(), 10); // Convert ticket number to integer
+            console.log("Ticket ID:", ticketId);
+            if (!isNaN(ticketId)) {
+              await ticketManager.handleTicketRequest(context, ticketId); // Process the ticket
+              console.log("Ticket request handled");
+            } else {
+              await context.sendActivity("Please enter a valid numeric ticket number.");
+            }
           } else {
-            await context.sendActivity("Please enter a valid numeric ticket number.");
+            await context.sendActivity("Please enter a valid ticket or quote number.");
           }
-        } else {
-          await context.sendActivity("Please enter a valid ticket number.");
-        }
-        break;
-  
+          break;
+        
         case "assignRoleCommand":
           const { roleName, userEmail } = submittedData;
     

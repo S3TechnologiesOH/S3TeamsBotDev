@@ -26,6 +26,25 @@ async function showTicketInformationCard(context) {
         isRequired: true,
         spacing: "Small",
       },
+      {
+        type: "TextBlock",
+        text: "___________________",
+        wrap: false,
+        spacing: "Medium",
+      },
+      {
+        type: "TextBlock",
+        text: "Enter the quote number below to retrieve scope details.",
+        wrap: true,
+        spacing: "Medium",
+      },
+      {
+        type: "Input.Text",
+        id: "quoteNumber", // Input field for the ticket ID
+        placeholder: "Enter Quote Number",
+        isRequired: true,
+        spacing: "Small",
+      },
     ],
     actions: [
       {
