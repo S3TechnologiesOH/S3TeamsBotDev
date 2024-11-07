@@ -9,6 +9,8 @@ const { start } = require("repl");
 const fs = require("fs");
 const mysql = require('mysql2/promise');
 
+const { testProducts } = require("./ConnectWise/connectwiseAPI");
+
 // --------------- Data ---------------
 const {assignUserRole} = require("./Data/dataManager");
 const {connectToMySQL} = require("./Data/sqlManager");
@@ -33,7 +35,7 @@ class TeamsBot extends TeamsActivityHandler {
 
     this.onMessage(async (context, next) => {
       connectToMySQL();
-      
+      await testProducts();
       const authState = await this.userAuthState.get(context, {
         isAuthenticated: false,
         lastLoginMessageId: null,

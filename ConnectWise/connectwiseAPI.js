@@ -27,7 +27,6 @@ try {
   throw new Error("Failed to initialize ConnectWise API.");
 }
 
-await testProducts();
 
 async function testProducts(){
   try{
@@ -77,4 +76,4 @@ async function fetch_time_entries_for_ticket(ticketId) {
 
 
 
-module.exports = { fetch_ticket_by_id, fetch_time_entries_for_ticket, fetch_ticket_tasks_by_id };
+module.exports = {testProducts, fetch_ticket_by_id, fetch_time_entries_for_ticket, fetch_ticket_tasks_by_id };
