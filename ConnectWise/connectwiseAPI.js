@@ -28,8 +28,8 @@ try {
 }
 
 try{
-  cwProductItems.procurementProductsIdGet({id: 53357});
-  console.log("Got procurement products: ", cwProductItems);
+  var response = cwProductItems.procurementProductsIdGet({id: 53357});
+  console.log("Got procurement products: ", response);
 }
 catch{
   console.log("Error getting procurement products");
