@@ -24,7 +24,7 @@ const handleQuoteRequest = async (context, quoteNumber) => {
   await fetchQuotes(baseUrl, headers);
   const value = extractTermsAndConditions('quotes.json', quoteNumber);
   console.log("Quote: ", value);
-  await context.sendActivity("Quote: ", value);
+  await context.sendActivity(`Quote: ${value}`);
 }
 
 // Example function to get a list of quotes
