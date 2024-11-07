@@ -29,6 +29,7 @@ try {
 
 try{
   cwProductItems.procurementProductsIdGet({id: 53357});
+  console.log("Got procurement products: ", cwProductItems);
 }
 catch{
   console.log("Error getting procurement products");
