@@ -14,7 +14,7 @@ const {assignUserRole} = require("./Data/dataManager");
 const {connectToMySQL} = require("./Data/sqlManager");
 // --------------- ConnectWise ---------------
 const {handleTicketRequest} = require("./ConnectWise/ticketManager");
-
+const {extractTermsAndConditions, getQuotes, exportQuotesToJson} = require("./CPQ/cpqAPI");
 // --------------- MS Graph ---------------
 const authenticationHelper = require("./MSGraph/authenticationHelper");
 
@@ -26,6 +26,14 @@ class TeamsBot extends TeamsActivityHandler {
   
   constructor(userState) {
     super();
+
+    // Call the function and export the response to a JSON file
+    getQuotes().then((quotes) => {
+      if (quotes) {
+        exportQuotesToJson(quotes);
+      }
+    });
+
     this.userMessageId = null; // Track the last user message ID    
 
     this.userState = userState;
@@ -33,7 +41,7 @@ class TeamsBot extends TeamsActivityHandler {
 
     this.onMessage(async (context, next) => {
       connectToMySQL();
-
+      
       const authState = await this.userAuthState.get(context, {
         isAuthenticated: false,
         lastLoginMessageId: null,

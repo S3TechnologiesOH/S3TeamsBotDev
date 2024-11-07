@@ -42,4 +42,8 @@ async function handleTicketRequest(context, ticketId) {
       console.error("Error fetching ticket or time entries:", error);
     }
   }
+
+async function handleQuoteRequest(context, ticketId){
+  
+}
 module.exports = { handleTicketRequest };
