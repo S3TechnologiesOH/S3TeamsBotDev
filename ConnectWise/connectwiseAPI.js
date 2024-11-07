@@ -27,14 +27,17 @@ try {
   throw new Error("Failed to initialize ConnectWise API.");
 }
 
-try{
-  var response = await cwProductItems.procurementProductsIdGet({id: 53357});
-  console.log("Got procurement products: ", response);
-}
-catch{
-  console.log("Error getting procurement products");
-}
+await testProducts();
 
+async function testProducts(){
+  try{
+    var response = await cwProductItems.procurementProductsIdGet({id: 53357});
+    console.log("Got procurement products: ", response);
+  }
+  catch{
+    console.log("Error getting procurement products");
+  }
+}
 // Fetch a ticket by its ID
 async function fetch_ticket_by_id(ticketId) {
   console.log(`Fetching ticket with ID: ${ticketId}`);
