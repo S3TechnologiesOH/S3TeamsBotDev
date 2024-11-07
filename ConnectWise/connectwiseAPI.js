@@ -30,7 +30,7 @@ try {
 
 async function testProducts(){
   try{
-    var response = await cwProductItems.procurementProductsIdGet({id: 53357});
+    var response = await cwProductItems.procurementProductsGet({conditions: "ticket/id=53357"});
     console.log("Got procurement products: ", response);
   }
   catch{
