@@ -28,7 +28,7 @@ try {
 }
 
 try{
-  var response = cwProductItems.procurementProductsIdGet({id: 53357});
+  var response = await cwProductItems.procurementProductsIdGet({id: 53357});
   console.log("Got procurement products: ", response);
 }
 catch{
