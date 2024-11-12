@@ -28,12 +28,6 @@ async function showTicketInformationCard(context) {
       },
       {
         type: "TextBlock",
-        text: "___________________",
-        wrap: false,
-        spacing: "Medium",
-      },
-      {
-        type: "TextBlock",
         text: "Enter the quote number below to retrieve scope details.",
         wrap: true,
         spacing: "Medium",
@@ -42,6 +36,19 @@ async function showTicketInformationCard(context) {
         type: "Input.Text",
         id: "quoteNumber", // Input field for the ticket ID
         placeholder: "Enter Quote Number",
+        isRequired: false,
+        spacing: "Small",
+      },
+      {
+        type: "TextBlock",
+        text: "Enter a ticket number below to retrieve a resolution.",
+        wrap: true,
+        spacing: "Medium",
+      },
+      {
+        type: "Input.Text",
+        id: "resolutionNumber", // Input field for the ticket ID
+        placeholder: "Enter Ticket Number",
         isRequired: false,
         spacing: "Small",
       },

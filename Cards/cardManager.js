@@ -121,7 +121,8 @@ async function onAdaptiveCardSubmit(context, authState) {
         case "runTicketCommand":
           const ticketNumber = submittedData.ticketId;
           const quoteNumber = submittedData.quoteNumber;
-        
+          const resolutionNumber = submittedData.resolutionNumber;
+
           if (ticketNumber && ticketNumber.trim() !== "") {
             // Handle ticket command
             const ticket = ticketNumber.toString().replace("#", "");
@@ -140,6 +141,16 @@ async function onAdaptiveCardSubmit(context, authState) {
             if (!isNaN(quoteId)) {
               await cpq.handleQuoteRequest(context, quoteId);
               console.log("Quote request handled");
+            } else {
+              await context.sendActivity("Please enter a valid numeric quote number.");
+            }
+          } else if (resolutionNumber && resolutionNumber.trim() !== "") {
+            // Handle quote command
+            const ticketId = parseInt(quoteNumber.trim(), 10);
+            console.log("ticketId Number:", ticketId);
+            if (!isNaN(ticketId)) {
+              await ticketManager.handleResolutionRequest(context, ticketId);
+              console.log("Resolution request handled");
             } else {
               await context.sendActivity("Please enter a valid numeric quote number.");
             }
