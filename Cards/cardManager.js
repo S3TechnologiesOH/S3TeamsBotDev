@@ -146,7 +146,7 @@ async function onAdaptiveCardSubmit(context, authState) {
             }
           } else if (resolutionNumber && resolutionNumber.trim() !== "") {
             // Handle quote command
-            const ticketId = parseInt(quoteNumber.trim(), 10);
+            const ticketId = parseInt(resolutionNumber.trim(), 10);
             console.log("ticketId Number:", ticketId);
             if (!isNaN(ticketId)) {
               await ticketManager.handleResolutionRequest(context, ticketId);
