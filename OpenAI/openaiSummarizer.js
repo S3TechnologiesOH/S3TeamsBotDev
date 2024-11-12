@@ -105,7 +105,73 @@ async function summarizeJSON(context, ticketId, ticketData, taskData) {
     throw new Error("Failed to summarize JSON data.");
   }
 }
+async function createResolution(context, ticketId, ticketData) {
+  try {
+    console.log("Starting summarizeJSON function");
 
+    // Convert ticket data and task data to strings
+    const ticketString = JSON.stringify(ticketData, null, 2);
+
+    // Combine both strings into one prompt message
+    const promptMessage = `Create a resolution for this:\n${ticketString}`;
+    console.log("Prompt message created: ", promptMessage);
+
+    if (!currentThread) {
+      currentThread = await retryWithBackoff(() =>
+        client.beta.threads.create()
+      );
+      console.log("Thread created: ", currentThread);
+    }
+
+    const threadResponse = await retryWithBackoff(() =>
+      client.beta.threads.messages.create(currentThread.id, {
+        role: "user",
+        content: promptMessage,
+      })
+    );
+    console.log(
+      "User message added to thread: ",
+      JSON.stringify(threadResponse)
+    );
+
+    const runResponse = await retryWithBackoff(() =>
+      client.beta.threads.runs.create(currentThread.id, {
+        assistant_id: "asst_ICtoA5LgyafXUbfFx5cyQB4m",
+        max_completion_tokens: 200,
+        temperature: 0.1,
+      })
+    );
+    console.log("Run started: ", runResponse);
+    await context.sendActivity("Processing your resolution request. Please wait...");
+
+    let runStatus = runResponse.status;
+    while (runStatus === "queued" || runStatus === "in_progress") {
+      console.log(`Current run status: ${runStatus}`);
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      const runStatusResponse = await client.beta.threads.runs.retrieve(
+        currentThread.id,
+        runResponse.id
+      );
+      runStatus = runStatusResponse.status;
+      console.log(`Updated run status: ${runStatus}`);
+    }
+
+    if (runStatus === "completed") {
+      const messagesResponse = await client.beta.threads.messages.list(
+        currentThread.id
+      );
+      const messageContent = extractMessageContent(messagesResponse);
+      console.log("Message Content: ", messageContent);
+      return messageContent;
+    } else {
+      console.error(`Run did not complete successfully. Status: ${runStatus}`);
+      throw new Error(`Run did not complete successfully. Status: ${runStatus}`);
+    }
+  } catch (error) {
+    console.error("Error summarizing JSON:", error);
+    throw new Error("Failed to summarize JSON data.");
+  }
+}
 
 // Extract message content from the response
 function extractMessageContent(messagesResponse) {
@@ -141,5 +207,5 @@ async function retryWithBackoff(fn, retries = 3) {
 }
 
 module.exports = {
-  summarizeJSON,
+  summarizeJSON, createResolution,
 };

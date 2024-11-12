@@ -1,6 +1,6 @@
 const {fetch_ticket_by_id, fetch_time_entries_for_ticket, fetch_ticket_tasks_by_id} = require("./connectwiseAPI"); // ConnectWise API logic
 const { get_attr_or_key } = require("./connectwiseHelpers");
-const { summarizeJSON } = require("../OpenAI/openaiSummarizer");
+const { summarizeJSON, createResolution } = require("../OpenAI/openaiSummarizer");
 
 async function handleTicketRequest(context, ticketId) {
     try {
@@ -43,4 +43,10 @@ async function handleTicketRequest(context, ticketId) {
     }
   }
 
-module.exports = { handleTicketRequest };
+async function handleResolutionRequest(context, ticketId){
+    const ticketInfo = await fetch_ticket_by_id(ticketId);
+    const resolution = createResolution(ticketInfo);
+    const fullMessage = `**Resolution:**\n\n ${resolution}`
+    context.sendActivity(fullMessage);
+  }
+module.exports = { handleTicketRequest, handleResolutionRequest };
