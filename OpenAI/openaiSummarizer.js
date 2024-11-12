@@ -105,7 +105,7 @@ async function summarizeJSON(context, ticketId, ticketData, taskData) {
     throw new Error("Failed to summarize JSON data.");
   }
 }
-async function createResolution(context, ticketId, ticketData) {
+async function createResolution(context, ticketData) {
   try {
     console.log("Starting summarizeJSON function");
 
