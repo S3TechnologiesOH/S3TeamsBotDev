@@ -43,10 +43,11 @@ async function handleTicketRequest(context, ticketId) {
     }
   }
 
-async function handleResolutionRequest(context, ticketId){
+  async function handleResolutionRequest(context, ticketId) {
     const ticketInfo = await fetch_ticket_by_id(ticketId);
-    const resolution = createResolution(ticketInfo);
-    const fullMessage = `**Resolution:**\n\n ${resolution}`
-    context.sendActivity(fullMessage);
-  }
+    const resolution = await createResolution(context, ticketInfo); // Await here
+    const fullMessage = `**Resolution:**\n\n ${resolution}`;
+    await context.sendActivity(fullMessage); // Ensure this is awaited if `sendActivity` is async
+}
+
 module.exports = { handleTicketRequest, handleResolutionRequest };

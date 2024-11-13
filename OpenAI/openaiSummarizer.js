@@ -127,18 +127,15 @@ async function createResolution(context, ticketData) {
     );
     console.log("User message added to thread: ", JSON.stringify(threadResponse));
 
-    // Start assistant run
-    const runResponse = await retryWithBackoff(() =>
-      client.beta.threads.runs.create(currentThread.id, {
-        assistant_id: "asst_ICtoA5LgyafXUbfFx5cyQB4m",
-        max_completion_tokens: 200,
-        temperature: 0.1,
-      })
-    );
+    const runResponse = await retryWithBackoff(() => client.beta.threads.runs.create(currentThread.id, {
+      assistant_id: "asst_ICtoA5LgyafXUbfFx5cyQB4m",
+      max_completion_tokens: 200,
+      temperature: 0.1,
+    }));
     console.log("Run started: ", runResponse);
     await context.sendActivity("Processing your resolution request. Please wait...");
 
-    // Check the run status in a loop until complete
+    // Waiting for the run to complete
     let runStatus = runResponse.status;
     while (["queued", "in_progress"].includes(runStatus)) {
       console.log(`Current run status: ${runStatus}`);
@@ -149,11 +146,12 @@ async function createResolution(context, ticketData) {
       console.log(`Updated run status: ${runStatus}`);
     }
 
+    // Await completion and extract message content
     if (runStatus === "completed") {
       const messagesResponse = await client.beta.threads.messages.list(currentThread.id);
-      const messageContent = extractMessageContent(messagesResponse);
+      const messageContent = extractMessageContent(messagesResponse); // This should be a synchronous function
       console.log("Message Content: ", messageContent);
-      return messageContent;
+      return messageContent; // Ensure this is the final returned content
     } else {
       throw new Error(`Run did not complete successfully. Status: ${runStatus}`);
     }
