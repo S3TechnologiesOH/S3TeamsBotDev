@@ -134,8 +134,11 @@ async function onAdaptiveCardSubmit(context, authState) {
             } else {
               await context.sendActivity("Please enter a valid numeric ticket number.");
             }
-
-          } else if (quoteNumber && quoteNumber.trim() !== "") {
+          } else {
+            await context.sendActivity("Please enter either a ticket ID or a quote number.");
+          }
+          
+          if (quoteNumber && quoteNumber.trim() !== "") {
             // Handle quote command
             const quoteId = parseInt(quoteNumber.trim(), 10);
             console.log("Quote Number:", quoteId);
@@ -145,8 +148,11 @@ async function onAdaptiveCardSubmit(context, authState) {
             } else {
               await context.sendActivity("Please enter a valid numeric quote number.");
             }
+          } else {
+          await context.sendActivity("Please enter either a ticket ID or a quote number.");
+          }
 
-          } else if (resolutionNumber && resolutionNumber.trim() !== "") {
+          if (resolutionNumber && resolutionNumber.trim() !== "") {
             // Handle quote command
             const ticketId = parseInt(resolutionNumber.trim(), 10);
             console.log("ticketId Number:", ticketId);
@@ -156,10 +162,10 @@ async function onAdaptiveCardSubmit(context, authState) {
             } else {
               await context.sendActivity("Please enter a valid numeric quote number.");
             }
-            
           } else {
             await context.sendActivity("Please enter either a ticket ID or a quote number.");
           }
+
           break;
         
         case "assignRoleCommand":
