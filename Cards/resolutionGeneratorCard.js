@@ -32,7 +32,7 @@ async function showResolutionCard(context) {
         type: "Action.Submit",
         title: "Submit",
         data: {
-          action: "runTicketCommand", // Identifies the submit action
+          action: "runResolutionCommand", // Identifies the submit action
         },
       },
       {

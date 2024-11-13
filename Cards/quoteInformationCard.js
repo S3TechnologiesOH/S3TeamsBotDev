@@ -32,7 +32,7 @@ async function showQuoteInformationCard(context) {
         type: "Action.Submit",
         title: "Submit",
         data: {
-          action: "runTicketCommand", // Identifies the submit action
+          action: "runQuoteCommand", // Identifies the submit action
         },
       },
       {
