@@ -1,6 +1,6 @@
 const { CardFactory } = require("botbuilder");
 
-async function showTicketInformationCard(context) {
+async function showQuoteInformationCard(context) {
   const ticketInfoCard = {
     $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
     type: "AdaptiveCard",
@@ -8,21 +8,21 @@ async function showTicketInformationCard(context) {
     body: [
       {
         type: "TextBlock",
-        text: "Retrieve Ticket Information",
+        text: "Retrieve Quote Information",
         weight: "Bolder",
         size: "Large",
         wrap: true,
       },
       {
         type: "TextBlock",
-        text: "Enter the ticket ID below to retrieve its details.",
+        text: "Enter the quote number below to retrieve scope details.",
         wrap: true,
         spacing: "Medium",
       },
       {
         type: "Input.Text",
-        id: "ticketId", // Input field for the ticket ID
-        placeholder: "Enter Ticket ID",
+        id: "quoteNumber", // Input field for the ticket ID
+        placeholder: "Enter Quote Number",
         isRequired: false,
         spacing: "Small",
       },
@@ -51,4 +51,4 @@ async function showTicketInformationCard(context) {
   });
 }
 
-module.exports = { showTicketInformationCard };
+module.exports = { showQuoteInformationCard };

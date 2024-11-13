@@ -2,7 +2,12 @@ const {dataManager, hasCommandPermission, assignUserRole, permissionsPath} = req
 const {logCommand} = require("../Data/sqlManager");
 const ticketManager = require("../ConnectWise/ticketManager");
 const cpq = require("../CPQ/cpqAPI");
+
+const ticketMenu = require("./ticketMenuCard");
 const ticketInfoCard = require("./ticketInformationCard");
+const quoteCard = require("./quoteInformationCard");
+const resoltuionCard = require("./resolutionGeneratorCard");
+
 const adminCommandsCard = require("./adminCommandsCard");
 const helpCard = require("./showHelpCard");
 const bugReportCard = require("./bugReportCard");
@@ -53,7 +58,7 @@ async function sendWelcomeCard(context, authState) {
         type: "Action.Submit",
         title: "Ticket Information",
         data: {
-          action: "showTicketInformationCard",
+          action: "showTicketMenuCard",
         },
       });
     }
@@ -98,11 +103,28 @@ async function onAdaptiveCardSubmit(context, authState) {
 
     switch (submittedData.action) {
   
+      case "showTicketMenuCard":
+        // Show the card listing ticket-related commands
+        console.log("showTicketMenuCard");
+        await ticketMenu.showInformationSelectionCard(context);
+        break;
+
       case "showTicketInformationCard":
         // Show the card listing ticket-related commands
         console.log("showTicketInformationCard");
         await ticketInfoCard.showTicketInformationCard(context);
         break;
+      case "showQuoteInformationCard":
+        // Show the card listing ticket-related commands
+        console.log("showQuoteInformationCard");
+        await quoteCard.showQuoteInformationCard(context);
+        break;
+      case "showResolutionCard":
+        // Show the card listing ticket-related commands
+        console.log("showResolutionCard");
+        await resoltuionCard.showResolutionCard(context);
+        break;
+      
       case "showAdminCommandsCard":
         // Show the card listing admin commands
         console.log("showAdminCommandsCard");
@@ -118,7 +140,7 @@ async function onAdaptiveCardSubmit(context, authState) {
         await bugReportCard.showBugReportCard(context);
         break;
 
-        case "runTicketCommand":
+      case "runTicketCommand":
           const ticketNumber = submittedData.ticketId;
           const quoteNumber = submittedData.quoteNumber;
           const resolutionNumber = submittedData.resolutionNumber;
@@ -137,7 +159,7 @@ async function onAdaptiveCardSubmit(context, authState) {
           } else {
             await context.sendActivity("Please enter either a ticket ID or a quote number.");
           }
-          
+
           if (quoteNumber && quoteNumber.trim() !== "") {
             // Handle quote command
             const quoteId = parseInt(quoteNumber.trim(), 10);
