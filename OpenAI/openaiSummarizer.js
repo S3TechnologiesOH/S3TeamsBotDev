@@ -107,33 +107,27 @@ async function summarizeJSON(context, ticketId, ticketData, taskData) {
 }
 async function createResolution(context, ticketData) {
   try {
-    console.log("Starting summarizeJSON function");
-
-    // Convert ticket data and task data to strings
+    if (!context || typeof context.sendActivity !== 'function') {
+      throw new Error("Invalid context: sendActivity function not available.");
+    }
+    
+    // Convert ticket data to string format for prompt
     const ticketString = JSON.stringify(ticketData, null, 2);
-
-    // Combine both strings into one prompt message
     const promptMessage = `Create a resolution for this:\n${ticketString}`;
     console.log("Prompt message created: ", promptMessage);
 
     if (!currentThread) {
-      currentThread = await retryWithBackoff(() =>
-        client.beta.threads.create()
-      );
+      currentThread = await retryWithBackoff(() => client.beta.threads.create());
       console.log("Thread created: ", currentThread);
     }
 
+    // Create user message in the thread
     const threadResponse = await retryWithBackoff(() =>
-      client.beta.threads.messages.create(currentThread.id, {
-        role: "user",
-        content: promptMessage,
-      })
+      client.beta.threads.messages.create(currentThread.id, { role: "user", content: promptMessage })
     );
-    console.log(
-      "User message added to thread: ",
-      JSON.stringify(threadResponse)
-    );
+    console.log("User message added to thread: ", JSON.stringify(threadResponse));
 
+    // Start assistant run
     const runResponse = await retryWithBackoff(() =>
       client.beta.threads.runs.create(currentThread.id, {
         assistant_id: "asst_ICtoA5LgyafXUbfFx5cyQB4m",
@@ -144,32 +138,28 @@ async function createResolution(context, ticketData) {
     console.log("Run started: ", runResponse);
     await context.sendActivity("Processing your resolution request. Please wait...");
 
+    // Check the run status in a loop until complete
     let runStatus = runResponse.status;
-    while (runStatus === "queued" || runStatus === "in_progress") {
+    while (["queued", "in_progress"].includes(runStatus)) {
       console.log(`Current run status: ${runStatus}`);
       await new Promise((resolve) => setTimeout(resolve, 3000));
-      const runStatusResponse = await client.beta.threads.runs.retrieve(
-        currentThread.id,
-        runResponse.id
-      );
+      
+      const runStatusResponse = await client.beta.threads.runs.retrieve(currentThread.id, runResponse.id);
       runStatus = runStatusResponse.status;
       console.log(`Updated run status: ${runStatus}`);
     }
 
     if (runStatus === "completed") {
-      const messagesResponse = await client.beta.threads.messages.list(
-        currentThread.id
-      );
+      const messagesResponse = await client.beta.threads.messages.list(currentThread.id);
       const messageContent = extractMessageContent(messagesResponse);
       console.log("Message Content: ", messageContent);
       return messageContent;
     } else {
-      console.error(`Run did not complete successfully. Status: ${runStatus}`);
       throw new Error(`Run did not complete successfully. Status: ${runStatus}`);
     }
   } catch (error) {
-    console.error("Error summarizing JSON:", error);
-    throw new Error("Failed to summarize JSON data.");
+    console.error("Error creating resolution:", error);
+    throw new Error("Failed to create resolution.");
   }
 }
 
