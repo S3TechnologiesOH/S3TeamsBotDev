@@ -180,7 +180,7 @@ function extractMessageContent(messagesResponse) {
 }
 
 // Retry with exponential backoff
-async function retryWithBackoff(fn, retries = 3) {
+async function retryWithBackoff(fn, retries = 10) {
   let delay = 1000;
   for (let i = 0; i < retries; i++) {
     try {
