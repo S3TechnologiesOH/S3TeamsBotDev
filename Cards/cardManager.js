@@ -142,7 +142,6 @@ async function onAdaptiveCardSubmit(context, authState) {
 
       case "runTicketCommand":
           const ticketNumber = submittedData.ticketId;
-          const quoteNumber = submittedData.quoteNumber;
           const resolutionNumber = submittedData.resolutionNumber;
 
           if (ticketNumber && ticketNumber.trim() !== "") {
@@ -159,38 +158,42 @@ async function onAdaptiveCardSubmit(context, authState) {
           } else {
             await context.sendActivity("Please enter either a ticket ID or a quote number.");
           }
-
-          if (quoteNumber && quoteNumber.trim() !== "") {
-            // Handle quote command
-            const quoteId = parseInt(quoteNumber.trim(), 10);
-            console.log("Quote Number:", quoteId);
-            if (!isNaN(quoteId)) {
-              await cpq.handleQuoteRequest(context, quoteId);
-              console.log("Quote request handled");
-            } else {
-              await context.sendActivity("Please enter a valid numeric quote number.");
-            }
-          } else {
-          await context.sendActivity("Please enter either a ticket ID or a quote number.");
-          }
-
-          if (resolutionNumber && resolutionNumber.trim() !== "") {
-            // Handle quote command
-            const ticketId = parseInt(resolutionNumber.trim(), 10);
-            console.log("ticketId Number:", ticketId);
-            if (!isNaN(ticketId)) {
-              await ticketManager.handleResolutionRequest(context, ticketId);
-              console.log("Resolution request handled");
-            } else {
-              await context.sendActivity("Please enter a valid numeric quote number.");
-            }
-          } else {
-            await context.sendActivity("Please enter either a ticket ID or a quote number.");
-          }
-
           break;
         
-        case "assignRoleCommand":
+      case "runQuoteCommand":
+        const quoteNumber = submittedData.quoteNumber;
+        if (quoteNumber && quoteNumber.trim() !== "") {
+          // Handle quote command
+          const quoteId = parseInt(quoteNumber.trim(), 10);
+          console.log("Quote Number:", quoteId);
+          if (!isNaN(quoteId)) {
+            await cpq.handleQuoteRequest(context, quoteId);
+            console.log("Quote request handled");
+          } else {
+            await context.sendActivity("Please enter a valid numeric quote number.");
+          }
+        } else {
+        await context.sendActivity("Please enter either a ticket ID or a quote number.");
+        }
+        break;
+
+      case "runResolutionCommand":
+        
+      if (resolutionNumber && resolutionNumber.trim() !== "") {
+        // Handle quote command
+        const ticketId = parseInt(resolutionNumber.trim(), 10);
+        console.log("ticketId Number:", ticketId);
+        if (!isNaN(ticketId)) {
+          await ticketManager.handleResolutionRequest(context, ticketId);
+          console.log("Resolution request handled");
+        } else {
+          await context.sendActivity("Please enter a valid numeric quote number.");
+        }
+      } else {
+        await context.sendActivity("Please enter either a ticket ID or a quote number.");
+      }
+      
+      case "assignRoleCommand":
           const { roleName, userEmail } = submittedData;
     
           if (!roleName || !userEmail) {
