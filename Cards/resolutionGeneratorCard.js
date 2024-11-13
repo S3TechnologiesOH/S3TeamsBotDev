@@ -1,7 +1,7 @@
 const { CardFactory } = require("botbuilder");
 
 async function showResolutionCard(context) {
-  const ticketInfoCard = {
+  const resolutionCard = {
     $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
     type: "AdaptiveCard",
     version: "1.4",
@@ -21,7 +21,7 @@ async function showResolutionCard(context) {
       },
       {
         type: "Input.Text",
-        id: "resolutionNumber", // Input field for the ticket ID
+        id: "resolutionNumber", // Input field for the ticket number
         placeholder: "Enter Ticket Number",
         isRequired: false,
         spacing: "Small",
@@ -45,9 +45,9 @@ async function showResolutionCard(context) {
     ],
   };
 
-  // Send the Ticket Information card
+  // Send the Resolution Information card
   await context.sendActivity({
-    attachments: [CardFactory.adaptiveCard(ticketInfoCard)],
+    attachments: [CardFactory.adaptiveCard(resolutionCard)],
   });
 }
 
