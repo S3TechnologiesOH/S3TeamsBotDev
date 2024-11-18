@@ -93,9 +93,9 @@ async function createCompany(context, companyDetails) {
       }
 
       // Create a new company
-      context.sendActivity(`Creating Company...: ${existingCompany.name}`);
+      context.sendActivity(`Creating Company...: ${payload.name}`);
       const response = await cwCompanies.companyCompaniesPost({ company: payload });
-      context.sendActivity(`Company Created: ${existingCompany.name}`);
+      context.sendActivity(`Company Created: ${payload.name}`);
 
       console.log("Company created successfully: ", response);
       return response;
