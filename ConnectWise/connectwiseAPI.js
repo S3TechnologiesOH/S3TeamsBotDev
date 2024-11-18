@@ -1,4 +1,4 @@
-const { TicketsApi, TicketTasksApi, ProductsItemApi } = require('connectwise-rest-api/release/api/api');  // Ensure this is the correct import
+const { TicketsApi, TicketTasksApi, ProductsItemApi, CompaniesApi } = require('connectwise-rest-api/release/api/api');  // Ensure this is the correct import
 
 // Set your ConnectWise configuration
 const connectwiseUrl = process.env.CW_URL;  // Your ConnectWise URL
@@ -14,19 +14,17 @@ const authKey = process.env.CW_AUTHKEY;
 let cwService;
 //console.log(`Company ID: ${process.env.CW_COMPANY_ID}`);
 //console.log(`Public Key: ${process.env.CW_PUBLIC_KEY}`);
+
 try {
   cwService = new TicketsApi(`${connectwiseUrl}`);  // Initialize API without version path in the base URL
   cwTasks = new TicketTasksApi(`${connectwiseUrl}`);
   cwProductItems = new ProductsItemApi(`${connectwiseUrl}`);
+  cwCompanies = new CompaniesApi(`${connectwiseUrl}`);
   
-  cwService.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
-  cwTasks.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
-  cwProductItems.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
 } catch (error) {
   console.error("Error initializing ConnectWise API:", error);
   throw new Error("Failed to initialize ConnectWise API.");
 }
-
 
 async function testProducts(){
   try{
@@ -74,6 +72,70 @@ async function fetch_time_entries_for_ticket(ticketId) {
   }
 }
 
+async function createCompany(context, companyDetails) {
+  
+  const payload = {
+      name: companyDetails.name,
+      identifier: companyDetails.identifier || companyDetails.name.replace(/\s+/g, '').toLowerCase(),
+      site: companyDetails.site || {
+          id: 0,
+          name: "Main"
+      }
+  };
 
+  try {
+      // Check if the company already exists
+      const existingCompany = await this.getCompanyByIdentifier(payload.identifier);
+      if (existingCompany) {
+          console.log(`This company already exists:`, existingCompany);
+          context.sendActivity(`This company already exists: ${existingCompany.name}`);
+          return existingCompany; // Return the existing company instead of proceeding
+      }
 
-module.exports = {testProducts, fetch_ticket_by_id, fetch_time_entries_for_ticket, fetch_ticket_tasks_by_id };
+      // Create a new company
+      context.sendActivity(`Creating Company...: ${existingCompany.name}`);
+      const response = await this.cwCompanies.companyCompaniesPost({ company: payload });
+      context.sendActivity(`Company Created: ${existingCompany.name}`);
+
+      console.log("Company created successfully: ", response);
+      return response;
+  } catch (error) {
+      console.error("Failed to create company: ", error);
+      throw error;
+  }
+}
+
+async function getCompanyByIdentifier(identifier) {
+  try {
+      const response = await this.cwCompanies.companyCompaniesGet({
+          conditions: `identifier='${identifier}'` // Ensure correct field name is used
+      });
+      if (response && response.length > 0) {
+          return response[0];
+      }
+      return null;
+  } catch (error) {
+      console.error("Failed to retrieve company: ", error);
+      return null;
+  }
+}
+
+async function deleteCompany(companyId) {
+  try {
+      await this.cwCompanies.companyCompaniesIdDelete({ id: companyId });
+      console.log(`Company with ID ${companyId} deleted successfully.`);
+  } catch (error) {
+      if (error.response?.status === 409) {
+          console.error(`Failed to delete company with ID ${companyId}: The company has dependencies.`);
+      } else {
+          console.error("Failed to delete company:", error);
+          throw error;
+      }
+  }
+}
+
+async function createSalesTicket(summary, companyId) {
+  console.log("Creating sales ticket: ", summary, " for company: ", companyId);
+}
+module.exports = {testProducts, fetch_ticket_by_id, fetch_time_entries_for_ticket,
+   fetch_ticket_tasks_by_id, createCompany, getCompanyByIdentifier, deleteCompany, createSalesTicket};

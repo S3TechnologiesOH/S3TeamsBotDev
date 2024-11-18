@@ -8,6 +8,9 @@ const ticketInfoCard = require("./ticketInformationCard");
 const quoteCard = require("./quoteInformationCard");
 const resoltuionCard = require("./resolutionGeneratorCard");
 
+const companyCreationCard = require("./companyCreationCard");
+const companyManager = require("../ConnectWise/companyManager");
+
 const adminCommandsCard = require("./adminCommandsCard");
 const helpCard = require("./showHelpCard");
 const bugReportCard = require("./bugReportCard");
@@ -62,7 +65,18 @@ async function sendWelcomeCard(context, authState) {
         },
       });
     }
-  
+
+    // Add the "Ticket Information" button if the user has permission
+    if (await hasCommandPermission(authState.userEmail, "company_commands")) {
+      adaptiveCard.actions.push({
+        type: "Action.Submit",
+        title: "Company Creation",
+        data: {
+          action: "showCreateCompanyCard",
+        },
+      });
+    }
+
     if (await hasCommandPermission(authState.userEmail, "help_commands")) {
       adaptiveCard.actions.push({
         type: "Action.Submit",
@@ -114,25 +128,32 @@ async function onAdaptiveCardSubmit(context, authState) {
         console.log("showTicketInformationCard");
         await ticketInfoCard.showTicketInformationCard(context);
         break;
+
       case "showQuoteInformationCard":
         // Show the card listing ticket-related commands
         console.log("showQuoteInformationCard");
         await quoteCard.showQuoteInformationCard(context);
         break;
+
       case "showResolutionCard":
         // Show the card listing ticket-related commands
         console.log("showResolutionCard");
         await resoltuionCard.showResolutionCard(context);
         break;
-      
+
       case "showAdminCommandsCard":
         // Show the card listing admin commands
         console.log("showAdminCommandsCard");
         await adminCommandsCard.showAdminCommandsCard(context);
         break;
+
       case "showHelpCard":
         // Show the card listing admin commands
         await helpCard.showHelpCard(context);
+        break;
+
+      case "showCreateCompanyCard":
+        await companyCreationCard.showCompanyCreationCard(context);
         break;
 
       case "showBugReportCard":
@@ -223,7 +244,17 @@ async function onAdaptiveCardSubmit(context, authState) {
       case "showWelcomeCard":
         await sendWelcomeCard(context, authState); // Back to the main menu
         break;
-  
+
+      case "handleCreateCompany":
+
+        const companyName = submittedData.companyName;
+        const companyId = submittedData.companyId;
+        const siteId = submittedData.siteId;
+        const siteName = submittedData.siteName;
+
+        await companyManager.handleCreateCompany(context, companyName, companyId, siteId, siteName);
+        break;
+
       default:
         await context.sendActivity("Unknown action. Please try again.");
         break;

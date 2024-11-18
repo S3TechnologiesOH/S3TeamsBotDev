@@ -5,6 +5,7 @@
       "clarker@mys3tech.com"
     ],
     "ticket_management": [],
+    "company_management": [],
     "guest": [
       "catwell@mys3tech.com",
       "JLowry@mys3tech.com",
@@ -13,6 +14,7 @@
       "jwagner@mys3tech.com"
     ]
   },
+
   "commandGroups": {
     "admin": [
       "Permission.Read",
@@ -22,10 +24,15 @@
       "Ticket.Read",
       "Ticket.Write"
     ],
+    "company_commands": [
+      "Company.Read",
+      "Company.Write"
+    ],
     "help_commands": [
       "Help.BugReport"
     ]
   },
+
   "rolePermissions": {
     "admin": [
       "ticket_commands",
@@ -34,6 +41,9 @@
     ],
     "ticket_management": [
       "ticket_commands"
+    ],
+    "company_management": [
+      "company_commands"
     ],
     "guest": [
       "ticket_commands",
