@@ -23,6 +23,7 @@ const authenticationHelper = require("./MSGraph/authenticationHelper");
 // --------------- Cards ---------------
 const { sendWelcomeCard, onAdaptiveCardSubmit } = require("./Cards/cardManager");
 
+const authState = null;
 
 class TeamsBot extends TeamsActivityHandler {
   
@@ -36,7 +37,7 @@ class TeamsBot extends TeamsActivityHandler {
     this.onMessage(async (context, next) => {
       connectToMySQL();
       await testProducts();
-      const authState = await this.userAuthState.get(context, {
+      authState = await this.userAuthState.get(context, {
         isAuthenticated: false,
         lastLoginMessageId: null,
       });
@@ -111,4 +112,4 @@ class TeamsBot extends TeamsActivityHandler {
 
 }
 
-module.exports = {TeamsBot};
+module.exports = {TeamsBot, authState};

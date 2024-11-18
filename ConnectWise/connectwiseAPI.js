@@ -1,4 +1,7 @@
 const { TicketsApi, TicketTasksApi, ProductsItemApi, CompaniesApi } = require('connectwise-rest-api/release/api/api');  // Ensure this is the correct import
+const { ManageAPI } = require('connectwise-rest');
+const { CommonParameters, CWMOptions } = require('connectwise-rest');
+const { TeamsBot, authState} = require('../teamsBot');
 
 // Set your ConnectWise configuration
 const connectwiseUrl = process.env.CW_URL;  // Your ConnectWise URL
@@ -20,6 +23,7 @@ try {
   cwTasks = new TicketTasksApi(`${connectwiseUrl}`);
   cwProductItems = new ProductsItemApi(`${connectwiseUrl}`);
   cwCompanies = new CompaniesApi(`${connectwiseUrl}`);
+  cwManage = new ManageAPI({ companyId, publicKey, privateKey, clientId, baseUrl: connectwiseUrl });
   cwCompanies.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
 
 } catch (error) {
@@ -126,8 +130,38 @@ async function createCompany(context, companyDetails) {
         }
   }
 
-async function createSalesTicket(summary, companyId) {
-  console.log("Creating sales ticket: ", summary, " for company: ", companyId);
-}
+  async function createSalesTicket(summary, companyId, context) {
+    console.log(`Creating sales ticket: ${summary} for company ID: ${companyId}`);
+  
+    const payload = {
+      summary: summary,
+      company: {
+        id: companyId, // ConnectWise company ID
+      },
+      status: {
+        name: "New", // Replace with your desired ticket status
+      },
+      priority: {
+        name: "Normal", // Replace with your desired priority
+      },
+      board: {
+        name: "Sales Board", // Replace with the relevant board name
+      },
+      owner: {
+        identifier: authState.userDisplayName, // Replace with a valid user ID
+      },
+    };                            
+  
+    try {
+      const response = await cwService.serviceTicketsPost({ serviceTicket: payload });
+      console.log("Sales ticket created successfully:", response);
+      context.sendActivity(`Sales ticket created with ID: ${response.id}`);
+      return response;
+    } catch (error) {
+      console.error("Error creating sales ticket:", error);
+      throw new Error("Failed to create sales ticket.");
+    }
+  }
+  
 module.exports = {testProducts, fetch_ticket_by_id, fetch_time_entries_for_ticket,
    fetch_ticket_tasks_by_id, createCompany, getCompanyByIdentifier, createSalesTicket};
