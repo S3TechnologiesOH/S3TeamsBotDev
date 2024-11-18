@@ -85,7 +85,7 @@ async function createCompany(context, companyDetails) {
 
   try {
       // Check if the company already exists
-      const existingCompany = await cwCompanies.getCompanyByIdentifier(payload.identifier);
+      const existingCompany = await getCompanyByIdentifier(payload.identifier);
       if (existingCompany) {
           console.log(`This company already exists:`, existingCompany);
           context.sendActivity(`This company already exists: ${existingCompany.name}`);
