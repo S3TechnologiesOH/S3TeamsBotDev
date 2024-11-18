@@ -85,7 +85,7 @@ async function createCompany(context, companyDetails) {
 
   try {
       // Check if the company already exists
-      const existingCompany = await this.getCompanyByIdentifier(payload.identifier);
+      const existingCompany = await cwCompanies.getCompanyByIdentifier(payload.identifier);
       if (existingCompany) {
           console.log(`This company already exists:`, existingCompany);
           context.sendActivity(`This company already exists: ${existingCompany.name}`);
@@ -94,7 +94,7 @@ async function createCompany(context, companyDetails) {
 
       // Create a new company
       context.sendActivity(`Creating Company...: ${existingCompany.name}`);
-      const response = await this.cwCompanies.companyCompaniesPost({ company: payload });
+      const response = await cwCompanies.companyCompaniesPost({ company: payload });
       context.sendActivity(`Company Created: ${existingCompany.name}`);
 
       console.log("Company created successfully: ", response);
@@ -107,7 +107,7 @@ async function createCompany(context, companyDetails) {
 
 async function getCompanyByIdentifier(identifier) {
   try {
-      const response = await this.cwCompanies.companyCompaniesGet({
+      const response = await cwCompanies.companyCompaniesGet({
           conditions: `identifier='${identifier}'` // Ensure correct field name is used
       });
       if (response && response.length > 0) {
@@ -122,7 +122,7 @@ async function getCompanyByIdentifier(identifier) {
 
 async function deleteCompany(companyId) {
   try {
-      await this.cwCompanies.companyCompaniesIdDelete({ id: companyId });
+      await cwCompanies.companyCompaniesIdDelete({ id: companyId });
       console.log(`Company with ID ${companyId} deleted successfully.`);
   } catch (error) {
       if (error.response?.status === 409) {
