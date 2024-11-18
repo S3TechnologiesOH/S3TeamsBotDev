@@ -107,9 +107,8 @@ async function createCompany(context, companyDetails) {
 
 async function getCompanyByIdentifier(identifier) {
   try {
-      const response = await cwCompanies.companyCompaniesGet({
-          conditions: `identifier='${identifier}'` // Ensure correct field name is used
-      });
+      const conditions = `identifier=${encodeURIComponent(identifier)}`;
+      const response = await this.cwService.companyCompaniesGet({ conditions });
       if (response && response.length > 0) {
           return response[0];
       }
