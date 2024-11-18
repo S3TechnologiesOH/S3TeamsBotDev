@@ -20,7 +20,8 @@ try {
   cwTasks = new TicketTasksApi(`${connectwiseUrl}`);
   cwProductItems = new ProductsItemApi(`${connectwiseUrl}`);
   cwCompanies = new CompaniesApi(`${connectwiseUrl}`);
-  
+  cwCompanies.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
+
 } catch (error) {
   console.error("Error initializing ConnectWise API:", error);
   throw new Error("Failed to initialize ConnectWise API.");
@@ -75,12 +76,17 @@ async function fetch_time_entries_for_ticket(ticketId) {
 async function createCompany(context, companyDetails) {
   
   const payload = {
-      name: companyDetails.name,
-      identifier: companyDetails.identifier || companyDetails.name.replace(/\s+/g, '').toLowerCase(),
-      site: companyDetails.site || {
-          id: 0,
-          name: "Main"
-      }
+    name: companyDetails.name,
+    identifier: companyDetails.identifier || companyDetails.name.replace(/\s+/g, '').toLowerCase(),
+    site: companyDetails.site || {
+        id: 0,
+        name: "Main",
+        _info: {
+            additionalProp1: "Null",
+            additionalProp2: "Null",
+            additionalProp3: "Null"
+        }
+    }
   };
 
   try {
@@ -105,37 +111,23 @@ async function createCompany(context, companyDetails) {
   }
 }
 
-async function getCompanyByIdentifier(identifier) {
-  try {
-      const conditions = `identifier=${encodeURIComponent(identifier)}`;
-      console.log(`Fetching company with identifier: identifier=${encodeURIComponent(identifier)}`);
-      const response = await cwCompanies.companyCompaniesGet({ conditions });
-      if (response && response.length > 0) {
-          return response[0];
-      }
-      return null;
-  } catch (error) {
-      console.error("Failed to retrieve company: ", error);
-      return null;
+  async function getCompanyByIdentifier(identifier) {
+        try {
+            const response = await this.cwCompanies.companyCompaniesGet({
+                conditions: `identifier='${identifier}'` // Ensure correct field name is used
+            });
+            if (response && response.length > 0) {
+                return response[0];
+            }
+            return null;
+        } catch (error) {
+            console.error("Failed to retrieve company: ", error);
+            return null;
+        }
   }
-}
-
-async function deleteCompany(companyId) {
-  try {
-      await cwCompanies.companyCompaniesIdDelete({ id: companyId });
-      console.log(`Company with ID ${companyId} deleted successfully.`);
-  } catch (error) {
-      if (error.response?.status === 409) {
-          console.error(`Failed to delete company with ID ${companyId}: The company has dependencies.`);
-      } else {
-          console.error("Failed to delete company:", error);
-          throw error;
-      }
-  }
-}
 
 async function createSalesTicket(summary, companyId) {
   console.log("Creating sales ticket: ", summary, " for company: ", companyId);
 }
 module.exports = {testProducts, fetch_ticket_by_id, fetch_time_entries_for_ticket,
-   fetch_ticket_tasks_by_id, createCompany, getCompanyByIdentifier, deleteCompany, createSalesTicket};
+   fetch_ticket_tasks_by_id, createCompany, getCompanyByIdentifier, createSalesTicket};
