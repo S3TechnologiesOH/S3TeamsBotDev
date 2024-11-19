@@ -21,7 +21,7 @@ const authenticationHelper = require("./MSGraph/authenticationHelper");
 // --------------- Cards ---------------
 const { sendWelcomeCard, onAdaptiveCardSubmit } = require("./Cards/cardManager");
 
-const authState = null;
+let authState = null;
 
 class TeamsBot extends TeamsActivityHandler {
   
