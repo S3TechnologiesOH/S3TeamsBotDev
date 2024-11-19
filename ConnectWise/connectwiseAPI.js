@@ -15,8 +15,10 @@ const authKey = process.env.CW_AUTHKEY;
 //console.log(`Auth Key: ${authKey}`);
 // Initialize the Tickets API
 let cwService;
-//console.log(`Company ID: ${process.env.CW_COMPANY_ID}`);
-//console.log(`Public Key: ${process.env.CW_PUBLIC_KEY}`);
+let cwTasks;
+let cwProductItems;
+let cwCompanies;
+let cwManage;
 
 try {
   cwService = new TicketsApi(`${connectwiseUrl}`);  // Initialize API without version path in the base URL
@@ -29,6 +31,7 @@ try {
   console.log("private key: ", privateKey);
   console.log("base url: ", connectwiseUrl);
   console.log("client id: ", clientId);
+  
   cwManage = new ManageAPI({companyId: companyId, publicKey: publicKey, privateKey: privateKey, companyUrl: connectwiseUrl, clientId: clientId});
   cwCompanies.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
 
