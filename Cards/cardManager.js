@@ -28,14 +28,6 @@ async function sendWelcomeCard(context, authState) {
       version: "1.4",
       body: [
         {
-          type: "Image",
-          url: `../s3LogoSignature.png`,
-          size: "Large",
-          style: "Default",
-          altText: "S3 Logo", 
-          horizontalAlignment: "Center",
-        },
-        {
           type: "TextBlock",
           text: `Welcome to the Teams Bot ${authState.userDisplayName}!`,
           weight: "Bolder",
