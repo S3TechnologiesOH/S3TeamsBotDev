@@ -29,7 +29,7 @@ try {
   console.log("private key: ", privateKey);
   console.log("base url: ", connectwiseUrl);
   console.log("client id: ", clientId);
-  options = new CWMOptions(companyId, publicKey, privateKey, connectwiseUrl, clientId);
+  options = {companyId, publicKey, privateKey, connectwiseUrl, clientId};
   cwManage = new ManageAPI(options);
   cwCompanies.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
 
