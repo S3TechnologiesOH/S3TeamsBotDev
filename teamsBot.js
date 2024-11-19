@@ -51,7 +51,7 @@ class TeamsBot extends TeamsActivityHandler {
         const userInput = context.activity.text?.trim().toLowerCase();
         console.log("User input: ", userInput);
         if (userInput) {
-          const isCommandHandled = await this.handleUserCommand(context, userInput, authState);
+          const isCommandHandled = await this.handleUserCommand(context, userInput);
           console.log("Command handled: ", isCommandHandled);
           if (!isCommandHandled) {
             await sendWelcomeCard(context, authState); // Show the welcome card if no valid command
@@ -72,7 +72,7 @@ class TeamsBot extends TeamsActivityHandler {
     });
   }    
 
-  async handleUserCommand(context, userInput, authState) {
+  async handleUserCommand(context, userInput) {
     const ticketRegex = /^\/ticket (\d+)$/;
     const roleAssignRegex = /^\/role assign (\w+) (\S+)$/;
   
