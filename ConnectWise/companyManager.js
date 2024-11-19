@@ -11,8 +11,8 @@ async function handleCreateCompany(context, companyName, address, contactInfo, r
             rep: rep,
             identifier : companyId,
             site: {
-                id: Main,
-                name: Main
+                id: 0,
+                name: m
             }
         };
 
