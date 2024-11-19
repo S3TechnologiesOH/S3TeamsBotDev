@@ -28,6 +28,27 @@ async function showCompanyCreationCard(context) {
       },
       {
         type: "Input.Text",
+        id: "companyAddress", // Input field for the ticket ID
+        placeholder: "Enter the Company Address",
+        isRequired: false,
+        spacing: "Small",
+      },
+      {
+        type: "Input.Text",
+        id: "companyContactInformation", // Input field for the ticket ID
+        placeholder: "Enter the Company Contact Information",
+        isRequired: false,
+        spacing: "Small",
+      },
+      {
+        type: "Input.Text",
+        id: "rep", // Input field for the ticket ID
+        placeholder: "Enter the rep",
+        isRequired: false,
+        spacing: "Small",
+      },
+      {
+        type: "Input.Text",
         id: "companyId", // Input field for the ticket ID
         placeholder: "Enter a Company ID",
         isRequired: false,

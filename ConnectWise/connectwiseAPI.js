@@ -107,6 +107,10 @@ async function createCompany(context, companyDetails) {
       const response = await cwCompanies.companyCompaniesPost({ company: payload });
       context.sendActivity(`Company Created: ${payload.name}`);
 
+      context.sendActivity(`Creating Appointment Ticket...: ${payload.name}`);
+      const newTicket = await createSalesTicket("New Appointment", payload.address, payload.contactInfo, payload.rep, response.id, context);
+      context.sendActivity(`Created Appointment For Company: ${payload.name}`);
+      
       console.log("Company created successfully: ", response);
       return response;
   } catch (error) {
@@ -130,9 +134,11 @@ async function createCompany(context, companyDetails) {
         }
   }
 
-  async function createSalesTicket(summary, companyId, context) {
+  async function createSalesTicket(summary, address, contactInfo, rep, companyId, context) {
     console.log(`Creating sales ticket: ${summary} for company ID: ${companyId}`);
   
+    const imageUrl = '../s3LogoSignature.png';
+
     const payload = {
       summary: summary,
       company: {
@@ -145,11 +151,22 @@ async function createCompany(context, companyDetails) {
         name: "Normal", // Replace with your desired priority
       },
       board: {
-        name: "Sales Board", // Replace with the relevant board name
+        name: "Sales", // Replace with the relevant board name
       },
       owner: {
         identifier: authState.userDisplayName, // Replace with a valid user ID
       },
+      source: {
+        name: "SDR - Jason Hone"
+      },
+      initialDescription: `Company:   ${companyId} \n\n 
+                          Address:   ${address} \n\n
+                          Contact Info: ${contactInfo}  \n\n 
+                          Rep: ${rep} \n\n
+                          Jason Hone|Business Development \n\n
+                          Direct-(234)252-1739 (O)330.648.5408 x129| jhone@mys3tech.com | www.mys3tech.com \n\n
+                          90 N. Prospect St. Akron, OH 44304| 752 N State St. Westerville, OH 43081 // Replace with your desired description
+                          ${imageUrl}`, 
     };                            
   
     try {
