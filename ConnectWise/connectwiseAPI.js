@@ -23,7 +23,7 @@ try {
   cwTasks = new TicketTasksApi(`${connectwiseUrl}`);
   cwProductItems = new ProductsItemApi(`${connectwiseUrl}`);
   cwCompanies = new CompaniesApi(`${connectwiseUrl}`);
-  cwManage = new ManageAPI({ companyId, publicKey, privateKey, clientId, baseUrl: connectwiseUrl });
+  cwManage = new ManageAPI({ companyId, publicKey, privateKey, baseUrl: connectwiseUrl }, clientId);
   cwCompanies.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
 
 } catch (error) {
@@ -110,7 +110,7 @@ async function createCompany(context, companyDetails) {
       context.sendActivity(`Creating Appointment Ticket...: ${payload.name}`);
       const newTicket = await createSalesTicket("New Appointment", payload.address, payload.contactInfo, payload.rep, response.id, context);
       context.sendActivity(`Created Appointment For Company: ${payload.name}`);
-      
+
       console.log("Company created successfully: ", response);
       return response;
   } catch (error) {
