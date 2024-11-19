@@ -1,10 +1,10 @@
-const { TicketsApi, TicketTasksApi, ProductsItemApi, CompaniesApi } = require('connectwise-rest-api/release/api/api');  // Ensure this is the correct import
+const { TicketsApi, TicketTasksApi, ProductsItemApi, CompaniesApi } = require('connectwise-rest-api/release/api/api');
 const { ManageAPI } = require('connectwise-rest');
 const { CommonParameters, CWMOptions } = require('connectwise-rest');
-const { TeamsBot, authState} = require('../teamsBot');
+const { TeamsBot, authState } = require('../teamsBot');
 
 // Set your ConnectWise configuration
-const connectwiseUrl = process.env.CW_URL;  // Your ConnectWise URL
+const connectwiseUrl = process.env.CW_URL;
 const companyId = process.env.CW_COMPANY_ID;
 const publicKey = process.env.CW_PUBLIC_KEY;
 const privateKey = process.env.CW_PRIVATE_KEY;
@@ -12,29 +12,34 @@ const clientId = process.env.CW_CLIENTID;
 const authKey = process.env.CW_AUTHKEY;
 
 // Authenticate with ConnectWise using a basic auth header
-//console.log(`Auth Key: ${authKey}`);
-// Initialize the Tickets API
-let cwService;
-let cwTasks;
-let cwProductItems;
-let cwCompanies;
-let cwManage;
+let cwService, cwTasks, cwProductItems, cwCompanies, cwManage;
 
 try {
-  cwService = new TicketsApi(`${connectwiseUrl}`);  // Initialize API without version path in the base URL
+  console.log("Initializing ConnectWise APIs...");
+  console.log("Configuration: ", {
+    connectwiseUrl,
+    companyId,
+    publicKey,
+    privateKey,
+    clientId,
+    authKey: authKey ? "Provided" : "Not Provided"
+  });
+
+  cwService = new TicketsApi(`${connectwiseUrl}`);
   cwTasks = new TicketTasksApi(`${connectwiseUrl}`);
   cwProductItems = new ProductsItemApi(`${connectwiseUrl}`);
   cwCompanies = new CompaniesApi(`${connectwiseUrl}`);
 
-  console.log("company id: ", companyId);
-  console.log("public key: ", publicKey);
-  console.log("private key: ", privateKey);
-  console.log("base url: ", connectwiseUrl);
-  console.log("client id: ", clientId);
-  
-  cwManage = new ManageAPI({companyId: companyId, publicKey: publicKey, privateKey: privateKey, companyUrl: connectwiseUrl, clientId: clientId});
-  cwCompanies.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
+  cwManage = new ManageAPI({
+    companyId,
+    publicKey,
+    privateKey,
+    companyUrl: connectwiseUrl,
+    clientId
+  });
 
+  cwCompanies.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
+  console.log("ConnectWise APIs initialized successfully.");
 } catch (error) {
   console.error("Error initializing ConnectWise API:", error);
   throw new Error("Failed to initialize ConnectWise API.");
@@ -42,22 +47,24 @@ try {
 
 // Fetch a ticket by its ID
 async function fetch_ticket_by_id(ticketId) {
-  console.log(`Fetching ticket with ID: ${ticketId}`);
+  console.log(`Entering fetch_ticket_by_id with ticketId: ${ticketId}`);
   try {
-    var response = await cwService.serviceTicketsIdGet({ id: ticketId });  // Pass the id as part of an object
-    console.log("Ticket Response: ", response);
-    return response;  // The full ticket data will be returned as an object
+    console.log("Calling cwService.serviceTicketsIdGet...");
+    const response = await cwService.serviceTicketsIdGet({ id: ticketId });
+    console.log("Fetch ticket response: ", response);
+    return response;
   } catch (error) {
-
     console.error("Error fetching ticket:", error);
     throw new Error("Failed to fetch ticket.");
   }
 }
 
 async function fetch_ticket_tasks_by_id(ticketId) {
+  console.log(`Entering fetch_ticket_tasks_by_id with ticketId: ${ticketId}`);
   try {
+    console.log("Calling cwTasks.serviceTicketsIdTasksGet...");
     const response = await cwTasks.serviceTicketsIdTasksGet({ id: ticketId });
-    console.log("Task Response: ", response);
+    console.log("Fetch ticket tasks response: ", response);
     return response;
   } catch (error) {
     console.error("Error fetching ticket tasks:", error);
@@ -67,10 +74,12 @@ async function fetch_ticket_tasks_by_id(ticketId) {
 
 // Fetch time entries related to a specific ticket
 async function fetch_time_entries_for_ticket(ticketId) {
+  console.log(`Entering fetch_time_entries_for_ticket with ticketId: ${ticketId}`);
   try {
-    // Assuming `serviceTicketsIdGetTimeEntries` is a valid endpoint in your API:
-    const response = await cwService.serviceTicketsIdTimeentriesGet( { id : ticketId });
-    return response; // The time entries will be returned as an array
+    console.log("Calling cwService.serviceTicketsIdTimeentriesGet...");
+    const response = await cwService.serviceTicketsIdTimeentriesGet({ id: ticketId });
+    console.log("Fetch time entries response: ", response);
+    return response;
   } catch (error) {
     console.error("Error fetching time entries:", error);
     throw new Error("Failed to fetch time entries.");
@@ -78,107 +87,101 @@ async function fetch_time_entries_for_ticket(ticketId) {
 }
 
 async function createCompany(context, companyDetails) {
-  
-  var payload = {
+  console.log("Entering createCompany with details:", companyDetails);
+
+  const payload = {
     name: companyDetails.name,
     identifier: companyDetails.identifier || companyDetails.name.replace(/\s+/g, '').toLowerCase(),
     site: companyDetails.site || {
-        id: 0,
-        name: "Main",
-        _info: {
-            additionalProp1: "Null",
-            additionalProp2: "Null",
-            additionalProp3: "Null"
-        }
+      id: 0,
+      name: "Main",
+      _info: {
+        additionalProp1: "Null",
+        additionalProp2: "Null",
+        additionalProp3: "Null"
+      }
     }
   };
 
   try {
-      // Check if the company already exists
-      var existingCompany = await getCompanyByIdentifier(payload.identifier);
-      if (existingCompany) {
-          console.log(`This company already exists:`, existingCompany);
-          context.sendActivity(`This company already exists: ${existingCompany.name}`);
-          return existingCompany; // Return the existing company instead of proceeding
-      }
+    console.log("Checking if company exists...");
+    const existingCompany = await getCompanyByIdentifier(payload.identifier);
+    if (existingCompany) {
+      console.log("Company already exists:", existingCompany);
+      context.sendActivity(`This company already exists: ${existingCompany.name}`);
+      return existingCompany;
+    }
 
-      // Create a new company
-      context.sendActivity(`Creating Company...: ${payload.name}`);
-      const response = await cwCompanies.companyCompaniesPost({ company: payload });
-      context.sendActivity(`Company Created: ${payload.name}`);
+    console.log("Creating new company with payload:", payload);
+    const response = await cwCompanies.companyCompaniesPost({ company: payload });
+    console.log("Company created successfully:", response);
 
-      context.sendActivity(`Creating Appointment Ticket...: ${payload.name}`);
-      const newTicket = await createSalesTicket("New Appointment", payload.address, payload.contactInfo, payload.rep, response.id, context);
-      context.sendActivity(`Created Appointment For Company: ${payload.name}`);
+    context.sendActivity(`Creating Appointment Ticket for company: ${payload.name}`);
+    const newTicket = await createSalesTicket(
+      "New Appointment",
+      payload.address,
+      payload.contactInfo,
+      payload.rep,
+      response.id,
+      context
+    );
+    console.log("Appointment ticket created successfully:", newTicket);
 
-      console.log("Company created successfully: ", response);
-      return response;
+    return response;
   } catch (error) {
-      console.error("Failed to create company: ", error);
-      throw error;
+    console.error("Failed to create company:", error);
+    throw error;
   }
 }
 
-  async function getCompanyByIdentifier(identifier) {
-        try {
-            var response = await this.cwCompanies.companyCompaniesGet({
-                conditions: `identifier='${identifier}'` // Ensure correct field name is used
-            });
-            if (response && response.length > 0) {
-                return response[0];
-            }
-            return null;
-        } catch (error) {
-            console.error("Failed to retrieve company: ", error);
-            return null;
-        }
+async function getCompanyByIdentifier(identifier) {
+  console.log(`Entering getCompanyByIdentifier with identifier: ${identifier}`);
+  try {
+    console.log("Calling cwCompanies.companyCompaniesGet...");
+    const response = await cwCompanies.companyCompaniesGet({
+      conditions: `identifier='${identifier}'`
+    });
+    console.log("Get company response:", response);
+    return response && response.length > 0 ? response[0] : null;
+  } catch (error) {
+    console.error("Error fetching company by identifier:", error);
+    return null;
   }
+}
 
-  async function createSalesTicket(summary, address, contactInfo, rep, companyId, context) {
-    console.log(`Creating sales ticket: ${summary} for company ID: ${companyId}`);
-  
-    var imageUrl = '../s3LogoSignature.png';
+async function createSalesTicket(summary, address, contactInfo, rep, companyId, context) {
+  console.log("Entering createSalesTicket with details:", { summary, address, contactInfo, rep, companyId });
 
-    var payload = {
-      summary: summary,
-      company: {
-        id: companyId, // ConnectWise company ID
-      },
-      status: {
-        name: "New", // Replace with your desired ticket status
-      },
-      priority: {
-        name: "Normal", // Replace with your desired priority
-      },
-      board: {
-        name: "Sales", // Replace with the relevant board name
-      },
-      owner: {
-        identifier: authState.userDisplayName, // Replace with a valid user ID
-      },
-      source: {
-        name: "SDR - Jason Hone"
-      },
-      initialDescription: `Company:   ${companyId} \n\n 
-                          Address:   ${address} \n\n
-                          Contact Info: ${contactInfo}  \n\n 
-                          Rep: ${rep} \n\n
-                          Jason Hone|Business Development \n\n
-                          Direct-(234)252-1739 (O)330.648.5408 x129| jhone@mys3tech.com | www.mys3tech.com \n\n
-                          90 N. Prospect St. Akron, OH 44304| 752 N State St. Westerville, OH 43081 // Replace with your desired description
-                          ${imageUrl}`, 
-    };                            
-  
-    try {
-      var response = await cwService.serviceTicketsPost({ serviceTicket: payload });
-      console.log("Sales ticket created successfully:", response);
-      context.sendActivity(`Sales ticket created with ID: ${response.id}`);
-      return response;
-    } catch (error) {
-      console.error("Error creating sales ticket:", error);
-      throw new Error("Failed to create sales ticket.");
-    }
+  const imageUrl = '../s3LogoSignature.png';
+
+  const payload = {
+    summary,
+    company: { id: companyId },
+    status: { name: "New" },
+    priority: { name: "Normal" },
+    board: { name: "Sales" },
+    owner: { identifier: authState.userDisplayName },
+    source: { name: "SDR - Jason Hone" },
+    initialDescription: `Company: ${companyId}\n\nAddress: ${address}\n\nContact Info: ${contactInfo}\n\nRep: ${rep}\n\nJason Hone|Business Development\n\nDirect-(234)252-1739 (O)330.648.5408 x129| jhone@mys3tech.com | www.mys3tech.com\n\n90 N. Prospect St. Akron, OH 44304| 752 N State St. Westerville, OH 43081\n${imageUrl}`
+  };
+
+  try {
+    console.log("Calling cwService.serviceTicketsPost with payload:", payload);
+    const response = await cwService.serviceTicketsPost({ serviceTicket: payload });
+    console.log("Sales ticket created successfully:", response);
+    context.sendActivity(`Sales ticket created with ID: ${response.id}`);
+    return response;
+  } catch (error) {
+    console.error("Error creating sales ticket:", error);
+    throw new Error("Failed to create sales ticket.");
   }
-  
-module.exports = {fetch_ticket_by_id, fetch_time_entries_for_ticket,
-   fetch_ticket_tasks_by_id, createCompany, getCompanyByIdentifier, createSalesTicket};
+}
+
+module.exports = {
+  fetch_ticket_by_id,
+  fetch_time_entries_for_ticket,
+  fetch_ticket_tasks_by_id,
+  createCompany,
+  getCompanyByIdentifier,
+  createSalesTicket
+};
