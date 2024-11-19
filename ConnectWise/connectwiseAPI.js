@@ -23,6 +23,13 @@ try {
   cwTasks = new TicketTasksApi(`${connectwiseUrl}`);
   cwProductItems = new ProductsItemApi(`${connectwiseUrl}`);
   cwCompanies = new CompaniesApi(`${connectwiseUrl}`);
+
+  console.log("company id: ", companyId);
+  console.log("public key: ", publicKey);
+  console.log("private key: ", privateKey);
+  console.log("base url: ", connectwiseUrl);
+  console.log("client id: ", clientId);
+  
   cwManage = new ManageAPI({ companyId, publicKey, privateKey, baseUrl: connectwiseUrl }, clientId);
   cwCompanies.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
 
