@@ -31,11 +31,11 @@ try {
   cwCompanies = new CompaniesApi(`${connectwiseUrl}`);
 
   cwManage = new ManageAPI({
-    companyId,
-    publicKey,
-    privateKey,
-    companyUrl: connectwiseUrl,
-    clientId
+    companyId: companyId,
+    publicKey: publicKey,
+    privateKey: privateKey,
+    companyUrl : connectwiseUrl,
+    clientId: clientId
   });
 
   cwCompanies.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
