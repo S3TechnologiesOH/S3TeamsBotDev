@@ -37,15 +37,6 @@ try {
   throw new Error("Failed to initialize ConnectWise API.");
 }
 
-async function testProducts(){
-  try{
-    var response = await cwProductItems.procurementProductsGet({conditions: "ticket/id=52843"});
-    console.log("Got procurement products: ", response);
-  }
-  catch{
-    console.log("Error getting procurement products");
-  }
-}
 // Fetch a ticket by its ID
 async function fetch_ticket_by_id(ticketId) {
   console.log(`Fetching ticket with ID: ${ticketId}`);
@@ -85,7 +76,7 @@ async function fetch_time_entries_for_ticket(ticketId) {
 
 async function createCompany(context, companyDetails) {
   
-  const payload = {
+  var payload = {
     name: companyDetails.name,
     identifier: companyDetails.identifier || companyDetails.name.replace(/\s+/g, '').toLowerCase(),
     site: companyDetails.site || {
@@ -101,7 +92,7 @@ async function createCompany(context, companyDetails) {
 
   try {
       // Check if the company already exists
-      const existingCompany = await getCompanyByIdentifier(payload.identifier);
+      var existingCompany = await getCompanyByIdentifier(payload.identifier);
       if (existingCompany) {
           console.log(`This company already exists:`, existingCompany);
           context.sendActivity(`This company already exists: ${existingCompany.name}`);
@@ -127,7 +118,7 @@ async function createCompany(context, companyDetails) {
 
   async function getCompanyByIdentifier(identifier) {
         try {
-            const response = await this.cwCompanies.companyCompaniesGet({
+            var response = await this.cwCompanies.companyCompaniesGet({
                 conditions: `identifier='${identifier}'` // Ensure correct field name is used
             });
             if (response && response.length > 0) {
@@ -143,9 +134,9 @@ async function createCompany(context, companyDetails) {
   async function createSalesTicket(summary, address, contactInfo, rep, companyId, context) {
     console.log(`Creating sales ticket: ${summary} for company ID: ${companyId}`);
   
-    const imageUrl = '../s3LogoSignature.png';
+    var imageUrl = '../s3LogoSignature.png';
 
-    const payload = {
+    var payload = {
       summary: summary,
       company: {
         id: companyId, // ConnectWise company ID
@@ -176,7 +167,7 @@ async function createCompany(context, companyDetails) {
     };                            
   
     try {
-      const response = await cwService.serviceTicketsPost({ serviceTicket: payload });
+      var response = await cwService.serviceTicketsPost({ serviceTicket: payload });
       console.log("Sales ticket created successfully:", response);
       context.sendActivity(`Sales ticket created with ID: ${response.id}`);
       return response;
@@ -186,5 +177,5 @@ async function createCompany(context, companyDetails) {
     }
   }
   
-module.exports = {testProducts, fetch_ticket_by_id, fetch_time_entries_for_ticket,
+module.exports = {fetch_ticket_by_id, fetch_time_entries_for_ticket,
    fetch_ticket_tasks_by_id, createCompany, getCompanyByIdentifier, createSalesTicket};

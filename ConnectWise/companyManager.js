@@ -18,7 +18,7 @@ async function handleCreateCompany(context, companyName, address, contactInfo, r
 
 
         // Create a new company
-        const newCompany = await connectwiseAPI.createCompany(context, newCompanyDetails);
+        newCompany = await connectwiseAPI.createCompany(context, newCompanyDetails);
         console.log('New Company:', newCompany);
 
         console.log('New Ticket:', newTicket);
