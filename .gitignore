@@ -5,5 +5,5 @@
 # /Data/*.json
 
 # Node.js specific ignores (optional, if not already present)
-node_modules/
+node_modules/public-encrypt
 .env
