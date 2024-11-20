@@ -13,6 +13,10 @@ const authKey = process.env.CW_AUTHKEY;
 
 // Authenticate with ConnectWise using a basic auth header
 let cwService, cwTasks, cwProductItems, cwCompanies, cwManage;
+//console.log(`Auth Key: ${authKey}`);
+// Initialize the Tickets API
+//console.log(`Company ID: ${process.env.CW_COMPANY_ID}`);
+//console.log(`Public Key: ${process.env.CW_PUBLIC_KEY}`);
 
 try {
   console.log("Initializing ConnectWise APIs...");

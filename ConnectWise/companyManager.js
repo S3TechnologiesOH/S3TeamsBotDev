@@ -4,7 +4,7 @@ async function handleCreateCompany(context, companyName, address, contactInfo, r
     try {
 
         // Setup company details based on input
-        var newCompanyDetails = {
+        const newCompanyDetails = {
             name : companyName,
             address: address,
             contactInfo: contactInfo,
@@ -18,7 +18,7 @@ async function handleCreateCompany(context, companyName, address, contactInfo, r
 
 
         // Create a new company
-        let newCompany = await connectwiseAPI.createCompany(context, newCompanyDetails);
+        newCompany = await connectwiseAPI.createCompany(context, newCompanyDetails);
         console.log('New Company:', newCompany);
 
         console.log('New Ticket:', newTicket);
