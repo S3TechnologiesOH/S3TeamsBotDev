@@ -31,7 +31,7 @@
         "mysql2": "^3.11.3",
         "node": "^18.20.4",
         "openai": "^4.67.3",
-        "restify": "^10.0.0"
+        "restify": "^9.1.0"
     },
     "devDependencies": {
         "env-cmd": "^10.1.0",
