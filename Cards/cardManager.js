@@ -21,6 +21,7 @@ let welcomeCardMessageId = null; // Track the last welcome card message ID
 
 // Send a welcome card with buttons for commands
 async function sendWelcomeCard(context, authState) {
+<<<<<<< HEAD
   console.log("sendWelcomeCard invoked with authState:", authState);
 
   await deletePreviousWelcomeCard(context);
@@ -48,6 +49,40 @@ async function sendWelcomeCard(context, authState) {
 
   try {
     // Check permissions and dynamically add buttons
+=======
+    await deletePreviousWelcomeCard(context);
+    const adaptiveCard = {
+      $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
+      type: "AdaptiveCard",
+      version: "1.4",
+      body: [
+        {
+          type: "Image",
+          url: `../s3LogoSignature.png`,
+          size: "Large",
+          style: "Default",
+          altText: "S3 Logo", 
+          horizontalAlignment: "Center",
+        },
+        {
+          type: "TextBlock",
+          text: `Welcome to the Teams Bot ${authState.userDisplayName}!`,
+          weight: "Bolder",
+          size: "Large",
+          wrap: true,
+        },
+        {
+          type: "TextBlock",
+          text: "Choose a command category to continue:",
+          wrap: true,
+          spacing: "Medium",
+        },
+      ],
+      actions: [],
+    };
+    
+    // ADMIN COMMANDS
+>>>>>>> parent of 675c6ef (Update cardManager.js)
     if (await hasCommandPermission(authState.userEmail, "admin")) {
       console.log("User has admin permissions");
       adaptiveCard.actions.push({
