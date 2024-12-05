@@ -273,7 +273,7 @@ async function onAdaptiveCardSubmit(context, authState) {
         break;
 
       default:
-        console.error("Unknown action:", submittedData.action);
+        console.error("Unknown actions:", submittedData.action);
         await context.sendActivity("Unknown action. Please try again.");
         break;
     }
