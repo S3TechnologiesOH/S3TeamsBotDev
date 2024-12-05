@@ -116,12 +116,14 @@ async function createCompany(context, companyDetails) {
     if (existingCompany) {
       console.log("Company already exists:", existingCompany);
       context.sendActivity(`This company already exists: ${existingCompany.name}`);
-      return existingCompany;
+      //return existingCompany;
     }
-
-    console.log("Creating new company with payload:", payload);
-    const response = await cwCompanies.companyCompaniesPost({ company: payload });
-    console.log("Company created successfully:", response);
+    else
+    {
+      console.log("Creating new company with payload:", payload);
+      const response = await cwCompanies.companyCompaniesPost({ company: payload });
+      console.log("Company created successfully:", response);  
+    }
 
     context.sendActivity(`Creating Appointment Ticket for company: ${payload.name}`);
     const newTicket = await createSalesTicket(
