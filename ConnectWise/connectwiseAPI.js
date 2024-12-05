@@ -1,7 +1,7 @@
 const { TicketsApi, TicketTasksApi, ProductsItemApi, CompaniesApi } = require('connectwise-rest-api/release/api/api');
 const { ManageAPI } = require('connectwise-rest');
 const { CommonParameters, CWMOptions } = require('connectwise-rest');
-const { TeamsBot, authState } = require('../teamsBot');
+const { TeamsBot } = require('../teamsBot');
 
 // Set your ConnectWise configuration
 const connectwiseUrl = process.env.CW_URL;
@@ -90,7 +90,7 @@ async function fetch_time_entries_for_ticket(ticketId) {
   }
 }
 
-async function createCompany(context, companyDetails) {
+async function createCompany(context, companyDetails, authState) {
   console.log("Entering createCompany with details:", companyDetails);
 
   const payload = {
@@ -132,7 +132,8 @@ async function createCompany(context, companyDetails) {
       payload.contactInfo,
       payload.rep,
       payload.identifier,
-      context
+      context,
+      authState
     );
     console.log("Appointment ticket created successfully:", newTicket);
 
@@ -158,7 +159,7 @@ async function getCompanyByIdentifier(identifier) {
   }
 }
 
-async function createSalesTicket(summary, address, contactInfo, rep, companyId, context) {
+async function createSalesTicket(summary, address, contactInfo, rep, companyId, context, authState) {
   console.log("Entering createSalesTicket with details:", { summary, address, contactInfo, rep, companyId });
 
   const imageUrl = '../s3LogoSignature.png';

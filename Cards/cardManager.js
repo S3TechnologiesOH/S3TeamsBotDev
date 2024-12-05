@@ -270,7 +270,7 @@ async function onAdaptiveCardSubmit(context, authState) {
         const { companyName, companyId, siteId, siteName } = submittedData;
         console.log("Company creation data:", { companyName, companyId, siteId, siteName });
 
-        await companyManager.handleCreateCompany(context, companyName, companyId, siteId, siteName);
+        await companyManager.handleCreateCompany(context, companyName, companyId, siteId, siteName, authState);
         break;
 
       default:
