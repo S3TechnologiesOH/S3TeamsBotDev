@@ -12,7 +12,7 @@ async function handleCreateCompany(context, companyName, address, contactInfo, r
             identifier : companyId,
             site: {
                 id: 1,
-                name: Main
+                name: test
             }
         };
 
