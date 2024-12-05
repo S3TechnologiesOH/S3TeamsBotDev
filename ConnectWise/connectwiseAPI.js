@@ -131,7 +131,7 @@ async function createCompany(context, companyDetails) {
       payload.address,
       payload.contactInfo,
       payload.rep,
-      response.id,
+      payload.identifier,
       context
     );
     console.log("Appointment ticket created successfully:", newTicket);
