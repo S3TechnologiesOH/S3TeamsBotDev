@@ -96,6 +96,9 @@ async function createCompany(context, companyDetails) {
   const payload = {
     name: companyDetails.name,
     identifier: companyDetails.identifier || companyDetails.name.replace(/\s+/g, '').toLowerCase(),
+    address: companyDetails.address,
+    contactInfo: companyDetails.contactInfo,
+    rep: companyDetails.rep,
     site: companyDetails.site || {
       id: 0,
       name: "Main",
