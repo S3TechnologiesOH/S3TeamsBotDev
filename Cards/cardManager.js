@@ -123,7 +123,7 @@ async function onAdaptiveCardSubmit(context, authState) {
 
   if (!submittedData || !submittedData.action) {
     console.error("Invalid action in submitted data");
-    await context.sendActivity("Invalid action. Please try again.");
+    await context.sendActivity("Invalid actions. Please try again.");
     return;
   }
 
