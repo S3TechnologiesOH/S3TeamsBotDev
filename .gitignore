@@ -7,3 +7,5 @@
 # Node.js specific ignores (optional, if not already present)
 node_modules/public-encrypt
 .env
+
+node_modules/
