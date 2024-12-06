@@ -48,7 +48,7 @@ async function connectToMySQL() {
         Object.entries(row).forEach(([key, value]) => {
           console.log(`  ${key}: ${value}`);
         });
-        console.log('-----------------------------');  // For readability
+        console.log('----------------------------');  // For readability
       });
 
       // Close the connection
