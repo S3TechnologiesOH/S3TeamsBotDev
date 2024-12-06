@@ -12,6 +12,9 @@ const companyCreationCard = require("./companyCreationCard");
 const companyManager = require("../ConnectWise/companyManager");
 
 const adminCommandsCard = require("./adminCommandsCardMenu");
+const deleteServiceTicketCard = require("./deleteServiceTicketCard");
+const setUserPermissionsCard = require("./setUserPermissionsCard");
+
 const helpCard = require("./showHelpCard");
 const bugReportCard = require("./bugReportCard");
 const { CardFactory } = require("botbuilder");
@@ -174,7 +177,7 @@ async function onAdaptiveCardSubmit(context, authState) {
 
       case "showAdminCommandsCardMenu":
         console.log("Action: showAdminCommandsCardMenu");
-        await adminCommandsCardMenu.showAdminCommandsCardMenu(context);
+        await adminCommandsCard.showAdminCommandsCardMenu(context);
         break;
   
       case "showSetUserPermissions":
@@ -186,7 +189,7 @@ async function onAdaptiveCardSubmit(context, authState) {
         console.log("Action: showDeleteServiceTicket");
         await deleteServiceTicketCard.showDeleteServiceTicketCard(context);
         break;
-        
+
       case "runTicketCommand":
         console.log("Action: runTicketCommand");
         const ticketNumber = submittedData.ticketId;
