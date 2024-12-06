@@ -177,7 +177,7 @@ async function createSalesTicket(summary, address, contactInfo, rep, companyId, 
 
   try {
     console.log("Calling cwService.postServiceTickets with payload:", payload);
-    const response = await cwManage.ServiceAPI.postServiceTickets({ serviceTicket: payload });
+    const response = await cwManage.ServiceAPI.postServiceTickets(payload);
     console.log("Sales ticket created successfully:", response);
     context.sendActivity(`Sales ticket created with ID: ${response.id}`);
     return response;
