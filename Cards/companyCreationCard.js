@@ -48,7 +48,7 @@ async function showCompanyCreationCard(context) {
         spacing: "Small",
       },
       {
-        type: "Input.Number",
+        type: "Input.Text",
         id: "companyId", // Input field for the ticket ID
         placeholder: "Enter a Company ID",
         isRequired: false,
