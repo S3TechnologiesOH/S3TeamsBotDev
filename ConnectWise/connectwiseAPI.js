@@ -33,7 +33,7 @@ try {
     companyId: companyId,
     publicKey: publicKey,
     privateKey: privateKey,
-    companyUrl : connectwiseUrl,
+    companyUrl : "api-na.myconnectwise.net",
     clientId: clientId
   }
 
