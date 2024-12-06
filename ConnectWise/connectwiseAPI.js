@@ -128,12 +128,13 @@ async function createCompany(context, companyDetails, authState) {
     }
 
     context.sendActivity(`Creating Appointment Ticket for company: ${payload.name}`);
+    const currentCompany = await getCompanyByIdentifier(payload.identifier);
     const newTicket = await createSalesTicket(
       "New Appointment",
       payload.address,
       payload.contactInfo,
       payload.rep,
-      payload.identifier,
+      currentCompany.id,
       context,
       authState
     );
@@ -169,7 +170,7 @@ async function createSalesTicket(summary, address, contactInfo, rep, companyId, 
   // Construct the payload
   payload = {
     summary, // Ticket summary
-    company: { identifier: companyId }, // Company ID
+    company: { id: companyId }, // Company ID
     status: { id: 0, name: "New", sort: 0 }, // Ticket status
     priority: { name: "Normal" }, // Ticket priority
     board: { name: "Sales" }, // Board name
