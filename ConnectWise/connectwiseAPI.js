@@ -194,21 +194,27 @@ async function createSalesTicket(summary, address, contactInfo, rep, companyId, 
 }
 
 async function deleteSalesTicket(id, context, authState) {
-
   try {
+    console.log("Attempting to delete ticket with ID:", id);
 
-    const response = await cwManage.ServiceAPI.deleteServiceTicketsById({
-      id: id
-    })
-    .then((ticket) => {
-      console.log("Ticket deleted successfully:", ticket);
-      context.sendActivity(`Sales ticket deleted with ID: ${id}`);
-    })
-    .catch((error) => { console.log(error);});
-    
+    // Ensure `id` is a valid number
+    if (isNaN(id)) {
+      throw new Error("Invalid ticket ID. Please provide a valid numeric ID.");
+    }
+
+    const response = await cwManage.ServiceAPI.deleteServiceTicketsById(id); // Pass `id` directly
+    console.log("Ticket deleted successfully:", response);
+    await context.sendActivity(`Sales ticket deleted with ID: ${id}`);
     return response;
   } catch (error) {
     console.error("Error deleting sales ticket:", error);
+
+    // Extract detailed error information for better debugging
+    if (error.response) {
+      console.error("API Response:", error.response.data);
+    }
+
+    await context.sendActivity("Failed to delete the sales ticket. Please try again later.");
     throw new Error("Failed to delete sales ticket.");
   }
 }

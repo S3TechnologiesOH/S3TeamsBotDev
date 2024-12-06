@@ -294,6 +294,7 @@ async function onAdaptiveCardSubmit(context, authState) {
         console.log("Action: deleteServiceTicketCommand");
         await salesTicketManager.handleDeleteCompany(submittedData.ticketId, context, authState);
         break;
+        
       default:
         console.error("Unknown actions:", submittedData.action);
         await context.sendActivity("Unknown action. Please try again.");
