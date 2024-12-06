@@ -155,11 +155,6 @@ async function onAdaptiveCardSubmit(context, authState) {
         await resolutionCard.showResolutionCard(context);
         break;
 
-      case "showAdminCommandsCard":
-        console.log("Action: showAdminCommandsCard");
-        await adminCommandsCard.showAdminCommandsCard(context);
-        break;
-
       case "showHelpCard":
         console.log("Action: showHelpCard");
         await helpCard.showHelpCard(context);
