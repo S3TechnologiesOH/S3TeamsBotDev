@@ -34,7 +34,7 @@ try {
   cwProductItems = new ProductsItemApi(`${connectwiseUrl}`);
   cwCompanies = new CompaniesApi(`${connectwiseUrl}`);
 
-  const cwManage = new ManageAPI({
+  cwManage = new ManageAPI({
     companyId: companyId,
     publicKey: publicKey,
     privateKey: privateKey,
