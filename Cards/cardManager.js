@@ -57,7 +57,7 @@ async function sendWelcomeCard(context, authState) {
         type: "Action.Submit",
         title: "Admin Commands",
         data: {
-          action: "showAdminCommandsCard",
+          action: "showAdminCommandsCardMenu",
         },
       });
     }
