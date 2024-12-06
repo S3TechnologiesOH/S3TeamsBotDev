@@ -34,7 +34,7 @@ try {
   cwProductItems = new ProductsItemApi(`${connectwiseUrl}`);
   cwCompanies = new CompaniesApi(`${connectwiseUrl}`);
 
-  cwManage = new ManageAPI({
+  const cwManage = new ManageAPI({
     companyId: companyId,
     publicKey: publicKey,
     privateKey: privateKey,
@@ -165,14 +165,14 @@ async function createSalesTicket(summary, address, contactInfo, rep, companyId, 
   const imageUrl = '../s3LogoSignature.png';
 
   const payload = {
-    summary,
-    company: { id: companyId },
-    status: { name: "New" },
-    priority: { name: "Normal" },
-    board: { name: "Sales" },
-    owner: { identifier: authState.userDisplayName },
-    source: { name: "SDR - Jason Hone" },
-    initialDescription: `Company: ${companyId}\n\nAddress: ${address}\n\nContact Info: ${contactInfo}\n\nRep: ${rep}\n\nJason Hone|Business Development\n\nDirect-(234)252-1739 (O)330.648.5408 x129| jhone@mys3tech.com | www.mys3tech.com\n\n90 N. Prospect St. Akron, OH 44304| 752 N State St. Westerville, OH 43081\n${imageUrl}`
+    summary, // Ticket summary
+    company: { id: companyId }, // Company ID
+    status: { name: "New" }, // Ticket status
+    priority: { name: "Normal" }, // Ticket priority
+    board: { name: "Sales" }, // Board name
+    owner: { identifier: authState.userDisplayName }, // Owner identifier (logged-in user)
+    source: { name: "SDR - Jason Hone" }, // Source name
+    initialDescription: `Company: ${companyId}\n\nAddress: ${address}\n\nContact Info: ${contactInfo}\n\nRep: ${rep}\n\nJason Hone|Business Development\n\nDirect-(234)252-1739 (O)330.648.5408 x129| jhone@mys3tech.com | www.mys3tech.com\n\n90 N. Prospect St. Akron, OH 44304| 752 N State St. Westerville, OH 43081`, // Description with relevant details
   };
 
   try {
