@@ -128,13 +128,13 @@ async function createCompany(context, companyDetails, authState) {
     }
 
     context.sendActivity(`Creating Appointment Ticket for company: ${payload.name}`);
-    const currentCompany = await getCompanyByIdentifier(payload.identifier);
+    //const currentCompany = await getCompanyByIdentifier(payload.identifier);
     const newTicket = await createSalesTicket(
       "New Appointment",
       payload.address,
       payload.contactInfo,
       payload.rep,
-      currentCompany.id,
+      payload.identifier,
       context,
       authState
     );
@@ -167,23 +167,23 @@ async function createSalesTicket(summary, address, contactInfo, rep, companyId, 
 
   const imageUrl = '../s3LogoSignature.png';
 
-  // Construct the payload
-  payload = {
-    summary, // Ticket summary
-    company: { id: companyId }, // Company ID
-    status: { id: 0, name: "New", sort: 0 }, // Ticket status
-    priority: { name: "Normal" }, // Ticket priority
-    board: { name: "Sales" }, // Board name
-    owner: { identifier: authState.userDisplayName }, // Owner identifier (logged-in user)
-    source: { name: "SDR - Jason Hone" }, // Source name
-    initialDescription: `Company: ${companyId}\n\nAddress: ${address}\n\nContact Info: ${contactInfo}\n\nRep: ${rep}\n\nJason Hone|Business Development\n\nDirect-(234)252-1739 (O)330.648.5408 x129| jhone@mys3tech.com | www.mys3tech.com\n\n90 N. Prospect St. Akron, OH 44304| 752 N State St. Westerville, OH 43081`, // Description with relevant details
-  };
-
   try {
     console.log("Calling cwService.postServiceTickets with payload:", payload);
 
     // Pass the payload directly
-    const response = await cwManage.ServiceAPI.postServiceTickets(payload);
+    const response = await cwManage.ServiceAPI.postServiceTickets({
+      summary, // Ticket summary
+      board: { name: "Sales" }, // Board name
+      company: { identifier: companyId }, // Company ID
+      //owner: { identifier: authState.userDisplayName }, // Owner identifier (logged-in user)
+      //source: { name: "SDR - Jason Hone" }, // Source name
+      initialDescription: `Company: ${companyId}\n\nAddress: ${address}\n\nContact Info: ${contactInfo}\n\nRep: ${rep}\n\nJason Hone|Business Development\n\nDirect-(234)252-1739 (O)330.648.5408 x129| jhone@mys3tech.com | www.mys3tech.com\n\n90 N. Prospect St. Akron, OH 44304| 752 N State St. Westerville, OH 43081`, // Description with relevant details
+      recordType: "ServiceTicket", // Record type
+    })
+    .then((ticket) => {
+      console.log("Ticket created successfully:", ticket);})
+      .catch((error) => { console.log(error);});
+    
 
     console.log("Sales ticket created successfully:", response);
     context.sendActivity(`Sales ticket created with ID: ${response.id}`);
