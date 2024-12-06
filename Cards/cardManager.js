@@ -114,6 +114,7 @@ async function deletePreviousWelcomeCard(context) {
   }
 }
 
+// Handle the user input and command actions
 async function onAdaptiveCardSubmit(context, authState) {
   console.log("onAdaptiveCardSubmit invoked with authState:", authState);
 
@@ -122,7 +123,7 @@ async function onAdaptiveCardSubmit(context, authState) {
 
   if (!submittedData || !submittedData.action) {
     console.error("Invalid action in submitted data");
-    await context.sendActivity("Invalid action. Please try again.");
+    await context.sendActivity("Invalid actions. Please try again.");
     return;
   }
 
@@ -151,19 +152,9 @@ async function onAdaptiveCardSubmit(context, authState) {
         await resolutionCard.showResolutionCard(context);
         break;
 
-      case "showAdminCommandsCardMenu":
-        console.log("Action: showAdminCommandsCardMenu");
-        await adminCommandsCardMenu.showAdminCommandsCardMenu(context);
-        break;
-
-      case "showSetUserPermissions":
-        console.log("Action: showSetUserPermissions");
-        await setUserPermissionsCard.showSetUserPermissionsCard(context);
-        break;
-
-      case "showDeleteServiceTicket":
-        console.log("Action: showDeleteServiceTicket");
-        await deleteServiceTicketCard.showDeleteServiceTicketCard(context);
+      case "showAdminCommandsCard":
+        console.log("Action: showAdminCommandsCard");
+        await adminCommandsCard.showAdminCommandsCard(context);
         break;
 
       case "showHelpCard":
@@ -181,6 +172,21 @@ async function onAdaptiveCardSubmit(context, authState) {
         await bugReportCard.showBugReportCard(context);
         break;
 
+      case "showAdminCommandsCardMenu":
+        console.log("Action: showAdminCommandsCardMenu");
+        await adminCommandsCardMenu.showAdminCommandsCardMenu(context);
+        break;
+  
+      case "showSetUserPermissions":
+        console.log("Action: showSetUserPermissions");
+        await setUserPermissionsCard.showSetUserPermissionsCard(context);
+        break;
+  
+      case "showDeleteServiceTicket":
+        console.log("Action: showDeleteServiceTicket");
+        await deleteServiceTicketCard.showDeleteServiceTicketCard(context);
+        break;
+        
       case "runTicketCommand":
         console.log("Action: runTicketCommand");
         const ticketNumber = submittedData.ticketId;
@@ -278,19 +284,11 @@ async function onAdaptiveCardSubmit(context, authState) {
         console.log("Action: handleCreateCompany");
         const { companyName, companyAddress, companyId, companyContactInformation, rep } = submittedData;
 
-        await companyManager.handleCreateCompany(
-          context,
-          companyName,
-          companyAddress,
-          companyContactInformation,
-          rep,
-          companyId,
-          authState
-        );
+        await companyManager.handleCreateCompany(context, companyName, companyAddress, companyContactInformation, rep, companyId, authState);
         break;
 
       default:
-        console.error("Unknown action:", submittedData.action);
+        console.error("Unknown actions:", submittedData.action);
         await context.sendActivity("Unknown action. Please try again.");
         break;
     }
@@ -300,4 +298,4 @@ async function onAdaptiveCardSubmit(context, authState) {
   }
 }
 
-module.exports = { onAdaptiveCardSubmit };
+module.exports = { sendWelcomeCard, deletePreviousWelcomeCard, onAdaptiveCardSubmit };
