@@ -164,10 +164,11 @@ async function createSalesTicket(summary, address, contactInfo, rep, companyId, 
 
   const imageUrl = '../s3LogoSignature.png';
 
-  const payload = {
+  // Construct the payload
+  payload = {
     summary, // Ticket summary
     company: { id: companyId }, // Company ID
-    status: { name: "New" }, // Ticket status
+    status: { id: 0, name: "New", sort: 0 }, // Ticket status
     priority: { name: "Normal" }, // Ticket priority
     board: { name: "Sales" }, // Board name
     owner: { identifier: authState.userDisplayName }, // Owner identifier (logged-in user)
@@ -177,7 +178,10 @@ async function createSalesTicket(summary, address, contactInfo, rep, companyId, 
 
   try {
     console.log("Calling cwService.postServiceTickets with payload:", payload);
+
+    // Pass the payload directly
     const response = await cwManage.ServiceAPI.postServiceTickets(payload);
+
     console.log("Sales ticket created successfully:", response);
     context.sendActivity(`Sales ticket created with ID: ${response.id}`);
     return response;
@@ -186,6 +190,7 @@ async function createSalesTicket(summary, address, contactInfo, rep, companyId, 
     throw new Error("Failed to create sales ticket.");
   }
 }
+
 
 module.exports = {
   fetch_ticket_by_id,
