@@ -1,6 +1,7 @@
 const { dataManager, hasCommandPermission, assignUserRole, permissionsPath } = require("../Data/dataManager");
 const { logCommand } = require("../Data/sqlManager");
 const ticketManager = require("../ConnectWise/ticketManager");
+const { connectwiseAPI } = require("../ConnectWise/connectwiseAPI");
 const cpq = require("../CPQ/cpqAPI");
 
 const ticketMenu = require("./ticketMenuCard");
@@ -10,6 +11,7 @@ const resolutionCard = require("./resolutionGeneratorCard");
 
 const companyCreationCard = require("./companyCreationCard");
 const companyManager = require("../ConnectWise/companyManager");
+const salesTicketManager = require("../ConnectWise/salesTicketManager");
 
 const adminCommandsCard = require("./adminCommandsCardMenu");
 const deleteServiceTicketCard = require("./deleteServiceTicketCard");
@@ -185,6 +187,8 @@ async function onAdaptiveCardSubmit(context, authState) {
         await deleteServiceTicketCard.showDeleteServiceTicketCard(context);
         break;
 
+
+        
       case "runTicketCommand":
         console.log("Action: runTicketCommand");
         const ticketNumber = submittedData.ticketId;
@@ -280,11 +284,16 @@ async function onAdaptiveCardSubmit(context, authState) {
 
       case "handleCreateCompany":
         console.log("Action: handleCreateCompany");
+
         const { companyName, companyAddress, companyId, companyContactInformation, rep } = submittedData;
 
         await companyManager.handleCreateCompany(context, companyName, companyAddress, companyContactInformation, rep, companyId, authState);
         break;
 
+      case "deleteServiceTicketCommand":
+        console.log("Action: deleteServiceTicketCommand");
+        await salesTicketManager.handleDeleteCompany(submittedData.ticketId, context, authState);
+        break;
       default:
         console.error("Unknown actions:", submittedData.action);
         await context.sendActivity("Unknown action. Please try again.");

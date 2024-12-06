@@ -193,6 +193,25 @@ async function createSalesTicket(summary, address, contactInfo, rep, companyId, 
   }
 }
 
+async function deleteSalesTicket(id, context, authState) {
+
+  try {
+
+    const response = await cwManage.ServiceAPI.deleteServiceTicketsById({
+      id: id
+    })
+    .then((ticket) => {
+      console.log("Ticket deleted successfully:", ticket);
+      context.sendActivity(`Sales ticket deleted with ID: ${id}`);
+    })
+    .catch((error) => { console.log(error);});
+    
+    return response;
+  } catch (error) {
+    console.error("Error deleting sales ticket:", error);
+    throw new Error("Failed to delete sales ticket.");
+  }
+}
 
 module.exports = {
   fetch_ticket_by_id,
@@ -200,5 +219,6 @@ module.exports = {
   fetch_ticket_tasks_by_id,
   createCompany,
   getCompanyByIdentifier,
-  createSalesTicket
+  createSalesTicket,
+  deleteSalesTicket
 };
