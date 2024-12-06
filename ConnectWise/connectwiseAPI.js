@@ -181,12 +181,11 @@ async function createSalesTicket(summary, address, contactInfo, rep, companyId, 
       recordType: "ServiceTicket", // Record type
     })
     .then((ticket) => {
-      console.log("Ticket created successfully:", ticket);})
+      console.log("Ticket created successfully:", ticket);
+      context.sendActivity(`Sales ticket created with ID: ${ticket.id}`);
+    })
       .catch((error) => { console.log(error);});
     
-
-    console.log("Sales ticket created successfully:", response);
-    context.sendActivity(`Sales ticket created with ID: ${response.company.identifier}`);
     return response;
   } catch (error) {
     console.error("Error creating sales ticket:", error);
