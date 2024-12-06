@@ -29,18 +29,20 @@ try {
     authKey: authKey ? "Provided" : "Not Provided"
   });
 
-  cwService = new TicketsApi(`${connectwiseUrl}`);
-  cwTasks = new TicketTasksApi(`${connectwiseUrl}`);
-  cwProductItems = new ProductsItemApi(`${connectwiseUrl}`);
-  cwCompanies = new CompaniesApi(`${connectwiseUrl}`);
-
-  cwManage = new ManageAPI({
+  const CWMOptions = {
     companyId: companyId,
     publicKey: publicKey,
     privateKey: privateKey,
     companyUrl : connectwiseUrl,
     clientId: clientId
-  });
+  }
+
+  cwService = new TicketsApi(`${connectwiseUrl}`);
+  cwTasks = new TicketTasksApi(`${connectwiseUrl}`);
+  cwProductItems = new ProductsItemApi(`${connectwiseUrl}`);
+  cwCompanies = new CompaniesApi(`${connectwiseUrl}`);
+
+  cwManage = new ManageAPI(CWMOptions);
 
   cwCompanies.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
   console.log("ConnectWise APIs initialized successfully.");
