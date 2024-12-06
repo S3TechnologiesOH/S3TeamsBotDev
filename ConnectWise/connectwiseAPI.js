@@ -169,7 +169,7 @@ async function createSalesTicket(summary, address, contactInfo, rep, companyId, 
   // Construct the payload
   payload = {
     summary, // Ticket summary
-    company: { id: companyId }, // Company ID
+    company: { identifier: companyId }, // Company ID
     status: { id: 0, name: "New", sort: 0 }, // Ticket status
     priority: { name: "Normal" }, // Ticket priority
     board: { name: "Sales" }, // Board name
