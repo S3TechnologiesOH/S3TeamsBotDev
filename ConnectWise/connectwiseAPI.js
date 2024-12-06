@@ -168,7 +168,7 @@ async function createSalesTicket(summary, address, contactInfo, rep, companyId, 
   const imageUrl = '../s3LogoSignature.png';
 
   try {
-    console.log("Calling cwService.postServiceTickets with payload:", payload);
+    //console.log("Calling cwService.postServiceTickets with payload:", payload);
 
     // Pass the payload directly
     const response = await cwManage.ServiceAPI.postServiceTickets({
