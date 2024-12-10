@@ -98,7 +98,7 @@ async function insertSingleRow(name, email) {
   }
 // Function to check and insert if not exists
 const checkAndInsertOpportunity = async (id, opportunity_stage_id) => {
-  const connection = await mysql.createConnection(dbConfig);
+  const connection = await mysql.createConnection(sqlconfig);
   try {
     const [rows] = await connection.execute(
       'SELECT * FROM apollo_opportunities WHERE id = ?',
@@ -125,7 +125,7 @@ const checkAndInsertOpportunity = async (id, opportunity_stage_id) => {
 
 // Function to update and check conditions
 const updateOpportunityAndCheck = async (id, opportunity_stage_id) => {
-  const connection = await mysql.createConnection(dbConfig);
+  const connection = await mysql.createConnection(sqlconfig);
   try {
     const [rows] = await connection.execute(
       'SELECT * FROM apollo_opportunities WHERE id = ?',
