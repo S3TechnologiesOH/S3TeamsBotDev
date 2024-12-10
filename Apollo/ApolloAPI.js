@@ -4,9 +4,9 @@ const fetchDeals = async (api_key) => {
       method: 'GET',
       headers: {
         accept: 'application/json',
-        'Cache-Control': 'no-cache',
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${api_key}` // Include API key here
+        'Cache-Control': 'no-cache',
+        'X-Api-Key': api_key
       }
     };
   
