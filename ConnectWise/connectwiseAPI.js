@@ -179,6 +179,7 @@ async function createSalesTicket(summary, address, contactInfo, rep, companyId, 
       //source: { name: "SDR - Jason Hone" }, // Source name
       initialDescription: `Company: ${companyId}\n\nAddress: ${address}\n\nContact Info: ${contactInfo}\n\nRep: ${rep}\n\nJason Hone|Business Development\n\nDirect-(234)252-1739 (O)330.648.5408 x129| jhone@mys3tech.com | www.mys3tech.com\n\n90 N. Prospect St. Akron, OH 44304| 752 N State St. Westerville, OH 43081`, // Description with relevant details
       recordType: "ServiceTicket", // Record type
+      source: { name: "SDR - Jason Hone" }, // Source name
     })
     .then((ticket) => {
       console.log("Ticket created successfully:", ticket);
