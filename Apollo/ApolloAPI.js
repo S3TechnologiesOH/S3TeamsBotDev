@@ -11,7 +11,7 @@ const fetchDeals = async (api_key) => {
     };
   
     try {
-      const response = await fetch('https://api.apollo.io/api/v1/opportunities', options);
+      const response = await fetch('https://api.apollo.io/api/v1/opportunities/search', options);
       if (!response.ok) {
         throw new Error(`Error: ${response.status} - ${response.statusText}`);
       }
