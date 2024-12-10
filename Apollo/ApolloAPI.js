@@ -28,5 +28,5 @@ const fetchDeals = async (api_key) => {
   // Replace 'your_api_key_here' with your actual API key
   //fetchDeals('rwYHYDXtbYkuXRImQKoDVA').then(deals => console.log(deals)).catch(err => console.error(err));
   
-  module.exports = fetchDeals;
+  module.exports = { fetchDeals };
   

@@ -17,7 +17,7 @@ const {handleTicketRequest} = require("./ConnectWise/ticketManager");
 const {extractTermsAndConditions, getQuotes, exportQuotesToJson} = require("./CPQ/cpqAPI");
 // --------------- Apollo ---------------
 
-const {fetchDeals} = require("./Apollo/ApolloAPI");
+const { fetchDeals } = require("./Apollo/ApolloAPI");
 
 // --------------- MS Graph ---------------
 const authenticationHelper = require("./MSGraph/authenticationHelper");
