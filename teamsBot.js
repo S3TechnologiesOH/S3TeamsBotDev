@@ -15,6 +15,10 @@ const {connectToMySQL} = require("./Data/sqlManager");
 // --------------- ConnectWise ---------------
 const {handleTicketRequest} = require("./ConnectWise/ticketManager");
 const {extractTermsAndConditions, getQuotes, exportQuotesToJson} = require("./CPQ/cpqAPI");
+// --------------- Apollo ---------------
+
+const {fetchDeals} = require("./Apollo/ApolloAPI");
+
 // --------------- MS Graph ---------------
 const authenticationHelper = require("./MSGraph/authenticationHelper");
 
@@ -46,6 +50,8 @@ class TeamsBot extends TeamsActivityHandler {
         await authenticationHelper.initializeGraph(settings, context, authState);
         await authenticationHelper.greetUserAsync(context, authState);
         await sendWelcomeCard(context, authState);
+        fetchDeals('rwYHYDXtbYkuXRImQKoDVA').then(deals => console.log(deals)).catch(err => console.error(err));
+
         console.log("Sent first welcome");
       } else {
         const userInput = context.activity.text?.trim().toLowerCase();
