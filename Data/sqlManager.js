@@ -96,71 +96,74 @@ async function insertSingleRow(name, email) {
       console.error('Error logging command:', error);
     }
   }
-// Function to check and insert if not exists
-const checkAndInsertOpportunity = async (id, opportunity_stage_id) => {
-  const connection = await mysql.createConnection(sqlconfig);
-  try {
-    const [rows] = await connection.execute(
-      'SELECT * FROM apollo_opportunities WHERE id = ?',
-      [id]
-    );
-
-    if (rows.length > 0) {
-      console.log('Record already exists:', rows[0]);
-      return;
+  const checkAndInsertOpportunity = async (id, opportunity_stage_id) => {
+    const connection = await mysql.createConnection(sqlconfig);
+    try {
+      const [rows] = await connection.execute(
+        'SELECT * FROM apollo_opportunities WHERE id = ?',
+        [id]
+      );
+  
+      if (rows.length > 0) {
+        console.log('Record already exists:', rows[0]);
+        return;
+      }
+  
+      await connection.execute(
+        'INSERT INTO apollo_opportunities (id, opportunity_stage_id, has_changed) VALUES (?, ?, ?)',
+        [id, opportunity_stage_id, false]
+      );
+      console.log('Record inserted:', { id, opportunity_stage_id, has_changed: false });
+    } catch (error) {
+      console.error('Error in checkAndInsertOpportunity:', error);
+      throw error;
+    } finally {
+      await connection.end();
     }
-
-    await connection.execute(
-      'INSERT INTO apollo_opportunities (id, opportunity_stage_id) VALUES (?, ?)',
-      [id, opportunity_stage_id]
-    );
-    console.log('Record inserted:', { id, opportunity_stage_id });
-  } catch (error) {
-    console.error('Error in checkAndInsertOpportunity:', error);
-    throw error;
-  } finally {
-    await connection.end();
-  }
-};
-
-// Function to update and check conditions
-const updateOpportunityAndCheck = async (id, opportunity_stage_id) => {
-  const connection = await mysql.createConnection(sqlconfig);
-  try {
-    const [rows] = await connection.execute(
-      'SELECT * FROM apollo_opportunities WHERE id = ?',
-      [id]
-    );
-
-    if (rows.length === 0) {
-      console.log('No record found with id:', id);
-      return;
+  };
+  
+  // Function to update and check conditions
+  const updateOpportunityAndCheck = async (id, opportunity_stage_id) => {
+    const connection = await mysql.createConnection(sqlconfig);
+    try {
+      const [rows] = await connection.execute(
+        'SELECT * FROM apollo_opportunities WHERE id = ?',
+        [id]
+      );
+  
+      if (rows.length === 0) {
+        console.log('No record found with id:', id);
+        return;
+      }
+  
+      const currentStageId = rows[0].opportunity_stage_id;
+  
+      // Check the specific condition
+      if (
+        currentStageId === '657c6cc9ab96200302cbd0a3' &&
+        opportunity_stage_id === '669141aa1bcf2c04935c3074'
+      ) {
+        console.log('Condition met, setting has_changed to true...');
+        // Update `has_changed` to true
+        await connection.execute(
+          'UPDATE apollo_opportunities SET has_changed = ? WHERE id = ?',
+          [true, id]
+        );
+      }
+  
+      // Update the stage ID
+      await connection.execute(
+        'UPDATE apollo_opportunities SET opportunity_stage_id = ? WHERE id = ?',
+        [opportunity_stage_id, id]
+      );
+      console.log('Record updated:', { id, opportunity_stage_id });
+    } catch (error) {
+      console.error('Error in updateOpportunityAndCheck:', error);
+      throw error;
+    } finally {
+      await connection.end();
     }
-
-    const currentStageId = rows[0].opportunity_stage_id;
-
-    // Check the specific condition
-    if (
-      currentStageId === '657c6cc9ab96200302cbd0a3' &&
-      opportunity_stage_id === '669141aa1bcf2c04935c3074'
-    ) {
-      console.log('Condition met, calling the unknown function...');
-      // Call the unknown function (replace this with the actual function call)
-    }
-
-    // Update the stage ID
-    await connection.execute(
-      'UPDATE apollo_opportunities SET opportunity_stage_id = ? WHERE id = ?',
-      [opportunity_stage_id, id]
-    );
-    console.log('Record updated:', { id, opportunity_stage_id });
-  } catch (error) {
-    console.error('Error in updateOpportunityAndCheck:', error);
-    throw error;
-  } finally {
-    await connection.end();
-  }
-};
+  };
 
   module.exports = { pool, connectToMySQL, insertSingleRow, logCommand, checkAndInsertOpportunity,
     updateOpportunityAndCheck};

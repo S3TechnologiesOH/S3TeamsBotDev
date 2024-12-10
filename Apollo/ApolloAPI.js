@@ -32,7 +32,7 @@ const fetchDeals = async (api_key, sortByField = 'amount', perPage = 100) => {
         console.log(`Page ${currentPage} retrieved. Total deals returned on this page: ${opportunities.length}`);
   
         // Filter deals by `stage_name`, excluding null values
-        const filteredDeals = opportunities.filter(deal => deal.opportunity_stage_id && deal.opportunity_stage_id === "669141aa1bcf2c04935c3074");
+        const filteredDeals = opportunities.filter(deal => deal.opportunity_stage_id && deal.opportunity_stage_id === "657c6cc9ab96200302cbd0a3");
   
         // Process each deal by passing its data to checkAndInsertOpportunity
         for (const deal of filteredDeals) {
