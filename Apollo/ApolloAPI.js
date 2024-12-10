@@ -25,10 +25,10 @@ const fetchDeals = async (api_key, sortByField = 'amount', perPage = 100) => {
         const { opportunities, pagination } = await response.json();
   
         // Filter deals by `stage_name`, excluding null values
-        const filteredDeals = opportunities.filter(deal => deal.stage_name !== null);
+        //const filteredDeals = opportunities.filter(deal => deal.stage_name !== null);
   
         // Add filtered deals to the collection
-        allDeals = [...allDeals, ...filteredDeals];
+        allDeals = [...allDeals];
   
         // Check if we have more pages to fetch
         if (pagination && pagination.has_next_page) {
