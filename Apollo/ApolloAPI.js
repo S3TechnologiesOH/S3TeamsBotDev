@@ -1,5 +1,5 @@
 // ApolloAPI.js
-const fetchDeals = async (api_key, sortByField = 'amount', perPage = 200) => {
+const fetchDeals = async (api_key, sortByField = 'amount', perPage = 100) => {
     const baseUrl = 'https://api.apollo.io/api/v1/opportunities/search';
     const options = {
       method: 'GET',
