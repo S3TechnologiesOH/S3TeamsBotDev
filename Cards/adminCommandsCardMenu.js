@@ -30,6 +30,13 @@ async function showAdminCommandsCardMenu(context) {
       },
       {
         type: "Action.Submit",
+        title: "Call Update Apollo Deals",
+        data: {
+          action: "callUpdateApolloDeals",
+        },
+      },
+      {
+        type: "Action.Submit",
         title: "Delete Service Ticket",
         data: {
           action: "showDeleteServiceTicket",

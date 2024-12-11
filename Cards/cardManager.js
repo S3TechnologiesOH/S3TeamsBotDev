@@ -12,6 +12,7 @@ const resolutionCard = require("./resolutionGeneratorCard");
 const companyCreationCard = require("./companyCreationCard");
 const companyManager = require("../ConnectWise/companyManager");
 const salesTicketManager = require("../ConnectWise/salesTicketManager");
+const sqlManager = require("../Data/sqlManager");
 
 const adminCommandsCard = require("./adminCommandsCardMenu");
 const deleteServiceTicketCard = require("./deleteServiceTicketCard");
@@ -186,8 +187,10 @@ async function onAdaptiveCardSubmit(context, authState) {
         console.log("Action: showDeleteServiceTicket");
         await deleteServiceTicketCard.showDeleteServiceTicketCard(context);
         break;
-
-
+      case "callUpdateApolloDeals":
+        console.log("Updating Apollo Deals in SQL...");
+        await sqlManager.updateApolloDeals();
+        break;
         
       case "runTicketCommand":
         console.log("Action: runTicketCommand");
