@@ -52,7 +52,7 @@ class TeamsBot extends TeamsActivityHandler {
         await authenticationHelper.greetUserAsync(context, authState);
         await sendWelcomeCard(context, authState);
         startWebhook();
-        fetchDeals(process.env.APOLLO_API_KEY, true).then(deals => console.log(deals)).catch(err => console.error(err));
+        fetchDeals(process.env.APOLLO_API_KEY, false).then(deals => console.log(deals)).catch(err => console.error(err));
 
         console.log("Sent first welcome");
       } else {
