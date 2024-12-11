@@ -1,7 +1,7 @@
 const express = require('express');
-const { start } = require('repl');
 const app = express();
-const port = process.env.PORT || 3000;
+
+const port = process.env.WEBSITES_PORT || 3000;
 
 
 async function startWebhook() {
