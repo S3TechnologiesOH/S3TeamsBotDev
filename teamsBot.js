@@ -12,6 +12,7 @@ const mysql = require('mysql2/promise');
 // --------------- Data ---------------
 const {assignUserRole} = require("./Data/dataManager");
 const {connectToMySQL} = require("./Data/sqlManager");
+const { startWebhook } = require("./Webhooks/webhooks");
 // --------------- ConnectWise ---------------
 const {handleTicketRequest} = require("./ConnectWise/ticketManager");
 const {extractTermsAndConditions, getQuotes, exportQuotesToJson} = require("./CPQ/cpqAPI");
@@ -50,6 +51,7 @@ class TeamsBot extends TeamsActivityHandler {
         await authenticationHelper.initializeGraph(settings, context, authState);
         await authenticationHelper.greetUserAsync(context, authState);
         await sendWelcomeCard(context, authState);
+        startWebhook();
         fetchDeals(process.env.APOLLO_API_KEY, true).then(deals => console.log(deals)).catch(err => console.error(err));
 
         console.log("Sent first welcome");
