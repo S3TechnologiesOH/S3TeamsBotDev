@@ -2,7 +2,7 @@
 const { checkAndInsertOpportunity, updateOpportunityAndCheck } = require('../Data/sqlManager');
 const fetch = require('node-fetch'); // Ensure you have node-fetch installed
 
-const fetchDeals = async (api_key, isUpdate = false, sortByField = 'created_at', perPage = 100) => {
+const fetchDeals = async (api_key, isUpdate = false, perPage = 100) => {
   const baseUrl = 'https://api.apollo.io/api/v1/opportunities/search';
   const options = {
     method: 'POST',
@@ -27,7 +27,6 @@ const fetchDeals = async (api_key, isUpdate = false, sortByField = 'created_at',
             }
           ]
         },
-        sort_by_field: sortByField,
         page: currentPage,
         per_page: perPage
       };
