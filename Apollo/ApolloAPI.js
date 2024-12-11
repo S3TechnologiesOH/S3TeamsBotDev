@@ -1,16 +1,14 @@
 // ApolloAPI.js
-const { checkAndInsertOpportunity, updateOpportunityAndCheck } = require('../Data/sqlManager'); // Import the function
+const { checkAndInsertOpportunity, updateOpportunityAndCheck } = require('../Data/sqlManager');
+const fetch = require('node-fetch'); // Ensure you have node-fetch installed
 
-const fetch = require('node-fetch'); // Ensure you have node-fetch or a similar library if you're running in Node.js
-
-const fetchDeals = async (api_key, isUpdate = false, sortByField = 'amount', perPage = 100) => {
+const fetchDeals = async (api_key, isUpdate = false, sortByField = 'created_at', perPage = 100) => {
   const baseUrl = 'https://api.apollo.io/api/v1/opportunities/search';
   const options = {
-    method: 'GET',
+    method: 'POST',
     headers: {
       accept: 'application/json',
       'Content-Type': 'application/json',
-      'Cache-Control': 'no-cache',
       'X-Api-Key': api_key
     }
   };
@@ -18,26 +16,38 @@ const fetchDeals = async (api_key, isUpdate = false, sortByField = 'amount', per
   let currentPage = 1;
 
   try {
-    // Iterate through pages until pagination.has_next_page is false
     while (true) {
-      const url = `${baseUrl}?sort_by_field=${sortByField}&page=${currentPage}&per_page=${perPage}`;
+      const requestBody = {
+        search_filter_json: {
+          filters: [
+            {
+              field: "opportunity_stage_id",
+              values: ["657c6cc9ab96200302cbd0a3"],
+              type: "exact"
+            }
+          ]
+        },
+        sort_by_field: sortByField,
+        page: currentPage,
+        per_page: perPage
+      };
+
       console.log(`Fetching page ${currentPage} with up to ${perPage} results...`);
 
-      const response = await fetch(url, options);
+      const response = await fetch(baseUrl, {
+        ...options,
+        body: JSON.stringify(requestBody)
+      });
+
       if (!response.ok) {
         throw new Error(`Error: ${response.status} - ${response.statusText}`);
       }
 
       const { opportunities = [], pagination = {} } = await response.json();
+
       console.log(`Page ${currentPage} retrieved. Total deals returned on this page: ${opportunities.length}`);
 
-      // Filter deals by `opportunity_stage_id`, excluding null values
-      const filteredDeals = opportunities.filter(
-        deal => deal.opportunity_stage_id && deal.opportunity_stage_id === "657c6cc9ab96200302cbd0a3"
-      );
-
-      // Process each deal based on the `isUpdate` flag
-      for (const deal of filteredDeals) {
+      for (const deal of opportunities) {
         const { id, opportunity_stage_id } = deal;
         try {
           if (isUpdate) {
@@ -54,7 +64,7 @@ const fetchDeals = async (api_key, isUpdate = false, sortByField = 'amount', per
         }
       }
 
-      console.log(`Filtered deals processed from page ${currentPage}: ${filteredDeals.length}`);
+      console.log(`Filtered deals processed from page ${currentPage}: ${opportunities.length}`);
 
       // Check pagination
       if (pagination && pagination.has_next_page) {
@@ -73,8 +83,8 @@ const fetchDeals = async (api_key, isUpdate = false, sortByField = 'amount', per
 };
 
 // Usage example (uncomment the following lines and replace 'your_api_key_here' with your actual API key):
-// fetchDeals('your_api_key_here').then(deals => {
-//   console.log('All filtered deals:', deals);
+// fetchDeals('your_api_key_here').then(() => {
+//   console.log('All deals processed successfully.');
 // }).catch(err => console.error(err));
 
 module.exports = { fetchDeals };
