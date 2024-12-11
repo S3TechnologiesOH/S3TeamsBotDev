@@ -82,9 +82,5 @@ const fetchDeals = async (api_key, isUpdate = false, sortByField = 'created_at',
   }
 };
 
-// Usage example (uncomment the following lines and replace 'your_api_key_here' with your actual API key):
-// fetchDeals('your_api_key_here').then(() => {
-//   console.log('All deals processed successfully.');
-// }).catch(err => console.error(err));
 
 module.exports = { fetchDeals };
