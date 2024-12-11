@@ -2,7 +2,7 @@ const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const app = express();
 
-const port = process.env.PORT || 3000;
+const port = process.env.WEBSITES_PORT || 3000;
 
 // API endpoint exposed via reverse proxy
 async function startWebhook() {
