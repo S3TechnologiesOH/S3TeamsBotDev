@@ -23,7 +23,7 @@ const fetchDeals = async (api_key, isUpdate = false, sortByField = 'created_at',
             {
               field: "opportunity_stage_id",
               values: ["657c6cc9ab96200302cbd0a3"],
-              type: "exact"
+              type: "equals" // Changed to "equals" for compatibility
             }
           ]
         },
@@ -33,6 +33,7 @@ const fetchDeals = async (api_key, isUpdate = false, sortByField = 'created_at',
       };
 
       console.log(`Fetching page ${currentPage} with up to ${perPage} results...`);
+      console.log(`Request Body:`, JSON.stringify(requestBody, null, 2));
 
       const response = await fetch(baseUrl, {
         ...options,
@@ -40,10 +41,13 @@ const fetchDeals = async (api_key, isUpdate = false, sortByField = 'created_at',
       });
 
       if (!response.ok) {
+        const errorResponse = await response.text();
+        console.error(`API Error Response:`, errorResponse);
         throw new Error(`Error: ${response.status} - ${response.statusText}`);
       }
 
-      const { opportunities = [], pagination = {} } = await response.json();
+      const responseData = await response.json();
+      const { opportunities = [], pagination = {} } = responseData;
 
       console.log(`Page ${currentPage} retrieved. Total deals returned on this page: ${opportunities.length}`);
 
@@ -82,5 +86,9 @@ const fetchDeals = async (api_key, isUpdate = false, sortByField = 'created_at',
   }
 };
 
+// Usage example (uncomment the following lines and replace 'your_api_key_here' with your actual API key):
+// fetchDeals('your_api_key_here').then(() => {
+//   console.log('All deals processed successfully.');
+// }).catch(err => console.error(err));
 
 module.exports = { fetchDeals };
