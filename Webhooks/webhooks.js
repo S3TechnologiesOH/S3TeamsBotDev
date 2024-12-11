@@ -1,5 +1,6 @@
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
+const cors = require('cors');
 const app = express();
 
 const port = process.env.WEBSITES_PORT || 3000;
@@ -7,6 +8,7 @@ const port = process.env.WEBSITES_PORT || 3000;
 // API endpoint exposed via reverse proxy
 async function startWebhook() {
     app.use(
+        cors(),
         '/api',
         createProxyMiddleware({
             target: 'http://localhost:3000', // Internal API

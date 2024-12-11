@@ -1,5 +1,5 @@
 // ApolloAPI.js
-const { checkAndInsertOpportunity } = require('../Data/sqlManager'); // Import the function
+const { checkAndInsertOpportunity, updateOpportunityAndCheck } = require('../Data/sqlManager'); // Import the function
 
 const fetch = require('node-fetch'); // Ensure you have node-fetch or a similar library if you're running in Node.js
 
