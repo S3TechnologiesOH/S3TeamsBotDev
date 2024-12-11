@@ -99,28 +99,18 @@ async function insertSingleRow(name, email) {
   const checkAndInsertOpportunity = async (id, opportunity_stage_id) => {
     const connection = await mysql.createConnection(sqlconfig);
     try {
-      const [rows] = await connection.execute(
-        'SELECT * FROM apollo_opportunities WHERE id = ?',
-        [id]
-      );
-  
-      if (rows.length > 0) {
-        console.log('Record already exists:', rows[0]);
-        return;
-      }
-  
-      await connection.execute(
-        'INSERT INTO apollo_opportunities (id, opportunity_stage_id, has_changed) VALUES (?, ?, ?)',
-        [id, opportunity_stage_id, false]
-      );
-      console.log('Record inserted:', { id, opportunity_stage_id, has_changed: false });
+        await connection.execute(
+            'INSERT INTO apollo_opportunities (id, opportunity_stage_id, has_changed) VALUES (?, ?, ?)',
+            [id, opportunity_stage_id, false]
+        );
+        console.log('Record inserted:', { id, opportunity_stage_id, has_changed: false });
     } catch (error) {
-      console.error('Error in checkAndInsertOpportunity:', error);
-      throw error;
+        console.error('Error in checkAndInsertOpportunity:', error);
+        throw error;
     } finally {
-      await connection.end();
+        await connection.end();
     }
-  };
+};
   
   // Function to update and check conditions
   const updateOpportunityAndCheck = async (id, opportunity_stage_id) => {
