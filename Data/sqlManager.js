@@ -1,7 +1,7 @@
 
 mysql = require('mysql2/promise');
 
-const connectionString = process.env.MYSQLCONNSTR_localdb;
+const connectionString = process.env.SQL_CONNECTION_STRING;
 
 // Function to parse the MySQL connection string safely
 const parseConnectionString = (connectionString) => {
