@@ -2,6 +2,28 @@
 const { checkAndInsertOpportunity, updateOpportunityAndCheck } = require('../Data/sqlManager');
 const fetch = require('node-fetch'); // Ensure you have node-fetch installed
 
+const fetchWithRetry = async (url, options, retries = 3, backoff = 3000) => {
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok && retries > 0) {
+      if (response.status === 429) { // Too Many Requests
+        console.warn(`Rate limited. Retrying in ${backoff}ms...`);
+        await new Promise(res => setTimeout(res, backoff));
+        return fetchWithRetry(url, options, retries - 1, backoff * 2);
+      }
+      throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
+    }
+    return response;
+  } catch (error) {
+    if (retries > 0) {
+      console.warn(`Fetch failed. Retrying in ${backoff}ms...`, error);
+      await new Promise(res => setTimeout(res, backoff));
+      return fetchWithRetry(url, options, retries - 1, backoff * 2);
+    }
+    throw error;
+  }
+};
+
 const fetchDeals = async (api_key, isUpdate = false, perPage = 100) => {
   const baseUrl = 'https://api.apollo.io/api/v1/opportunities/search';
   const options = {
@@ -23,7 +45,7 @@ const fetchDeals = async (api_key, isUpdate = false, perPage = 100) => {
             {
               field: "opportunity_stage_id",
               values: ["657c6cc9ab96200302cbd0a3"],
-              type: "equals" // Changed to "equals" for compatibility
+              type: "is" // Adjusted filter type
             }
           ]
         },
@@ -31,21 +53,17 @@ const fetchDeals = async (api_key, isUpdate = false, perPage = 100) => {
         per_page: perPage
       };
 
-      console.log(`Fetching page ${currentPage} with up to ${perPage} results...`);
+      console.log(`\nFetching page ${currentPage} with up to ${perPage} results...`);
       console.log(`Request Body:`, JSON.stringify(requestBody, null, 2));
 
-      const response = await fetch(baseUrl, {
+      const response = await fetchWithRetry(baseUrl, {
         ...options,
         body: JSON.stringify(requestBody)
       });
 
-      if (!response.ok) {
-        const errorResponse = await response.text();
-        console.error(`API Error Response:`, errorResponse);
-        throw new Error(`Error: ${response.status} - ${response.statusText}`);
-      }
-
       const responseData = await response.json();
+      console.log('API Response:', JSON.stringify(responseData, null, 2));
+
       const { opportunities = [], pagination = {} } = responseData;
 
       console.log(`Page ${currentPage} retrieved. Total deals returned on this page: ${opportunities.length}`);
