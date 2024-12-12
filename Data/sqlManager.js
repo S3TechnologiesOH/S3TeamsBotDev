@@ -1,168 +1,179 @@
+const sql = require('mssql');
+const { DefaultAzureCredential } = require('@azure/identity');
 
-mysql = require('mysql2/promise');
-
-const connectionString = process.env.SQL_CONNECTION_STRING;
-
-// Function to parse the MySQL connection string safely
-const parseConnectionString = (connectionString) => {
-  console.log(connectionString);
-  const config = {};
-  const parts = connectionString.split(';');
-
-  parts.forEach((part) => {
-    if (part.includes('=')) {  // Ensure it's a valid key-value pair
-      const [key, value] = part.split('=');
-      if (key && value) {  // Check that both key and value exist
-        config[key.trim().toLowerCase()] = value.trim();
-      }
-    }
-  });
-
-  return {
-    host: "s3-powerbot-server.database.windows.net",
-    port: 1433,
-    user: "CloudSA5042b957",
-    password: "Ambyst0ma!",
-    database: "s3-powerbot-sqldb",
-  };
+// Azure SQL Database connection details
+const sqlConfig = {
+  server: 's3-powerbot-server.database.windows.net', // Your Azure SQL server name
+  database: 's3-powerbot-sqldb', // Your database name
+  options: {
+    encrypt: true, // This is required for Azure SQL
+    trustServerCertificate: false, // Recommended for production
+  },
 };
 
-const sqlconfig =  {
-  host: "s3-powerbot-server.database.windows.net",
-  port: 1433,
-  user: "CloudSA5042b957",
-  password: "Ambyst0ma!",
-  database: "s3-powerbot-sqldb",
-};
+// Function to get an access token for Azure SQL using DefaultAzureCredential
+async function getAccessToken() {
+  const credential = new DefaultAzureCredential();
+  const tokenResponse = await credential.getToken('https://database.windows.net/.default');
+  return tokenResponse.token;
+}
 
-// Create a connection pool
-const pool = mysql.createPool(sqlconfig);
-
-
-async function connectToMySQL() {
-    try {
-      // Establish connection
-      connection = await pool.getConnection(sqlconfig);
-      console.log('Connected to MySQL In-App');
-
-      const [tables] = await connection.execute('SHOW TABLES');
-      console.log('Tables:', tables);
-
-      const [rows] = await connection.execute('SELECT COUNT(*) AS count FROM users');
-      console.log('Number of rows in Users:', rows[0].count);
-      
-      // Print each row and its values
-      rows.forEach((row, index) => {
-        console.log(`Row ${index + 1}:`);
-        Object.entries(row).forEach(([key, value]) => {
-          console.log(`  ${key}: ${value}`);
-        });
-        console.log('----------------------------');  // For readability
-      });
-
-      // Close the connection
-      await connection.release();
-    } catch (error) {
-      console.error('MySQL connection error:', error);
-    }
-  }
-// Function to insert a single row with a uniqueness check
-async function insertSingleRow(name, email) {
-    try {
-      const connection = await pool.getConnection(); // Get a connection from the pool
-  
-      // Check if the user already exists
-      const [existingRows] = await connection.execute(
-        'SELECT * FROM users WHERE name = ? OR email = ?',
-        [name, email]
-      );
-  
-      if (existingRows.length > 0) {
-        console.log(`User with name "${name}" or email "${email}" already exists. Skipping insertion.`);
-        connection.release(); // Release the connection back to the pool
-        return;
-      }
-  
-      const query = 'INSERT INTO users (name, email) VALUES (?, ?)';
-      const values = [name, email];
-  
-      const [result] = await connection.execute(query, values);
-      console.log('Single row inserted:', result);
-  
-      connection.release(); // Release the connection back to the pool
-    } catch (error) {
-      console.error('Error inserting single row:', error);
-    }
-  }
-  async function logCommand(user, command) {
-    try {
-      const query = `INSERT INTO command_logs (user, command, date) VALUES (?, ?, ?)`;
-      const values = [user, command, new Date()]; // Use the current date and time
-  
-      const [result] = await pool.execute(query, values);
-      console.log('Command logged:', result);
-    } catch (error) {
-      console.error('Error logging command:', error);
-    }
-  }
-  const checkAndInsertOpportunity = async (id, opportunity_stage_id) => {
-    const connection = await mysql.createConnection(sqlconfig);
-    try {
-        await connection.execute(
-            'INSERT INTO apollo_opportunities (id, opportunity_stage_id, has_changed) VALUES (?, ?, ?)',
-            [id, opportunity_stage_id, false]
-        );
-        console.log('Record inserted:', { id, opportunity_stage_id, has_changed: false });
-    } catch (error) {
-        console.error('Error in checkAndInsertOpportunity:', error);
-        throw error;
-    } finally {
-        await connection.end();
-    }
-};
-  
-  // Function to update and check conditions
-  const updateOpportunityAndCheck = async (id, opportunity_stage_id) => {
-    const connection = await mysql.createConnection(sqlconfig);
-    try {
-      const [rows] = await connection.execute(
-        'SELECT * FROM apollo_opportunities WHERE id = ?',
-        [id]
-      );
-  
-      if (rows.length === 0) {
-        console.log('No record found with id:', id);
-        return;
-      }
-  
-      const currentStageId = rows[0].opportunity_stage_id;
-  
-      // Check the specific condition
-      if (
-        currentStageId === '657c6cc9ab96200302cbd0a3' &&
-        opportunity_stage_id === '669141aa1bcf2c04935c3074'
-      ) {
-        console.log('Condition met, setting has_changed to true...');
-        // Update `has_changed` to true
-        await connection.execute(
-          'UPDATE apollo_opportunities SET has_changed = ? WHERE id = ?',
-          [true, id]
-        );
-      }
-  
-      // Update the stage ID
-      await connection.execute(
-        'UPDATE apollo_opportunities SET opportunity_stage_id = ? WHERE id = ?',
-        [opportunity_stage_id, id]
-      );
-      console.log('Record updated:', { id, opportunity_stage_id });
-    } catch (error) {
-      console.error('Error in updateOpportunityAndCheck:', error);
-      throw error;
-    } finally {
-      await connection.end();
-    }
+// Function to establish a connection pool using passwordless authentication
+async function createConnectionPool() {
+  const accessToken = await getAccessToken();
+  const poolConfig = {
+    ...sqlConfig,
+    authentication: {
+      type: 'azure-active-directory-access-token',
+      options: {
+        token: accessToken,
+      },
+    },
   };
 
-  module.exports = { pool, connectToMySQL, insertSingleRow, logCommand, checkAndInsertOpportunity,
-    updateOpportunityAndCheck};
+  const pool = new sql.ConnectionPool(poolConfig);
+  await pool.connect();
+  console.log('Connected to Azure SQL Database using passwordless authentication.');
+  return pool;
+}
+
+// Function to retrieve tables from the database
+async function getTables(pool) {
+  try {
+    const result = await pool.request().query('SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES');
+    console.log('Tables:', result.recordset);
+  } catch (error) {
+    console.error('Error retrieving tables:', error);
+  }
+}
+
+// Function to insert a single row with uniqueness check
+async function insertSingleRow(pool, name, email) {
+  try {
+    // Check if the user already exists
+    const result = await pool
+      .request()
+      .input('name', sql.VarChar, name)
+      .input('email', sql.VarChar, email)
+      .query('SELECT * FROM users WHERE name = @name OR email = @email');
+
+    if (result.recordset.length > 0) {
+      console.log(`User with name "${name}" or email "${email}" already exists. Skipping insertion.`);
+      return;
+    }
+
+    // Insert the new user
+    await pool
+      .request()
+      .input('name', sql.VarChar, name)
+      .input('email', sql.VarChar, email)
+      .query('INSERT INTO users (name, email) VALUES (@name, @email)');
+
+    console.log('Single row inserted:', { name, email });
+  } catch (error) {
+    console.error('Error inserting single row:', error);
+  }
+}
+
+// Function to log a command
+async function logCommand(pool, user, command) {
+  try {
+    await pool
+      .request()
+      .input('user', sql.VarChar, user)
+      .input('command', sql.VarChar, command)
+      .input('date', sql.DateTime, new Date())
+      .query('INSERT INTO command_logs (user, command, date) VALUES (@user, @command, @date)');
+
+    console.log('Command logged:', { user, command });
+  } catch (error) {
+    console.error('Error logging command:', error);
+  }
+}
+
+// Function to check and insert opportunity
+async function checkAndInsertOpportunity(pool, id, opportunity_stage_id) {
+  try {
+    // Check if the opportunity already exists
+    const result = await pool
+      .request()
+      .input('id', sql.VarChar, id)
+      .query('SELECT * FROM apollo_opportunities WHERE id = @id');
+
+    if (result.recordset.length > 0) {
+      console.log(`Opportunity with ID ${id} already exists. Skipping insertion.`);
+      return;
+    }
+
+    // Insert the new opportunity
+    await pool
+      .request()
+      .input('id', sql.VarChar, id)
+      .input('opportunity_stage_id', sql.VarChar, opportunity_stage_id)
+      .input('has_changed', sql.Bit, false)
+      .query('INSERT INTO apollo_opportunities (id, opportunity_stage_id, has_changed) VALUES (@id, @opportunity_stage_id, @has_changed)');
+
+    console.log('Opportunity inserted:', { id, opportunity_stage_id, has_changed: false });
+  } catch (error) {
+    console.error('Error in checkAndInsertOpportunity:', error);
+  }
+}
+
+// Function to update and check opportunity
+async function updateOpportunityAndCheck(pool, id, opportunity_stage_id) {
+  try {
+    const result = await pool
+      .request()
+      .input('id', sql.VarChar, id)
+      .query('SELECT * FROM apollo_opportunities WHERE id = @id');
+
+    if (result.recordset.length === 0) {
+      console.log(`No record found with ID ${id}.`);
+      return;
+    }
+
+    const currentStageId = result.recordset[0].opportunity_stage_id;
+
+    // Check the specific condition
+    if (
+      currentStageId === '657c6cc9ab96200302cbd0a3' &&
+      opportunity_stage_id === '669141aa1bcf2c04935c3074'
+    ) {
+      console.log('Condition met, setting has_changed to true...');
+      await pool
+        .request()
+        .input('id', sql.VarChar, id)
+        .query('UPDATE apollo_opportunities SET has_changed = 1 WHERE id = @id');
+    }
+
+    // Update the stage ID
+    await pool
+      .request()
+      .input('id', sql.VarChar, id)
+      .input('opportunity_stage_id', sql.VarChar, opportunity_stage_id)
+      .query('UPDATE apollo_opportunities SET opportunity_stage_id = @opportunity_stage_id WHERE id = @id');
+
+    console.log('Opportunity updated:', { id, opportunity_stage_id });
+  } catch (error) {
+    console.error('Error in updateOpportunityAndCheck:', error);
+  }
+}
+
+(async () => {
+  const pool = await createConnectionPool();
+
+  try {
+    await getTables(pool); // Example: List tables
+
+    // Example usage of functions
+    await insertSingleRow(pool, 'John Doe', 'john.doe@example.com');
+    await logCommand(pool, 'John Doe', 'INSERT');
+    await checkAndInsertOpportunity(pool, '12345', '657c6cc9ab96200302cbd0a3');
+    await updateOpportunityAndCheck(pool, '12345', '669141aa1bcf2c04935c3074');
+  } catch (error) {
+    console.error('Error during execution:', error);
+  } finally {
+    await pool.close();
+    console.log('Connection pool closed.');
+  }
+})();
