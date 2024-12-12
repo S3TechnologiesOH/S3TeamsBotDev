@@ -1,7 +1,10 @@
+// ApolloAPI.js
+const axios = require('axios'); // Using Axios for HTTP requests
+const async = require('async'); // Using async for concurrency control
+const { checkAndInsertOpportunity, updateOpportunityAndCheck } = require('../Data/sqlManager');
+const dotenv = require('dotenv'); // To manage environment variables securely
 
-import axios from 'axios';
-import pLimit from 'p-limit';
-import { checkAndInsertOpportunity, updateOpportunityAndCheck } from '../Data/sqlManager';
+dotenv.config(); // Load environment variables from .env file
 
 /**
  * Fetches all deals from Apollo.io, filters them locally based on opportunity_stage_id,
@@ -10,8 +13,9 @@ import { checkAndInsertOpportunity, updateOpportunityAndCheck } from '../Data/sq
  * @param {boolean} isUpdate - Determines whether to update existing records or insert new ones.
  * @param {number} perPage - Number of deals to fetch per API request (max 100 as per API limits).
  */
-const fetchDeals = async (api_key, isUpdate = false, perPage = 100) => {
+const fetchDeals = async (isUpdate = false, perPage = 100) => {
   const baseUrl = 'https://api.apollo.io/api/v1/opportunities/search';
+  const api_key = process.env.APOLLO_API_KEY; // Securely accessing API key from environment variables
 
   if (!api_key) {
     console.error('Error: Apollo API key is not defined in environment variables.');
@@ -27,8 +31,8 @@ const fetchDeals = async (api_key, isUpdate = false, perPage = 100) => {
   let currentPage = 1;
   const targetStageId = "657c6cc9ab96200302cbd0a3"; // The opportunity_stage_id to filter by
 
-  // Initialize concurrency limiter
-  const limit = pLimit(10); // Adjust concurrency level as needed
+  // Define concurrency limit
+  const CONCURRENCY_LIMIT = 10; // Adjust as needed based on your system's capabilities
 
   try {
     while (true) {
@@ -57,9 +61,9 @@ const fetchDeals = async (api_key, isUpdate = false, perPage = 100) => {
       console.log(`Filtered deals on this page: ${filteredOpportunities.length}`);
 
       if (filteredOpportunities.length > 0) {
-        // Process deals with controlled concurrency
-        const processingPromises = filteredOpportunities.map(deal => 
-          limit(async () => {
+        // Process deals with controlled concurrency using async.eachLimit
+        await new Promise((resolve, reject) => {
+          async.eachLimit(filteredOpportunities, CONCURRENCY_LIMIT, async (deal) => {
             const { id, opportunity_stage_id } = deal;
             try {
               if (isUpdate) {
@@ -71,13 +75,17 @@ const fetchDeals = async (api_key, isUpdate = false, perPage = 100) => {
               }
             } catch (error) {
               console.error(`Error processing deal with ID: ${id}`, error.message);
-              // Optionally, log error details to a monitoring service
+              // Optionally, you can log these errors to a file or monitoring service
             }
-          })
-        );
-
-        // Await all processing promises
-        await Promise.all(processingPromises);
+          }, (err) => {
+            if (err) {
+              console.error('Error in processing deals:', err);
+              reject(err);
+            } else {
+              resolve();
+            }
+          });
+        });
 
         console.log(`Processed ${filteredOpportunities.length} filtered deals from page ${currentPage}.`);
       } else {
