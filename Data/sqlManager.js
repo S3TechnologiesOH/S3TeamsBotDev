@@ -19,14 +19,22 @@ const parseConnectionString = (connectionString) => {
   });
 
   return {
-    host: config['data source'].split(':')[0],
-    port: parseInt(config['data source'].split(':')[1], 10) || 3306,
-    user: config['user id'],
-    password: config['password'],
-    database: config['database'],
+    host: "s3-powerbot-server.database.windows.net",
+    port: 1433,
+    user: "CloudSA5042b957",
+    password: "Ambyst0ma!",
+    database: "s3-powerbot-sqldb",
   };
 };
-const sqlconfig = parseConnectionString(connectionString);
+
+const sqlconfig =  {
+  host: "s3-powerbot-server.database.windows.net",
+  port: 1433,
+  user: "CloudSA5042b957",
+  password: "Ambyst0ma!",
+  database: "s3-powerbot-sqldb",
+};
+
 // Create a connection pool
 const pool = mysql.createPool(sqlconfig);
 
