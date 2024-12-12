@@ -2,6 +2,7 @@
 const { checkAndInsertOpportunity, updateOpportunityAndCheck } = require('../Data/sqlManager');
 const fetch = require('node-fetch'); // Ensure you have node-fetch installed
 
+// Retry logic implementation
 const fetchWithRetry = async (url, options, retries = 3, backoff = 3000) => {
   try {
     const response = await fetch(url, options);
@@ -56,6 +57,7 @@ const fetchDeals = async (api_key, isUpdate = false, perPage = 100) => {
       console.log(`\nFetching page ${currentPage} with up to ${perPage} results...`);
       console.log(`Request Body:`, JSON.stringify(requestBody, null, 2));
 
+      // Use fetchWithRetry instead of fetch
       const response = await fetchWithRetry(baseUrl, {
         ...options,
         body: JSON.stringify(requestBody)
