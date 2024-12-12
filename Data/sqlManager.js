@@ -177,3 +177,5 @@ async function updateOpportunityAndCheck(pool, id, opportunity_stage_id) {
     console.log('Connection pool closed.');
   }
 })();
+
+module.exports = { createConnectionPool, getTables, insertSingleRow, logCommand, checkAndInsertOpportunity, updateOpportunityAndCheck };
