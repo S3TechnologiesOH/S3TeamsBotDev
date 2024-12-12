@@ -1,7 +1,7 @@
-// ApolloAPI.js
-const { checkAndInsertOpportunity, updateOpportunityAndCheck } = require('../Data/sqlManager');
-const {axios} = require('axios'); // Using Axios for HTTP requests
-const {pLimit} = require('p-limit'); // For concurrency control
+
+import axios from 'axios';
+import pLimit from 'p-limit';
+import { checkAndInsertOpportunity, updateOpportunityAndCheck } from '../Data/sqlManager';
 
 /**
  * Fetches all deals from Apollo.io, filters them locally based on opportunity_stage_id,
