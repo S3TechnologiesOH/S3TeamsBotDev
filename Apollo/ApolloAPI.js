@@ -2,7 +2,6 @@
 const { checkAndInsertOpportunity, updateOpportunityAndCheck } = require('../Data/sqlManager');
 const axios = require('axios'); // Using Axios for HTTP requests
 const pLimit = require('p-limit'); // For concurrency control
-require('dotenv').config(); // For environment variables
 
 /**
  * Fetches all deals from Apollo.io, filters them locally based on opportunity_stage_id,
@@ -11,9 +10,8 @@ require('dotenv').config(); // For environment variables
  * @param {boolean} isUpdate - Determines whether to update existing records or insert new ones.
  * @param {number} perPage - Number of deals to fetch per API request (max 100 as per API limits).
  */
-const fetchDeals = async (isUpdate = false, perPage = 100) => {
+const fetchDeals = async (api_key, isUpdate = false, perPage = 100) => {
   const baseUrl = 'https://api.apollo.io/api/v1/opportunities/search';
-  const api_key = process.env.APOLLO_API_KEY;
 
   if (!api_key) {
     console.error('Error: Apollo API key is not defined in environment variables.');
