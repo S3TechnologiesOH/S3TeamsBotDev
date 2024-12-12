@@ -5,6 +5,7 @@ const connectionString = process.env.MYSQLCONNSTR_localdb;
 
 // Function to parse the MySQL connection string safely
 const parseConnectionString = (connectionString) => {
+  console.log(connectionString);
   const config = {};
   const parts = connectionString.split(';');
 
