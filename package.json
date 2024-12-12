@@ -34,6 +34,7 @@
         "mysql2": "^3.11.3",
         "node": "^18.20.4",
         "openai": "^4.67.3",
+        "p-limit": "^6.1.0",
         "restify": "^11.1.0"
     },
     "devDependencies": {
