@@ -20,7 +20,7 @@ const fetchDeals = async (isUpdate = false, perPage = 100) => {
     'Content-Type': 'application/json',
     'X-Api-Key': api_key
   };
-  //u
+  
   let currentPage = 1;
   const targetStageId = "657c6cc9ab96200302cbd0a3";
   const CONCURRENCY_LIMIT = 10;
@@ -53,10 +53,10 @@ const fetchDeals = async (isUpdate = false, perPage = 100) => {
             const { id, opportunity_stage_id } = deal;
             try {
               if (isUpdate) {
-                await updateOpportunityAndCheck(id, opportunity_stage_id);
+                //await updateOpportunityAndCheck(id, opportunity_stage_id);
                 console.log(`Updated deal with ID: ${id}`);
               } else {
-                await checkAndInsertOpportunity(id, opportunity_stage_id);
+                //await checkAndInsertOpportunity(id, opportunity_stage_id);
                 console.log(`Inserted deal with ID: ${id}`);
               }
             } catch (error) {
