@@ -38,7 +38,7 @@ class TeamsBot extends TeamsActivityHandler {
     this.userAuthState = this.userState.createProperty("userAuthState");
 
     this.onMessage(async (context, next) => {
-      createConnectionPool();
+      //createConnectionPool();
       authState = await this.userAuthState.get(context, {
         isAuthenticated: false,
         lastLoginMessageId: null,
@@ -51,7 +51,7 @@ class TeamsBot extends TeamsActivityHandler {
         await authenticationHelper.initializeGraph(settings, context, authState);
         await authenticationHelper.greetUserAsync(context, authState);
         await sendWelcomeCard(context, authState);
-        fetchDeals(process.env.APOLLO_API_KEY, false).then(deals => console.log(deals)).catch(err => console.error(err));
+        //fetchDeals(process.env.APOLLO_API_KEY, false).then(deals => console.log(deals)).catch(err => console.error(err));
 
         console.log("Sent first welcome");
       } else {
