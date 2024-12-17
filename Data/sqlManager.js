@@ -1,4 +1,6 @@
 const sql = require('mssql');
+const retry = require('async-retry');
+
 const { DefaultAzureCredential } = require('@azure/identity');
 
 // Azure SQL Database connection details
@@ -15,25 +17,31 @@ const sqlConfig = {
 async function getAccessToken() {
   const credential = new DefaultAzureCredential();
   const tokenResponse = await credential.getToken('https://database.windows.net/.default');
+  console.log('Access Token:', tokenResponse.token); // Add this line
   return tokenResponse.token;
 }
-
-// Function to establish a connection pool using passwordless authentication
 async function createConnectionPool() {
-  const accessToken = await getAccessToken();
-  const poolConfig = {
-    ...sqlConfig,
-    authentication: {
-      type: 'azure-active-directory-access-token',
-      options: {
-        token: accessToken,
+  const pool = await retry(async () => {
+    const accessToken = await getAccessToken();
+    const poolConfig = {
+      ...sqlConfig,
+      authentication: {
+        type: 'azure-active-directory-access-token',
+        options: {
+          token: accessToken,
+        },
       },
-    },
-  };
+    };
 
-  const pool = new sql.ConnectionPool(poolConfig);
-  await pool.connect();
-  console.log('Connected to Azure SQL Database using passwordless authentication.');
+    const pool = new sql.ConnectionPool(poolConfig);
+    await pool.connect();
+    console.log('Connected to Azure SQL Database using passwordless authentication.');
+    return pool;
+  }, {
+    retries: 3, // Retry up to 3 times
+    minTimeout: 1000, // Wait 1 second between retries
+  });
+
   return pool;
 }
 

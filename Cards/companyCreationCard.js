@@ -27,6 +27,20 @@ async function showCompanyCreationCard(context) {
         spacing: "Small",
       },
       {
+        type: "Input.Date",
+        id: "appointmentDate", // Input field for the ticket ID
+        placeholder: "Enter the Appointment Date",
+        isRequired: false,
+        spacing: "Small",
+      },
+      {
+        type: "Input.Date",
+        id: "appointmentTime", // Input field for the ticket ID
+        placeholder: "Enter the Appointment Time",
+        isRequired: false,
+        spacing: "Small",
+      },
+      {
         type: "Input.Text",
         id: "companyAddress", // Input field for the ticket ID
         placeholder: "Enter the Company Address",
@@ -44,13 +58,6 @@ async function showCompanyCreationCard(context) {
         type: "Input.Text",
         id: "rep", // Input field for the ticket ID
         placeholder: "Enter the rep",
-        isRequired: false,
-        spacing: "Small",
-      },
-      {
-        type: "Input.Text",
-        id: "companyId", // Input field for the ticket ID
-        placeholder: "Enter a Company ID",
         isRequired: false,
         spacing: "Small",
       },

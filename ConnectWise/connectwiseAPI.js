@@ -92,7 +92,7 @@ async function fetch_time_entries_for_ticket(ticketId) {
   }
 }
 
-async function createCompany(context, companyDetails, authState) {
+async function createCompany(context, companyDetails, appointmentDetails, authState) {
   console.log("Entering createCompany with details:", companyDetails);
 
   const payload = {
@@ -129,8 +129,11 @@ async function createCompany(context, companyDetails, authState) {
 
     context.sendActivity(`Creating Appointment Ticket for company: ${payload.name}`);
     //const currentCompany = await getCompanyByIdentifier(payload.identifier);
+
+    const formattedAppointment = formatAppointmentDateTime(appointmentDetails.date, appointmentDetails.time);
+
     const newTicket = await createSalesTicket(
-      "New Appointment",
+      `New Appointment ${formattedAppointment}`,
       payload.address,
       payload.contactInfo,
       payload.rep,
@@ -219,7 +222,34 @@ async function deleteSalesTicket(id, context, authState) {
     throw new Error("Failed to delete sales ticket.");
   }
 }
+// Helper function to format date and time
+function formatAppointmentDateTime(date, time) {
+  const appointmentDate = new Date(`${date}T${time}`);
+  
+  // Get day suffix (1st, 2nd, 3rd, etc.)
+  const getOrdinalSuffix = (day) => {
+    if (day > 3 && day < 21) return 'th';
+    switch (day % 10) {
+      case 1: return 'st';
+      case 2: return 'nd';
+      case 3: return 'rd';
+      default: return 'th';
+    }
+  };
 
+  // Format the date: "Wednesday, Dec. 4th"
+  const options = { weekday: 'long', month: 'short', day: 'numeric', timeZone: 'America/New_York' };
+  const formattedDate = appointmentDate.toLocaleDateString('en-US', options);
+  const day = appointmentDate.getDate();
+  const dayWithSuffix = formattedDate.replace(/\d+/, `${day}${getOrdinalSuffix(day)}`);
+
+  // Format the time: "10 AM EST"
+  const optionsTime = { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/New_York' };
+  const formattedTime = appointmentDate.toLocaleTimeString('en-US', optionsTime);
+
+  // Combine formatted date and time
+  return `${dayWithSuffix} @ ${formattedTime} EST`;
+}
 module.exports = {
   fetch_ticket_by_id,
   fetch_time_entries_for_ticket,
