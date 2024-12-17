@@ -1,4 +1,4 @@
-const { TicketsApi, TicketTasksApi, ProductsItemApi, CompaniesApi, CompanyTeamsApi } = require('connectwise-rest-api/release/api/api');
+const { TicketsApi, TicketTasksApi, ProductsItemApi, CompaniesApi, CompanyTeamsApi, CompanySitesApi } = require('connectwise-rest-api/release/api/api');
 const { ManageAPI } = require('connectwise-rest');
 const { CommonParameters, CWMOptions } = require('connectwise-rest');
 const { TeamsBot } = require('../teamsBot');
@@ -43,6 +43,7 @@ try {
   cwCompanies = new CompaniesApi(`${connectwiseUrl}`);
   cwCompaniesTeams = new CompanyTeamsApi(`${connectwiseUrl}`);
   cwManage = new ManageAPI(CWMOptions);
+  cwSites = new CompanySitesApi(`${connectwiseUrl}`);
 
   cwCompanies.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
   console.log("ConnectWise APIs initialized successfully.");
@@ -90,6 +91,19 @@ async function fetch_time_entries_for_ticket(ticketId) {
     console.error("Error fetching time entries:", error);
     throw new Error("Failed to fetch time entries.");
   }
+}
+
+async function createSite(context, siteName, siteAddress, siteCity, siteState, companyId, authState) {
+
+  const response = await cwSites.companyCompaniesIdSitesPost({
+  id: companyId,
+  site: {
+    name: siteName,
+    addressLine1: siteAddress,
+    city: siteCity,
+    state: siteState,
+  }
+  });
 }
 
 async function createCompany(context, companyDetails, appointmentDetails, authState) {
@@ -296,5 +310,6 @@ module.exports = {
   createCompany,
   getCompanyByIdentifier,
   createSalesTicket,
-  deleteSalesTicket
+  deleteSalesTicket,
+  createSite
 };

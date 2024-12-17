@@ -1,8 +1,9 @@
 const connectwiseAPI = require("./connectwiseAPI"); // ConnectWise API logic
 
-async function handleCreateCompany(context, companyName, address, contactInfo, rep, companyId, marketChoice, appointmentDate, appointmentTime, authState) {
+async function handleCreateCompany(context, companyName, address, contactInfo, rep, siteName, siteAddress, siteCity, siteState, companyId, marketChoice, appointmentDate, appointmentTime, authState) {
     try {
 
+        const site = connectwiseAPI.createSite(context, siteName, siteAddress, siteCity, siteState, companyId, authState);
         // Setup company details based on input
         const newCompanyDetails = {
             name : companyName,
@@ -14,10 +15,7 @@ async function handleCreateCompany(context, companyName, address, contactInfo, r
             contactInfo: contactInfo,
             rep: rep,
             identifier : companyName,
-            site: {
-                id: 1,
-                name: "Main"
-            }
+            site: site
         };
 
         const appointmentDetails = {
