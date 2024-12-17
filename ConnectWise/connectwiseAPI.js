@@ -143,7 +143,7 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
     );
     console.log("Appointment ticket created successfully:", newTicket);
 
-    return response;
+    //return response;
   } catch (error) {
     console.error("Failed to create company:", error);
     throw error;
@@ -177,10 +177,10 @@ async function createSalesTicket(summary, address, contactInfo, rep, companyId, 
     const response = await cwManage.ServiceAPI.postServiceTickets({
       summary, // Ticket summary
       board: { name: "Sales" }, // Board name
+      status: { name: "Scheduled" }, // Status name
       company: { identifier: companyId }, // Company ID
       //owner: { identifier: authState.userDisplayName }, // Owner identifier (logged-in user)
-      //source: { name: "SDR - Jason Hone" }, // Source name
-      initialDescription: `Company: ${companyId}\n\nAddress: ${address}\n\nContact Info: ${contactInfo}\n\nRep: ${rep}\n\nJason Hone|Business Development\n\nDirect-(234)252-1739 (O)330.648.5408 x129| jhone@mys3tech.com | www.mys3tech.com\n\n90 N. Prospect St. Akron, OH 44304| 752 N State St. Westerville, OH 43081`, // Description with relevant details
+      initialDescription: `Company: ${companyId}\n\nAddress: ${address}\n\nContact Info: ${contactInfo}\n\nRep: ${rep}\n\n`, // Initial description
       recordType: "ServiceTicket", // Record type
       source: { name: "SDR - Jason Hone" }, // Source name
     })

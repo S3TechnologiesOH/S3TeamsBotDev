@@ -27,18 +27,43 @@ async function showCompanyCreationCard(context) {
         spacing: "Small",
       },
       {
-        type: "Input.Date",
-        id: "appointmentDate", // Input field for the ticket ID
-        placeholder: "Enter the Appointment Date",
-        isRequired: false,
-        spacing: "Small",
-      },
-      {
-        type: "Input.Time",
-        id: "appointmentTime", // Input field for the ticket ID
-        placeholder: "Enter the Appointment Time",
-        isRequired: false,
-        spacing: "Small",
+        type: "Input.ChoiceSet",
+        id: "marketChoice",
+        style: "compact",
+        label: "Select a Market",
+        isMultiSelect: false,
+        value: "1",
+        choices: [
+          { "title": "Agriculture", "value": "1" },
+          { "title": "Architect / Engineer", "value": "2" },
+          { "title": "Automotive", "value": "3" },
+          { "title": "Communications", "value": "4" },
+          { "title": "Construction / Development", "value": "5" },
+          { "title": "CPA", "value": "6" },
+          { "title": "Education", "value": "7" },
+          { "title": "Financial", "value": "8" },
+          { "title": "Government", "value": "9" },
+          { "title": "Healthcare", "value": "10" },
+          { "title": "Hospitality", "value": "11" },
+          { "title": "Human Resources", "value": "12" },
+          { "title": "Insurance", "value": "13" },
+          { "title": "Internet", "value": "14" },
+          { "title": "Legal", "value": "15" },
+          { "title": "Manufacturing", "value": "16" },
+          { "title": "Media/Advertising", "value": "17" },
+          { "title": "NonProfit", "value": "18" },
+          { "title": "Real Estate", "value": "19" },
+          { "title": "Religious Institution", "value": "20" },
+          { "title": "Residential", "value": "21" },
+          { "title": "Restaurant / Bar", "value": "22" },
+          { "title": "Retail", "value": "23" },
+          { "title": "Sanitation", "value": "24" },
+          { "title": "Senior Living", "value": "25" },
+          { "title": "Services", "value": "26" },
+          { "title": "Transportation", "value": "27" },
+          { "title": "Utilities", "value": "28" },
+          { "title": "Wholesale / Distribution", "value": "29" }
+        ]
       },
       {
         type: "Input.Text",
@@ -58,6 +83,20 @@ async function showCompanyCreationCard(context) {
         type: "Input.Text",
         id: "rep", // Input field for the ticket ID
         placeholder: "Enter the rep",
+        isRequired: false,
+        spacing: "Small",
+      },
+      {
+        type: "Input.Date",
+        id: "appointmentDate", // Input field for the ticket ID
+        placeholder: "Enter the Appointment Date",
+        isRequired: false,
+        spacing: "Small",
+      },
+      {
+        type: "Input.Time",
+        id: "appointmentTime", // Input field for the ticket ID
+        placeholder: "Enter the Appointment Time",
         isRequired: false,
         spacing: "Small",
       },
