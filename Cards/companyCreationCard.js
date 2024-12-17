@@ -51,7 +51,7 @@ async function showCompanyCreationCard(context) {
         type: "Input.Text",
         id: "siteName", // Input field for the ticket ID
         placeholder: "Enter a Site Name",
-        title: "Site Information",
+        label: "Site Information",
         isRequired: true,
         spacing: "Small",
       },
@@ -72,6 +72,7 @@ async function showCompanyCreationCard(context) {
       {
         type: "Input.ChoiceSet",
         id: "selectedState",
+        placeholder: "Select a State",
         style: "compact",
         choices: [
               { "title": "AL", "value": "AL" },
