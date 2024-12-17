@@ -33,7 +33,7 @@ const fetchDeals = async (isUpdate = false, perPage = 100) => {
           filters: []
         },
         page: currentPage,
-        per_page: perPage
+        per_page: 100
       };
 
       console.log(`\nFetching page ${currentPage}...`);
