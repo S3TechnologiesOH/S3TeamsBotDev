@@ -37,13 +37,11 @@ const fetchDeals = async (isUpdate = false, perPage = 100) => {
   try {
     while (true) {
       const requestBody = {
-        // No filters applied here; fetching all deals
-        search_filter_json: {
-          filters: [] // Empty filters array to fetch all deals
-        },
+        search_filter_json: {}, // Remove the filters or pass an empty object
         page: currentPage,
         per_page: perPage
       };
+      
 
       console.log(`\nFetching page ${currentPage} with up to ${perPage} results...`);
       console.log(`Request Body:`, JSON.stringify(requestBody, null, 2));
