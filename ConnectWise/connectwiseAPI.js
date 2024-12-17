@@ -120,7 +120,11 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
       context.sendActivity(`This company already exists: ${existingCompany.name}`);
 
       const companyTeam = {
-        company: existingCompany,
+        company: {
+          id: existingCompany.id,
+          identifier: existingCompany.identifier,
+          name: existingCompany.name
+        },
         accountManagerFlag: true,
         teamRole: "Account Manager",
         member: {
