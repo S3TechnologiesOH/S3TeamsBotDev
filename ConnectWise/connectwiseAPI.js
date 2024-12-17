@@ -118,6 +118,23 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
     if (existingCompany) {
       console.log("Company already exists:", existingCompany);
       context.sendActivity(`This company already exists: ${existingCompany.name}`);
+
+      const companyTeam = {
+        company: existingCompany,
+        accountManagerFlag: true,
+        teamRole: "Account Manager",
+        member: {
+          id: 1,
+          name: companyDetails.rep
+        },
+        contact: {
+          id: 1,
+          name: companyDetails.rep
+        }
+      }
+
+      const companyTeamResponse = await cwCompanies.companyCompaniesIdTeamsPost({ companyTeam, teamId: 1 });
+
       //return existingCompany;
     }
     else
