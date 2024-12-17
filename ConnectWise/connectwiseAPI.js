@@ -133,7 +133,7 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
         }
       }
 
-      const companyTeamResponse = await cwCompaniesTeams.companyCompaniesIdTeamsPost({ companyTeam, teamId: 1 });
+      const companyTeamResponse = await cwCompaniesTeams.companyCompaniesIdTeamsPost({ companyTeam, id: 1 });
 
       //return existingCompany;
     }
@@ -160,7 +160,7 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
       }
       console.log("Company created successfully:", response);  
 
-      const companyTeamResponse = await cwCompaniesTeams.companyCompaniesIdTeamsPost({ companyTeam, teamId: 1 });
+      const companyTeamResponse = await cwCompaniesTeams.companyCompaniesIdTeamsPost({ companyTeam, id: 1 });
       console.log("Company Team created successfully:", companyTeamResponse);
     }
 
