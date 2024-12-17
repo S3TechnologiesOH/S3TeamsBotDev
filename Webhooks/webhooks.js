@@ -6,7 +6,7 @@ const port = process.env.WEBSITES_PORT || 3000;
 
 // API endpoint exposed via reverse proxy
 async function startWebhook() {
-    app.use(
+    /*app.use(
         '/api',
         createProxyMiddleware({
             target: 'http://localhost:3000', // Internal API
@@ -24,7 +24,7 @@ async function startWebhook() {
     app.listen(port, () => {
         console.log(`App listening on port ${port}`);
     });
-
+*/
 }
 module.exports = { startWebhook };
 
