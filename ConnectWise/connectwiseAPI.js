@@ -122,7 +122,6 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
       const companyTeam = {
         "accountManagerFlag": true,
         "teamRole": {
-          "id": 1,
           "name": "Account Manager"
         },
       };
@@ -133,6 +132,7 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
         companyTeam: companyTeam,
         id: existingCompany.id
       });
+      console.log(teamResponse);
       //return existingCompany;
     }
     else
