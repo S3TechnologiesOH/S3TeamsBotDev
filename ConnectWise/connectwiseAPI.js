@@ -124,7 +124,27 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
     {
       console.log("Creating new company with payload:", payload);
       const response = await cwCompanies.companyCompaniesPost({ company: payload });
+      const companyTeam = {
+        company: {
+          id: response.id,
+          identifier: response.identifier,
+          name: response.name
+        },
+        accountManagerFlag: true,
+        teamRole: "Account Manager",
+        member: {
+          id: 1,
+          name: companyDetails.rep
+        },
+        contact: {
+          id: 1,
+          name: companyDetails.rep
+        }
+      }
       console.log("Company created successfully:", response);  
+
+      const companyTeamResponse = await cwCompanies.companyCompaniesIdTeamsPost({ companyTeam, teamId: 1 });
+      console.log("Company Team created successfully:", companyTeamResponse);
     }
 
     context.sendActivity(`Creating Appointment Ticket for company: ${payload.name}`);
