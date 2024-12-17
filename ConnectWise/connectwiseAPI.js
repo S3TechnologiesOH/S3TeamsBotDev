@@ -139,7 +139,7 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
 
       const teamResponse = await cwCompaniesTeams.companyCompaniesIdTeamsPost({
         companyTeam: companyTeam,
-        id: companyId
+        id: existingCompany.id
       });
       //return existingCompany;
     }
@@ -169,7 +169,7 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
 
       const teamResponse = await cwCompaniesTeams.companyCompaniesIdTeamsPost({
         companyTeam: companyTeam,
-        id: companyId
+        id: companyTeam.company.id
       });
       console.log("Company Team created successfully:", teamResponse);
     }
