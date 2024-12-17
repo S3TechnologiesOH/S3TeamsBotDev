@@ -133,8 +133,10 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
         }
       }
 
-      const companyTeamResponse = await cwCompaniesTeams.companyCompaniesIdTeamsPost({ companyTeam, id: 1 });
-
+      const teamResponse = await cwCompaniesTeams.companyCompaniesIdTeamsPost({
+        companyTeam: companyTeam,
+        id: companyId
+      });
       //return existingCompany;
     }
     else
@@ -160,8 +162,12 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
       }
       console.log("Company created successfully:", response);  
 
-      const companyTeamResponse = await cwCompaniesTeams.companyCompaniesIdTeamsPost({ companyTeam, id: 1 });
-      console.log("Company Team created successfully:", companyTeamResponse);
+
+      const teamResponse = await cwCompaniesTeams.companyCompaniesIdTeamsPost({
+        companyTeam: companyTeam,
+        id: companyId
+      });
+      console.log("Company Team created successfully:", teamResponse);
     }
 
     context.sendActivity(`Creating Appointment Ticket for company: ${payload.name}`);
