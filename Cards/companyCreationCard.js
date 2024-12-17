@@ -34,7 +34,7 @@ async function showCompanyCreationCard(context) {
         spacing: "Small",
       },
       {
-        type: "Input.Date",
+        type: "Input.Time",
         id: "appointmentTime", // Input field for the ticket ID
         placeholder: "Enter the Appointment Time",
         isRequired: false,
