@@ -1,4 +1,4 @@
-const { TicketsApi, TicketTasksApi, ProductsItemApi, CompaniesApi } = require('connectwise-rest-api/release/api/api');
+const { TicketsApi, TicketTasksApi, ProductsItemApi, CompaniesApi, CompanyTeamsApi } = require('connectwise-rest-api/release/api/api');
 const { ManageAPI } = require('connectwise-rest');
 const { CommonParameters, CWMOptions } = require('connectwise-rest');
 const { TeamsBot } = require('../teamsBot');
@@ -12,7 +12,7 @@ const clientId = process.env.CW_CLIENTID;
 const authKey = process.env.CW_AUTHKEY;
 
 // Authenticate with ConnectWise using a basic auth header
-let cwService, cwTasks, cwProductItems, cwCompanies, cwManage;
+let cwService, cwTasks, cwProductItems, cwCompanies, cwCompaniesTeams, cwManage;
 //console.log(`Auth Key: ${authKey}`);
 // Initialize the Tickets API
 //console.log(`Company ID: ${process.env.CW_COMPANY_ID}`);
@@ -41,7 +41,7 @@ try {
   cwTasks = new TicketTasksApi(`${connectwiseUrl}`);
   cwProductItems = new ProductsItemApi(`${connectwiseUrl}`);
   cwCompanies = new CompaniesApi(`${connectwiseUrl}`);
-
+  cwCompaniesTeams = new CompanyTeamsApi(`${connectwiseUrl}`);
   cwManage = new ManageAPI(CWMOptions);
 
   cwCompanies.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
@@ -133,7 +133,7 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
         }
       }
 
-      const companyTeamResponse = await cwCompanies.companyCompaniesIdTeamsPost({ companyTeam, teamId: 1 });
+      const companyTeamResponse = await cwCompaniesTeams.companyCompaniesIdTeamsPost({ companyTeam, teamId: 1 });
 
       //return existingCompany;
     }
@@ -160,7 +160,7 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
       }
       console.log("Company created successfully:", response);  
 
-      const companyTeamResponse = await cwCompanies.companyCompaniesIdTeamsPost({ companyTeam, teamId: 1 });
+      const companyTeamResponse = await cwCompaniesTeams.companyCompaniesIdTeamsPost({ companyTeam, teamId: 1 });
       console.log("Company Team created successfully:", companyTeamResponse);
     }
 
