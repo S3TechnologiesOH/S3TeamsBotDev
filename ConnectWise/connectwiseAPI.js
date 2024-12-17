@@ -125,10 +125,6 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
           "id": 1,
           "name": "Account Manager"
         },
-        "member": {
-          "id": 1,
-          "name": companyDetails.rep
-        }
       };
       
       
@@ -151,12 +147,7 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
         },
         accountManagerFlag: true,
         teamRole: "Account Manager",
-        member: {
-          id: 1,
-          name: companyDetails.rep
-        },
         contact: {
-          id: 1,
           name: companyDetails.rep
         }
       }
