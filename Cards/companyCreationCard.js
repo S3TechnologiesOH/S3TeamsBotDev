@@ -127,7 +127,6 @@ async function showCompanyCreationCard(context) {
               { "title": "WI", "value": "WI" },
               { "title": "WY", "value": "WY" }
         ]
-        
       },
       {
         type: "Input.ChoiceSet",
