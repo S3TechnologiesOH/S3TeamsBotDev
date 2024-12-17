@@ -121,6 +121,11 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
 
       const companyTeam = {
         "accountManagerFlag": true,
+        "company":{
+          "id": existingCompany.id,
+          "identifier": existingCompany.identifier,
+          "name": existingCompany.name
+        },
         "teamRole": {
           "name": "Account Manager"
         },
