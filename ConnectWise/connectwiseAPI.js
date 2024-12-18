@@ -176,6 +176,7 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
         companyTeam: companyTeam,
         id: companyTeam.company.id
       });*/
+      
       console.log("Company Team created successfully:", teamResponse);
     }
 
