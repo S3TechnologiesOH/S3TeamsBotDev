@@ -97,6 +97,7 @@ async function fetch_time_entries_for_ticket(ticketId) {
 
 async function createSite(context, siteName, siteAddress, siteCity, siteState, companyId) {
 
+  console.log("Attempting to create a new site with details:", { siteName, siteAddress, siteCity, siteState, companyId });
   const response = await cwSites.companyCompaniesIdSitesPost({
   id: companyId,
   site: {
@@ -124,9 +125,9 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
     console.log("Checking if company exists...");
     const existingCompany = await getCompanyByIdentifier(payload.identifier);
     if (existingCompany) {
-      console.log("Company already exists:", existingCompany);
+      console.log("Company already exists:", existingCompany.id);
       context.sendActivity(`This company already exists: ${existingCompany.name}`);
-      
+
       createSite(context, companyDetails.site._siteName, companyDetails.site._siteAddress,
          companyDetails.site._siteCity, companyDetails.site._siteState, existingCompany.id);
 
