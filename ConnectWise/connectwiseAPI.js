@@ -96,14 +96,11 @@ async function fetch_time_entries_for_ticket(ticketId) {
 }
 
 async function createSite(siteName, siteAddress, siteCity, siteState, companyId) {
-  return await cwSites.companyCompaniesIdSitesPost({
-    "id": companyId,
-    "site": {
-      name: siteName,
-      addressLine1: siteAddress,
-      city: siteCity,
-      state: siteState,
-    },
+  return await cwSites.companyCompaniesIdSitesPost(companyId, {
+    name: siteName,
+    addressLine1: siteAddress,
+    city: siteCity,
+    state: siteState,
   });
 }
 
