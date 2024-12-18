@@ -96,18 +96,23 @@ async function fetch_time_entries_for_ticket(ticketId) {
 }
 
 async function createSite(context, siteName, siteAddress, siteCity, siteState, companyId) {
-
   console.log("Attempting to create a new site with details:", { siteName, siteAddress, siteCity, siteState, companyId });
-  const response = await cwSites.companyCompaniesIdSitesPost({
-  id: companyId,
-  site: {
-    name: siteName,
-    addressLine1: siteAddress,
-    city: siteCity,
-    state: siteState,
+
+  try {
+    const response = await cwSites.companyCompaniesIdSitesPost({
+      id: companyId,
+      site: {
+        name: siteName,
+        addressLine1: siteAddress,
+        city: siteCity,
+        state: siteState,
+      }
+    });
+    context.sendActivity(`Created new Site: ${response.name}`);
+  } catch (error) {
+    console.error("Error creating site:", error);
+    context.sendActivity("An error occurred while creating the site. Please try again later.");
   }
-  });
-  context.sendActivity(`Created new Site: ${response.name}`);
 }
 
 async function createCompany(context, companyDetails, appointmentDetails, authState) {
