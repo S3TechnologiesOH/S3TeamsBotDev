@@ -123,7 +123,7 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
       console.log("Company already exists:", existingCompany.id);
       context.sendActivity(`This company already exists: ${existingCompany.name}`);
 
-      createSite(context, companyDetails.site._siteName, companyDetails.site._siteAddress,
+      createSite(companyDetails.site._siteName, companyDetails.site._siteAddress,
          companyDetails.site._siteCity, companyDetails.site._siteState, existingCompany.id);
 
       const companyTeam = {
