@@ -126,6 +126,7 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
     if (existingCompany) {
       console.log("Company already exists:", existingCompany);
       context.sendActivity(`This company already exists: ${existingCompany.name}`);
+      
       createSite(context, companyDetails.site._siteName, companyDetails.site._siteAddress,
          companyDetails.site._siteCity, companyDetails.site._siteState, existingCompany.id);
 
