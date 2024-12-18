@@ -118,15 +118,6 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
     address: companyDetails.address,
     contactInfo: companyDetails.contactInfo,
     rep: companyDetails.rep,
-    site: companyDetails.site || {
-      id: 0,
-      name: "Main",
-      _info: {
-        additionalProp1: "Null",
-        additionalProp2: "Null",
-        additionalProp3: "Null"
-      }
-    }
   };
 
   try {
@@ -135,6 +126,8 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
     if (existingCompany) {
       console.log("Company already exists:", existingCompany);
       context.sendActivity(`This company already exists: ${existingCompany.name}`);
+      createSite(context, companyDetails.site._siteName, companyDetails.site._siteAddress,
+         companyDetails.site._siteCity, companyDetails.site._siteState, existingCompany.id);
 
       const companyTeam = {
         "accountManagerFlag": true,
@@ -150,12 +143,13 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
       
       
 
-      const teamResponse = await cwCompaniesTeams.companyCompaniesIdTeamsPost({
+      /*const teamResponse = await cwCompaniesTeams.companyCompaniesIdTeamsPost({
         companyTeam: companyTeam,
         id: existingCompany.id
       });
       console.log(teamResponse);
-      //return existingCompany;
+      */
+      return existingCompany;
     }
     else
     {
@@ -175,11 +169,13 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
       }
       console.log("Company created successfully:", response);  
 
+      createSite(context, companyDetails.site._siteName, companyDetails.site._siteAddress,
+        companyDetails.site._siteCity, companyDetails.site._siteState, response.id);
 
-      const teamResponse = await cwCompaniesTeams.companyCompaniesIdTeamsPost({
+      /*const teamResponse = await cwCompaniesTeams.companyCompaniesIdTeamsPost({
         companyTeam: companyTeam,
         id: companyTeam.company.id
-      });
+      });*/
       console.log("Company Team created successfully:", teamResponse);
     }
 
