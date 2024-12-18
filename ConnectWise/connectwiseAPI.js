@@ -127,7 +127,7 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
       context.sendActivity(`This company already exists: ${existingCompany.name}`);
 
       createSite(companyDetails.site._siteName, companyDetails.site._siteAddress,
-         companyDetails.site._siteCity, companyDetails.site._selectedState, existingCompany.id);
+         companyDetails.site._siteCity, companyDetails.site._siteState, existingCompany.id);
 
       const companyTeam = {
         "accountManagerFlag": true,
