@@ -292,7 +292,7 @@ async function onAdaptiveCardSubmit(context, authState) {
            siteName, siteAddress, siteCity, selectedState,
             marketChoice, appointmentDate, appointmentTime } = submittedData;
 
-        await companyManager.handleCreateCompany(companyName, companyAddress, companyContactInformation, rep, 
+        await companyManager.handleCreateCompany(context, companyName, companyAddress, companyContactInformation, rep, 
           siteName, siteAddress, siteCity, selectedState,
            companyId, marketChoice, appointmentDate, appointmentTime, authState);
         break;
