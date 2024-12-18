@@ -127,7 +127,6 @@ async function showCompanyCreationCard(context) {
           { "title": "WI", "value": "Wisconsin" },
           { "title": "WY", "value": "Wyoming" }
         ]
-
       },
       {
         type: "Input.ChoiceSet",
@@ -202,7 +201,7 @@ async function showCompanyCreationCard(context) {
     ],
   };
 
-  // Send the Ticket Information card
+  // Send the Ticket Information cards
   await context.sendActivity({
     attachments: [CardFactory.adaptiveCard(companyCreationCard)],
   });
