@@ -95,41 +95,16 @@ async function fetch_time_entries_for_ticket(ticketId) {
   }
 }
 
-async function createSite(context, siteName, siteAddress, siteCity, siteState, companyId) {
-  console.log("Attempting to create a new site with details:", { siteName, siteAddress, siteCity, siteState, companyId });
-
-  try {
-    // Make the API call to create the site
-    const response = await cwSites.companyCompaniesIdSitesPost({
-      id: companyId,
-      site: {
-        name: siteName,
-        addressLine1: siteAddress,
-        city: siteCity,
-        state: siteState,
-      },
-    });
-
-    // Immediately send activity before the context expires
-    const confirmationMessage = `Created new Site: ${response.name}`;
-    if (context && context.sendActivity) {
-      await context.sendActivity(confirmationMessage);
-    } else {
-      console.warn("Context is no longer valid to send activity.");
-    }
-
-    return response; // Return the site data for further use if needed
-  } catch (error) {
-    console.error("Error creating site:", error);
-
-    // Inform the user if the context is still valid
-    if (context && context.sendActivity) {
-      await context.sendActivity("An error occurred while creating the site. Please try again later.");
-    }
-
-    // Rethrow the error for higher-level handling
-    throw error;
-  }
+async function createSite(siteName, siteAddress, siteCity, siteState, companyId) {
+  return await cwSites.companyCompaniesIdSitesPost({
+    id: companyId,
+    site: {
+      name: siteName,
+      addressLine1: siteAddress,
+      city: siteCity,
+      state: siteState,
+    },
+  });
 }
 
 
