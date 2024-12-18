@@ -45,6 +45,8 @@ try {
   cwManage = new ManageAPI(CWMOptions);
   cwSites = new CompanySitesApi(`${connectwiseUrl}`);
 
+  cwCompaniesTeams.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
+  cwSites.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
   cwCompanies.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
   console.log("ConnectWise APIs initialized successfully.");
 } catch (error) {
@@ -93,7 +95,7 @@ async function fetch_time_entries_for_ticket(ticketId) {
   }
 }
 
-async function createSite(context, siteName, siteAddress, siteCity, siteState, companyId, authState) {
+async function createSite(context, siteName, siteAddress, siteCity, siteState, companyId) {
 
   const response = await cwSites.companyCompaniesIdSitesPost({
   id: companyId,
@@ -104,6 +106,7 @@ async function createSite(context, siteName, siteAddress, siteCity, siteState, c
     state: siteState,
   }
   });
+  context.sendActivity(`Created new Site: ${response.name}`);
 }
 
 async function createCompany(context, companyDetails, appointmentDetails, authState) {

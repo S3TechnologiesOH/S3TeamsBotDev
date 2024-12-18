@@ -132,7 +132,7 @@ async function showCompanyCreationCard(context) {
         type: "Input.ChoiceSet",
         id: "marketChoice",
         style: "compact",
-        label: "Select a Market",
+        placeholder: "Select a Market",
         isMultiSelect: false,
         value: "1",
         choices: [
