@@ -106,14 +106,29 @@ async function createSite(context, siteName, siteAddress, siteCity, siteState, c
         addressLine1: siteAddress,
         city: siteCity,
         state: siteState,
-      }
+      },
     });
-    context.sendActivity(`Created new Site: ${response.name}`);
+
+    // Send confirmation message during the same lifecycle
+    if (context && context.sendActivity) {
+      await context.sendActivity(`Created new Site: ${response.name}`);
+    } else {
+      console.warn("Context is no longer valid to send activity.");
+    }
+
+    return response; // Return the created site for further processing
   } catch (error) {
     console.error("Error creating site:", error);
-    context.sendActivity("An error occurred while creating the site. Please try again later.");
+
+    if (context && context.sendActivity) {
+      await context.sendActivity("An error occurred while creating the site. Please try again later.");
+    }
+
+    // Propagate error for higher-level handling
+    throw error;
   }
 }
+
 
 async function createCompany(context, companyDetails, appointmentDetails, authState) {
   console.log("Entering createCompany with details:", companyDetails);
