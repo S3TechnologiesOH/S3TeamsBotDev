@@ -96,7 +96,8 @@ async function fetch_time_entries_for_ticket(ticketId) {
 }
 
 async function createSite(siteName, siteAddress, siteCity, siteState, companyId) {
-  return await cwSites.companyCompaniesIdSitesPost({
+  console.log("Entering createSite with details:", { siteName, siteAddress, siteCity, siteState, companyId });
+  const response = await cwSites.companyCompaniesIdSitesPost({
     id: companyId,
     site: {
       name: siteName,
