@@ -99,6 +99,7 @@ async function createSite(context, siteName, siteAddress, siteCity, siteState, c
   console.log("Attempting to create a new site with details:", { siteName, siteAddress, siteCity, siteState, companyId });
 
   try {
+    // Make the API call to create the site
     const response = await cwSites.companyCompaniesIdSitesPost({
       id: companyId,
       site: {
@@ -109,22 +110,24 @@ async function createSite(context, siteName, siteAddress, siteCity, siteState, c
       },
     });
 
-    // Send confirmation message during the same lifecycle
+    // Immediately send activity before the context expires
+    const confirmationMessage = `Created new Site: ${response.name}`;
     if (context && context.sendActivity) {
-      await context.sendActivity(`Created new Site: ${response.name}`);
+      await context.sendActivity(confirmationMessage);
     } else {
       console.warn("Context is no longer valid to send activity.");
     }
 
-    return response; // Return the created site for further processing
+    return response; // Return the site data for further use if needed
   } catch (error) {
     console.error("Error creating site:", error);
 
+    // Inform the user if the context is still valid
     if (context && context.sendActivity) {
       await context.sendActivity("An error occurred while creating the site. Please try again later.");
     }
 
-    // Propagate error for higher-level handling
+    // Rethrow the error for higher-level handling
     throw error;
   }
 }
