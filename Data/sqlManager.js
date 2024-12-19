@@ -5,7 +5,7 @@ let credential;
 
 async function getAccessToken() {
   credential = new DefaultAzureCredential();
-  // For Azure SQL, the resource is always 'https://database.windows.net/'
+  // For Azure SQL, the resources is always 'https://database.windows.net/'
   const tokenResponse = await credential.getToken('https://database.windows.net/.default');
   return tokenResponse.token;
 }
