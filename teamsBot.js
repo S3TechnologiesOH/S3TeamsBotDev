@@ -40,7 +40,6 @@ class TeamsBot extends TeamsActivityHandler {
 
     this.onMessage(async (context, next) => {
       //createConnectionPool();
-      await sqlManager.queryDatabase();
 
       authState = await this.userAuthState.get(context, {
         isAuthenticated: false,
@@ -55,6 +54,7 @@ class TeamsBot extends TeamsActivityHandler {
         await authenticationHelper.greetUserAsync(context, authState);
         await sendWelcomeCard(context, authState);
         //fetchDeals(process.env.APOLLO_API_KEY, false).then(deals => console.log(deals)).catch(err => console.error(err));
+        await sqlManager.queryDatabase();
 
         console.log("Sent first welcome");
       } else {
