@@ -41,8 +41,6 @@ class TeamsBot extends TeamsActivityHandler {
     this.onMessage(async (context, next) => {
       //createConnectionPool();
       await sqlManager.queryDatabase();
-      const tables = await sqlManager.getTables();
-      console.log(tables);
 
       authState = await this.userAuthState.get(context, {
         isAuthenticated: false,
