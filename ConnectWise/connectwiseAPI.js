@@ -12,7 +12,7 @@ const clientId = process.env.CW_CLIENTID;
 const authKey = process.env.CW_AUTHKEY;
 
 // Authenticate with ConnectWise using a basic auth header
-let cwService, cwTasks, cwProductItems, cwCompanies, cwCompaniesTeams, cwManage;
+let cwService, cwTasks, cwProductItems, cwCompanies, cwCompaniesTeams, cwManage, cwSites;
 //console.log(`Auth Key: ${authKey}`);
 // Initialize the Tickets API
 //console.log(`Company ID: ${process.env.CW_COMPANY_ID}`);
@@ -176,7 +176,7 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
         companyTeam: companyTeam,
         id: companyTeam.company.id
       });*/
-      
+
       console.log("Company Team created successfully:", teamResponse);
     }
 

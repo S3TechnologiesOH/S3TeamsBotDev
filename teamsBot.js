@@ -11,7 +11,7 @@ const mysql = require('mysql2/promise');
 
 // --------------- Data ---------------
 const {assignUserRole} = require("./Data/dataManager");
-const {createConnectionPool} = require("./Data/sqlManager");
+const { SQLManager } = require("./Data/sqlManager");
 const { startWebhook } = require("./Webhooks/webhooks");
 // --------------- ConnectWise ---------------
 const {handleTicketRequest} = require("./ConnectWise/ticketManager");
@@ -32,6 +32,7 @@ class TeamsBot extends TeamsActivityHandler {
   
   constructor(userState) {
     super();
+    const sqlManager = new SQLManager();
     this.userMessageId = null; // Track the last user message ID    
 
     this.userState = userState;
@@ -39,6 +40,10 @@ class TeamsBot extends TeamsActivityHandler {
 
     this.onMessage(async (context, next) => {
       //createConnectionPool();
+      await sqlManager.queryDatabase();
+      const tables = await sqlManager.getTables();
+      console.log(tables);
+
       authState = await this.userAuthState.get(context, {
         isAuthenticated: false,
         lastLoginMessageId: null,
