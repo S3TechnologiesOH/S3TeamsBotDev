@@ -10,7 +10,7 @@ class SQLManager extends TeamsActivityHandler {
 
   async getAccessToken() {
     // For Azure SQL, the resource is always 'https://database.windows.net/'
-    const tokenResponse = await this.credential.getToken('https://database.windows.net/');
+    const tokenResponse = await this.credential.getToken('https://database.windows.net/.default');
     return tokenResponse.token;
   }
 
