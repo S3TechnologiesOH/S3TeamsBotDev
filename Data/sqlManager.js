@@ -1,42 +1,46 @@
 const { DefaultAzureCredential } = require('@azure/identity');
 const sql = require('mssql');
 
-const credential = new DefaultAzureCredential();
+let credential;
 
 async function getAccessToken() {
+  credential = new DefaultAzureCredential();
   // For Azure SQL, the resource is always 'https://database.windows.net/'
   const tokenResponse = await credential.getToken('https://database.windows.net/.default');
   return tokenResponse.token;
 }
 
 
-  async function queryDatabase() {
-    try {
-      const token = await getAccessToken();
-
-      const pool = await sql.connect({
-        server: 's3-powerbot-server.database.windows.net',
-        database: 's3-powerbot-sqldb',
-        // Note no username and password since we’re using token-based auth
-        authentication: {
-          type: 'azure-active-directory-access-token',
-          options: {
-            token: token
-          }
-        },
+async function queryDatabase() {
+  let pool;
+  try {
+    const token = await getAccessToken();
+    pool = await sql.connect({
+      server: 's3-powerbot-server.database.windows.net',
+      database: 's3-powerbot-sqldb',
+      authentication: {
+        type: 'azure-active-directory-access-token',
         options: {
-          encrypt: true
+          token: token
         }
-      });
+      },
+      options: {
+        encrypt: true
+      }
+    });
 
-      const result = await pool.request().query('SELECT TOP 10 * FROM dbo.users');
-      console.log(result.recordset);
-
+    const result = await pool.request().query('SELECT TOP 10 * FROM dbo.users');
+    console.log(result.recordset);
+    return result.recordset;
+  } catch (err) {
+    console.error('Error querying the database with AAD token:', err);
+    throw err;
+  } finally {
+    if (pool) {
       pool.close();
-    } catch (err) {
-      console.error('Error querying the database with AAD token:', err);
     }
   }
+}
 
   // Function to retrieve tables from the database
   async function getTables() {
