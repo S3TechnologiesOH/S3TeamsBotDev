@@ -36,7 +36,7 @@ try {
     companyUrl : "api-na.myconnectwise.net",
     clientId: clientId
   }
-
+//
   cwService = new TicketsApi(`${connectwiseUrl}`);
   cwTasks = new TicketTasksApi(`${connectwiseUrl}`);
   cwProductItems = new ProductsItemApi(`${connectwiseUrl}`);
