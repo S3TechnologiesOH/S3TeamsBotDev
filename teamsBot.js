@@ -11,7 +11,7 @@ const mysql = require('mysql2/promise');
 
 // --------------- Data ---------------
 const {assignUserRole} = require("./Data/dataManager");
-const { SQLManager } = require("./Data/sqlManager");
+const {queryDatabase, getTables} = require("./Data/sqlManager");
 const { startWebhook } = require("./Webhooks/webhooks");
 // --------------- ConnectWise ---------------
 const {handleTicketRequest} = require("./ConnectWise/ticketManager");
@@ -32,15 +32,13 @@ class TeamsBot extends TeamsActivityHandler {
   
   constructor(userState) {
     super();
-    const sqlManager = new SQLManager();
-    this.userMessageId = null; // Track the last user message ID    
 
+    this.userMessageId = null; // Track the last user message ID    
     this.userState = userState;
     this.userAuthState = this.userState.createProperty("userAuthState");
 
     this.onMessage(async (context, next) => {
       //createConnectionPool();
-
       authState = await this.userAuthState.get(context, {
         isAuthenticated: false,
         lastLoginMessageId: null,
@@ -54,7 +52,6 @@ class TeamsBot extends TeamsActivityHandler {
         await authenticationHelper.greetUserAsync(context, authState);
         await sendWelcomeCard(context, authState);
         //fetchDeals(process.env.APOLLO_API_KEY, false).then(deals => console.log(deals)).catch(err => console.error(err));
-        await sqlManager.queryDatabase();
 
         console.log("Sent first welcome");
       } else {

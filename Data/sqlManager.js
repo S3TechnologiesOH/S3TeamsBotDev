@@ -1,26 +1,25 @@
-const { TeamsActivityHandler } = require('botbuilder'); // Ensure this is installed and imported
 const { DefaultAzureCredential } = require('@azure/identity');
 const sql = require('mssql');
 
-class SQLManager extends TeamsActivityHandler {
-  constructor() {
-    super();
-    this.credential = new DefaultAzureCredential();
-  }
+const credential = new DefaultAzureCredential();
 
-  async getAccessToken() {
-    // For Azure SQL, the resource is always 'https://database.windows.net/'
-    const tokenResponse = await this.credential.getToken('https://database.windows.net/.default');
+class TeamsBot extends TeamsActivityHandler {
+
+  async function getAccessToken() {
+    // For Azure SQL, the resource you request a token for is always 'https://database.windows.net/'
+    const tokenResponse = await credential.getToken('https://database.windows.net/');
     return tokenResponse.token;
   }
 
-  async queryDatabase() {
-    let pool;
+
+  async function queryDatabase() {
     try {
-      const token = await this.getAccessToken();
-      pool = await sql.connect({
+      const token = await getAccessToken();
+
+      const pool = await sql.connect({
         server: 's3-powerbot-server.database.windows.net',
         database: 's3-powerbot-sqldb',
+        // Note no username and password since we’re using token-based auth
         authentication: {
           type: 'azure-active-directory-access-token',
           options: {
@@ -34,22 +33,18 @@ class SQLManager extends TeamsActivityHandler {
 
       const result = await pool.request().query('SELECT TOP 10 * FROM dbo.users');
       console.log(result.recordset);
-      return result.recordset;
+
+      pool.close();
     } catch (err) {
       console.error('Error querying the database with AAD token:', err);
-      throw err;
-    } finally {
-      if (pool) {
-        pool.close();
-      }
     }
   }
 
   // Function to retrieve tables from the database
-  async getTables() {
+  async function getTables() {
     let pool;
     try {
-      const token = await this.getAccessToken();
+      const token = await getAccessToken();
       pool = await sql.connect({
         server: 's3-powerbot-server.database.windows.net',
         database: 's3-powerbot-sqldb',
@@ -72,25 +67,30 @@ class SQLManager extends TeamsActivityHandler {
 
       const result = await pool.request().query(query);
       console.log('Tables:', result.recordset);
+
+      // Return the list of tables if needed
       return result.recordset;
+
     } catch (error) {
       console.error('Error retrieving tables:', error);
-      throw error;
+      throw error; // re-throw so the caller knows something went wrong
     } finally {
       if (pool) {
-        pool.close();
+        pool.close(); // close the connection pool
       }
     }
   }
 
+
   // Function to insert a single row with uniqueness check
-  async insertSingleRow(name, email) {
-    let pool;
+  async function insertSingleRow(name, email) {
     try {
-      const token = await this.getAccessToken();
-      pool = await sql.connect({
+      //CONNECTION POOL
+      const token = await getAccessToken();
+      const pool = await sql.connect({
         server: 's3-powerbot-server.database.windows.net',
         database: 's3-powerbot-sqldb',
+        // Note no username and password since we’re using token-based auth
         authentication: {
           type: 'azure-active-directory-access-token',
           options: {
@@ -102,12 +102,13 @@ class SQLManager extends TeamsActivityHandler {
         }
       });
 
+
       // Check if the user already exists
       const result = await pool
         .request()
         .input('name', sql.VarChar, name)
         .input('email', sql.VarChar, email)
-        .query('SELECT * FROM dbo.users WHERE name = @name OR email = @email');
+        .query('SELECT * FROM users WHERE name = @name OR email = @email');
 
       if (result.recordset.length > 0) {
         console.log(`User with name "${name}" or email "${email}" already exists. Skipping insertion.`);
@@ -119,25 +120,20 @@ class SQLManager extends TeamsActivityHandler {
         .request()
         .input('name', sql.VarChar, name)
         .input('email', sql.VarChar, email)
-        .query('INSERT INTO dbo.users (name, email) VALUES (@name, @email)');
+        .query('INSERT INTO users (name, email) VALUES (@name, @email)');
 
       console.log('Single row inserted:', { name, email });
     } catch (error) {
       console.error('Error inserting single row:', error);
-      throw error;
-    } finally {
-      if (pool) {
-        pool.close();
-      }
     }
   }
 
   // Function to log a command
-  async logCommand(user, command) {
-    let pool;
+  async function logCommand(user, command) {
     try {
-      const token = await this.getAccessToken();
-      pool = await sql.connect({
+
+      const token = await getAccessToken();
+      const pool = await sql.connect({
         server: 's3-powerbot-server.database.windows.net',
         database: 's3-powerbot-sqldb',
         authentication: {
@@ -161,20 +157,15 @@ class SQLManager extends TeamsActivityHandler {
       console.log('Command logged:', { user, command });
     } catch (error) {
       console.error('Error logging command:', error);
-      throw error;
-    } finally {
-      if (pool) {
-        pool.close();
-      }
     }
   }
 
   // Function to check and insert opportunity
-  async checkAndInsertOpportunity(id, opportunity_stage_id) {
-    let pool;
+  async function checkAndInsertOpportunity(id, opportunity_stage_id) {
     try {
-      const token = await this.getAccessToken();
-      pool = await sql.connect({
+
+      const token = await getAccessToken();
+      const pool = await sql.connect({
         server: 's3-powerbot-server.database.windows.net',
         database: 's3-powerbot-sqldb',
         authentication: {
@@ -210,19 +201,15 @@ class SQLManager extends TeamsActivityHandler {
       console.log('Opportunity inserted:', { id, opportunity_stage_id, has_changed: false });
     } catch (error) {
       console.error('Error in checkAndInsertOpportunity:', error);
-      throw error;
-    } finally {
-      if (pool) {
-        pool.close();
-      }
     }
   }
 
   // Function to update and check opportunity
-  async updateOpportunityAndCheck(id, opportunity_stage_id) {
+  async function updateOpportunityAndCheck(id, opportunity_stage_id) {
     let pool;
     try {
-      const token = await this.getAccessToken();
+      
+      const token = await getAccessToken();
       pool = await sql.connect({
         server: 's3-powerbot-server.database.windows.net',
         database: 's3-powerbot-sqldb',
@@ -271,13 +258,28 @@ class SQLManager extends TeamsActivityHandler {
       console.log('Opportunity updated:', { id, opportunity_stage_id });
     } catch (error) {
       console.error('Error in updateOpportunityAndCheck:', error);
-      throw error;
-    } finally {
-      if (pool) {
-        pool.close();
-      }
     }
   }
-}
 
-module.exports = {SQLManager};
+  /*(async () => {
+    const pool = await createConnectionPool();
+
+    try {
+      await getTables(pool); // Example: List tables
+
+      // Example usage of functions
+      await insertSingleRow(pool, 'John Doe', 'john.doe@example.com');
+      await logCommand(pool, 'John Doe', 'INSERT');
+      await checkAndInsertOpportunity(pool, '12345', '657c6cc9ab96200302cbd0a3');
+      await updateOpportunityAndCheck(pool, '12345', '669141aa1bcf2c04935c3074');
+    } catch (error) {
+      console.error('Error during execution:', error);
+    } finally {
+      await pool.close();
+      console.log('Connection pool closed.');
+    }
+  })();
+  */
+ 
+module.exports = { getTables, insertSingleRow, logCommand,
+   checkAndInsertOpportunity, updateOpportunityAndCheck, queryDatabase};
