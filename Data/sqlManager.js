@@ -3,8 +3,6 @@ const sql = require('mssql');
 
 const credential = new DefaultAzureCredential();
 
-class TeamsBot extends TeamsActivityHandler {
-
   async function getAccessToken() {
     // For Azure SQL, the resource you request a token for is always 'https://database.windows.net/'
     const tokenResponse = await credential.getToken('https://database.windows.net/');
