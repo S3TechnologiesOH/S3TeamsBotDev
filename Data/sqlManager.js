@@ -9,8 +9,9 @@ const credential = new ClientSecretCredential(
 
 async function getAccessToken() {
   // For Azure SQL, the resources is always 'https://database.windows.net/'
-  const tokenResponse = await credential.getToken('https://database.windows.net/.default');
-  return tokenResponse.token;
+  const token = await credential.getToken('https://database.windows.net/.default');
+  console.log("Got token: ", token.token);
+  return token.token;
 }
 
 
@@ -31,7 +32,7 @@ async function queryDatabase() {
         encrypt: true
       }
     });
-
+    console.log('Connected to the database with AAD token.');
     const result = await pool.request().query('SELECT TOP 10 * FROM dbo.users');
     console.log(result.recordset);
     return result.recordset;
