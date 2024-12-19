@@ -3,11 +3,11 @@ const sql = require('mssql');
 
 const credential = new DefaultAzureCredential();
 
-  async function getAccessToken() {
-    // For Azure SQL, the resource you request a token for is always 'https://database.windows.net/'
-    const tokenResponse = await credential.getToken('https://database.windows.net/');
-    return tokenResponse.token;
-  }
+async function getAccessToken() {
+  // For Azure SQL, the resource is always 'https://database.windows.net/'
+  const tokenResponse = await credential.getToken('https://database.windows.net/.default');
+  return tokenResponse.token;
+}
 
 
   async function queryDatabase() {
