@@ -108,6 +108,23 @@ async function createSite(siteName, siteAddress, siteCity, siteState, companyId)
   });
 }
 
+async function createTeam(companyId, companyIdentifier, teamRole, contactName) {
+  console.log("Entering createTeam with details:", { companyId, teamRole, contactName });
+      const teamResponse = await cwCompaniesTeams.companyCompaniesIdTeamsPost({
+        id: companyId,
+        companyTeam: {
+          company: {
+            id: companyId,
+            identifier: companyIdentifier,
+            name: companyIdentifier
+          },
+          teamRole: {
+            name: teamRole
+          }
+        }
+      });
+  }
+
 async function createCompany(context, companyDetails, appointmentDetails, authState) {
   console.log("Entering createCompany with details:", companyDetails);
 
@@ -130,7 +147,6 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
          companyDetails.site._siteCity, companyDetails.site._siteState, existingCompany.id);
 
       const companyTeam = {
-        "accountManagerFlag": true,
         "company":{
           "id": existingCompany.id,
           "identifier": existingCompany.identifier,
@@ -139,6 +155,10 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
         "teamRole": {
           "name": "Account Manager"
         },
+        "contact": {
+          "name:": companyDetails.rep
+        },
+        "accountManagerFlag": true,
       };
       
       
@@ -169,13 +189,11 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
       }
       console.log("Company created successfully:", response);  
 
-      createSite(context, companyDetails.site._siteName, companyDetails.site._siteAddress,
-        companyDetails.site._siteCity, companyDetails.site._siteState, response.id);
 
-      /*const teamResponse = await cwCompaniesTeams.companyCompaniesIdTeamsPost({
-        companyTeam: companyTeam,
-        id: companyTeam.company.id
-      });*/
+      createSite(companyDetails.site._siteName, companyDetails.site._siteAddress,
+         companyDetails.site._siteCity, companyDetails.site._siteState, response.id);
+
+      createTeam(response.id, response.identifier, "Account Manager", companyDetails.rep);
 
       console.log("Company Team created successfully:", teamResponse);
     }
