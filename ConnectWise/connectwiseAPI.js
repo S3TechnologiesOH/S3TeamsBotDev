@@ -103,7 +103,6 @@ async function createSite(siteName, siteAddress, siteCity, siteState, companyId)
       name: siteName,
       addressLine1: siteAddress,
       city: siteCity,
-      state: siteState,
     }
   });
 }
