@@ -146,7 +146,7 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
       createSite(companyDetails.site._siteName, companyDetails.site._siteAddress,
          companyDetails.site._siteCity, companyDetails.site._siteState, existingCompany.id);
 
-      createTeam(response.id, response.identifier, "Account Manager", companyDetails.rep);
+      createTeam(existingCompany.id, existingCompany.identifier, "Account Manager", companyDetails.rep);
 
       const companyTeam = {
         "company":{
