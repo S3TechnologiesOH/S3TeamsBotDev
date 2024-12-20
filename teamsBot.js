@@ -36,9 +36,8 @@ class TeamsBot extends TeamsActivityHandler {
     this.userMessageId = null; // Track the last user message ID    
     this.userState = userState;
     this.userAuthState = this.userState.createProperty("userAuthState");
-    queryDatabase();
+    //queryDatabase();
     this.onMessage(async (context, next) => {
-      //createConnectionPool();
       authState = await this.userAuthState.get(context, {
         isAuthenticated: false,
         lastLoginMessageId: null,
