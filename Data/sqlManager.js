@@ -1,11 +1,7 @@
 const { DefaultAzureCredential, ClientSecretCredential } = require('@azure/identity');
 const sql = require('mssql');
 
-const credential = new ClientSecretCredential(
-  process.env.AZURE_TENANT_ID,
-  process.env.AZURE_CLIENT_ID,
-  process.env.AZURE_CLIENT_SECRET
-);
+const credential = new DefaultAzureCredential();
 
 async function getAccessToken() {
   // For Azure SQL, the resources is always 'https://database.windows.net/'
