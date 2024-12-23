@@ -107,20 +107,13 @@ async function createSite(siteName, siteAddress, siteCity, siteState, companyId)
   });
 }
 
-async function createTeam(companyId, companyIdentifier, teamRole, contactName) {
+async function createTeam(companyId, companyIdentifier, _teamRole, contactName) {
   console.log("Entering createTeam with details:", { companyId, teamRole, contactName });
       const teamResponse = await cwCompaniesTeams.companyCompaniesIdTeamsPost({
         id: companyId,
         companyTeam: {
-          company: {
-            id: companyId,
-            identifier: companyIdentifier,
-            name: companyIdentifier
-          },
-          teamRole: {
-            name: teamRole
+            teamRole: _teamRole
           }
-        }
       });
   }
 
