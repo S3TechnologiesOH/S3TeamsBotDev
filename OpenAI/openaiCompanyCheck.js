@@ -34,7 +34,7 @@ async function checkCompanies(context, companyToCheck, currentThread = null) {
       
       const companyString = JSON.stringify(companyData, null, 2);
       const promptMessage = `The company inputted is ${companyToCheck}. \nThe company list is: \n${companyString}`;
-      console.log("Prompt message created: ", promptMessage);
+      //console.log("Prompt message created: ", promptMessage);
   
       if (!currentThread) {
         currentThread = await retryWithBackoff(() =>

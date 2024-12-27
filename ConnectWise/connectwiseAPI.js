@@ -231,12 +231,33 @@ async function getCompanyByIdentifier(identifier) {
 }
 
 async function getCompanies(){
-  console.log("Entering getCompanies...");
+  console.log("Entering getAllCompanies...");
+  const pageSize = 100; // Adjust the page size if needed
+  let allCompanies = [];
+  let currentPage = 1;
+  let totalPages = 1;
+
   try {
-    console.log("Calling cwCompanies.companyCompaniesGet...");
-    const response = await cwCompanies.companyCompaniesGet({});
-    //console.log("Get companies response:", response);
-    return response;
+    do {
+      console.log(`Fetching page ${currentPage} of companies...`);
+      const response = await cwCompanies.companyCompaniesGet({
+        page: currentPage,
+        pageSize: pageSize,
+      });
+
+      if (response && response.length > 0) {
+        allCompanies = allCompanies.concat(response);
+        console.log(`Page ${currentPage} fetched, total companies so far: ${allCompanies.length}`);
+      } else {
+        console.log("No more companies to fetch.");
+        break;
+      }
+
+      currentPage++;
+    } while (currentPage <= totalPages);
+
+    console.log("All companies fetched successfully.");
+    return allCompanies;
   } catch (error) {
     console.error("Error fetching companies:", error);
     return null;
