@@ -26,6 +26,9 @@ const authenticationHelper = require("./MSGraph/authenticationHelper");
 // --------------- Cards ---------------
 const { sendWelcomeCard, onAdaptiveCardSubmit } = require("./Cards/cardManager");
 
+// --------------- OpenAI ---------------
+const { checkCompanies } = require("./OpenAI/openaiCompanyCheck");
+
 let authState = null;
 
 class TeamsBot extends TeamsActivityHandler {
@@ -42,7 +45,8 @@ class TeamsBot extends TeamsActivityHandler {
         isAuthenticated: false,
         lastLoginMessageId: null,
       });
-    
+      checkCompanies(context, "Development LLC");
+
       // Store the user message ID to delete it later
       this.userMessageId = context.activity.id;
     

@@ -88,3 +88,5 @@ async function checkCompanies(context, companyToCheck) {
     throw new Error("Failed to summarize JSON data.");
   }
 }
+
+module.exports = { checkCompanies };
