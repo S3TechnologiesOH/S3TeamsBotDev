@@ -253,17 +253,53 @@ async function getCompanies(){
         break;
       }
 
-      currentPage++;
-    } while (fetchedCompanies.length === pageSize); // Continue until the last page
+      // Process or store in chunks if total size exceeds limit
+      if (JSON.stringify(allCompanies).length > 250000) {
+        console.log(`Processing batch of ${allCompanies.length} companies...`);
+        await processCompaniesBatch(allCompanies);
+        allCompanies = [];  // Reset for next batch
+      }
 
-    console.log("All companies fetched successfully.");
-    return allCompanies;
+      currentPage++;
+    } while (fetchedCompanies.length === pageSize);
+
+    // Process any remaining companies
+    if (allCompanies.length > 0) {
+      console.log(`Processing final batch of ${allCompanies.length} companies...`);
+      await processCompaniesBatch(allCompanies);
+    }
+
+    console.log("All companies fetched and processed successfully.");
   } catch (error) {
     console.error("Error fetching companies:", error);
     return null;
   }
 }
+async function processCompaniesBatch(companiesBatch) {
+  try {
+    console.log(`Processing ${companiesBatch.length} companies...`);
 
+    // Example 1: Saving to a Database
+    // Assuming db.save is a method to save a batch of companies
+    // await db.save(companiesBatch);
+
+    // Example 2: Sending to an External API in Smaller Chunks
+    const chunkSize = 50;  // Adjust based on API limits
+    for (let i = 0; i < companiesBatch.length; i += chunkSize) {
+      const chunk = companiesBatch.slice(i, i + chunkSize);
+      console.log(`Sending chunk of ${chunk.length} companies...`);
+      
+      // Example API call (replace with your actual API method)
+      const response = await someApiEndpoint.sendCompanies(chunk);
+      console.log(`Chunk processed. API response: ${response.status}`);
+    }
+
+    console.log(`Batch of ${companiesBatch.length} companies processed successfully.`);
+  } catch (error) {
+    console.error(`Error processing companies batch:`, error);
+    // Handle retries or logging errors for further investigation
+  }
+}
 async function createSalesTicket(summary, address, contactInfo, rep, companyId, context, authState) {
   console.log("Entering createSalesTicket with details:", { summary, address, contactInfo, rep, companyId });
 
