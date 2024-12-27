@@ -88,5 +88,35 @@ async function checkCompanies(context, companyToCheck) {
     throw new Error("Failed to summarize JSON data.");
   }
 }
-
+// Retry with exponential backoff
+async function retryWithBackoff(fn, retries = 10) {
+    let delay = 1000;
+    for (let i = 0; i < retries; i++) {
+      try {
+        return await fn();
+      } catch (error) {
+        if (i === retries - 1) throw error;
+        console.log(`Retrying in ${delay / 1000} seconds...`);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        delay *= 2;
+      }
+    }
+  }
+  // Extract message content from the response
+function extractMessageContent(messagesResponse) {
+    if (messagesResponse && messagesResponse.data) {
+      for (const message of messagesResponse.data) {
+        for (const contentItem of message.content) {
+          if (
+            contentItem.type === "text" &&
+            contentItem.text &&
+            contentItem.text.value
+          ) {
+            return contentItem.text.value;
+          }
+        }
+      }
+    }
+    return "No valid content found.";
+  }
 module.exports = { checkCompanies };
