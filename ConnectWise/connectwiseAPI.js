@@ -230,6 +230,19 @@ async function getCompanyByIdentifier(identifier) {
   }
 }
 
+async function getCompanies(){
+  console.log("Entering getCompanies...");
+  try {
+    console.log("Calling cwCompanies.companyCompaniesGet...");
+    const response = await cwCompanies.companyCompaniesGet({});
+    console.log("Get companies response:", response);
+    return response;
+  } catch (error) {
+    console.error("Error fetching companies:", error);
+    return null;
+  }
+}
+
 async function createSalesTicket(summary, address, contactInfo, rep, companyId, context, authState) {
   console.log("Entering createSalesTicket with details:", { summary, address, contactInfo, rep, companyId });
 
@@ -323,5 +336,6 @@ module.exports = {
   getCompanyByIdentifier,
   createSalesTicket,
   deleteSalesTicket,
-  createSite
+  createSite,
+  getCompanies
 };
