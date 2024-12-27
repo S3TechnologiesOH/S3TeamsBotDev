@@ -21,75 +21,94 @@ const client = new AzureOpenAI({
 
 let currentThread = null; // Store the thread for reuse
 
-async function checkCompanies(context, companyToCheck) {
-  try {
-    console.log("Starting summarizeJSON function");
-    companyData = getCompanies();
-    // Convert ticket data and task data to strings
-    const companyString = JSON.stringify(companyData, null, 2);
-
-    // Combine both strings into one prompt message
-    const promptMessage = `The company inputted is ${companyToCheck}. \n\n The company list is: \n${companyString}`;
-    console.log("Prompt message created: ", promptMessage);
-
-    if (!currentThread) {
-      currentThread = await retryWithBackoff(() =>
-        client.beta.threads.create()
+async function checkCompanies(context, companyToCheck, currentThread = null) {
+    try {
+      console.log("Starting checkCompanies function");
+      
+      const companyData = await getCompanies();
+      if (!companyData) {
+        console.error("No company data retrieved.");
+        await context.sendActivity("Failed to retrieve company data.");
+        return;
+      }
+      
+      const companyString = JSON.stringify(companyData, null, 2);
+      const promptMessage = `The company inputted is ${companyToCheck}. \nThe company list is: \n${companyString}`;
+      console.log("Prompt message created: ", promptMessage);
+  
+      if (!currentThread) {
+        currentThread = await retryWithBackoff(() =>
+          client.beta.threads.create()
+        );
+        console.log("Thread created: ", currentThread);
+      }
+  
+      await retryWithBackoff(() =>
+        client.beta.threads.messages.create(currentThread.id, {
+          role: "user",
+          content: promptMessage,
+        })
       );
-      console.log("Thread created: ", currentThread);
+  
+      const runResponse = await retryWithBackoff(() =>
+        client.beta.threads.runs.create(currentThread.id, {
+          assistant_id: "asst_gQ8mvmK6osq6t4UNHNfijoDk",
+          max_completion_tokens: 200,
+          temperature: 0.1,
+        })
+      );
+      
+      console.log("Run started: ", runResponse);
+      await context.sendActivity("Processing your request. Please wait...");
+  
+      const messageContent = await waitForRunCompletion(currentThread.id, runResponse.id);
+      
+      if (messageContent) {
+        console.log("Message Content: ", messageContent);
+        return messageContent;
+      } else {
+        console.error("No valid content returned from run.");
+        throw new Error("Failed to retrieve message content.");
+      }
+    } catch (error) {
+      console.error("Error in checkCompanies:", error);
+      throw new Error("Failed to process company check.");
     }
-
-    const threadResponse = await retryWithBackoff(() =>
-      client.beta.threads.messages.create(currentThread.id, {
-        role: "user",
-        content: promptMessage,
-      })
-    );
-    console.log(
-      "User message added to thread: ",
-      JSON.stringify(threadResponse)
-    );
-
-    const runResponse = await retryWithBackoff(() =>
-      client.beta.threads.runs.create(currentThread.id, {
-        assistant_id: "asst_gQ8mvmK6osq6t4UNHNfijoDk",
-        max_completion_tokens: 200,
-        temperature: 0.1,
-      })
-    );
-    console.log("Run started: ", runResponse);
-    await context.sendActivity("Processing your request. Please wait...");
-
-    let runStatus = runResponse.status;
+  }
+  
+  // Helper function for waiting on completion
+  async function waitForRunCompletion(threadId, runId) {
+    let runStatus = "queued";
+    const maxWaitTime = 60000;  // 60 seconds timeout
+    const startTime = Date.now();
+  
     while (runStatus === "queued" || runStatus === "in_progress") {
-      console.log(`Current run status: ${runStatus}`);
+      if (Date.now() - startTime > maxWaitTime) {
+        console.error("Run timed out.");
+        throw new Error("Run process timed out.");
+      }
       await new Promise((resolve) => setTimeout(resolve, 3000));
+  
       const runStatusResponse = await client.beta.threads.runs.retrieve(
-        currentThread.id,
-        runResponse.id
+        threadId,
+        runId
       );
       runStatus = runStatusResponse.status;
-      console.log(`Updated run status: ${runStatus}`);
+      console.log(`Run status: ${runStatus}`);
     }
-
+  
     if (runStatus === "completed") {
-      const messagesResponse = await client.beta.threads.messages.list(
-        currentThread.id
-      );
-      const messageContent = extractMessageContent(messagesResponse);
-      console.log("Message Content: ", messageContent);
-      return messageContent;
+      const messagesResponse = await client.beta.threads.messages.list(threadId);
+      return extractMessageContent(messagesResponse);
     } else {
-      console.error(`Run did not complete successfully. Status: ${runStatus}`);
-      throw new Error(`Run did not complete successfully. Status: ${runStatus}`);
+      console.error(`Run failed with status: ${runStatus}`);
+      return null;
     }
-  } catch (error) {
-    console.error("Error summarizing JSON:", error);
-    throw new Error("Failed to summarize JSON data.");
   }
-}
-// Retry with exponential backoff
-async function retryWithBackoff(fn, retries = 10) {
+
+  
+  // Exponential backoff logic
+  async function retryWithBackoff(fn, retries = 10) {
     let delay = 1000;
     for (let i = 0; i < retries; i++) {
       try {
@@ -102,8 +121,9 @@ async function retryWithBackoff(fn, retries = 10) {
       }
     }
   }
+  
   // Extract message content from the response
-function extractMessageContent(messagesResponse) {
+  function extractMessageContent(messagesResponse) {
     if (messagesResponse && messagesResponse.data) {
       for (const message of messagesResponse.data) {
         for (const contentItem of message.content) {
@@ -119,4 +139,5 @@ function extractMessageContent(messagesResponse) {
     }
     return "No valid content found.";
   }
+  
 module.exports = { checkCompanies };

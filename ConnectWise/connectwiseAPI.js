@@ -235,7 +235,7 @@ async function getCompanies(){
   try {
     console.log("Calling cwCompanies.companyCompaniesGet...");
     const response = await cwCompanies.companyCompaniesGet({});
-    console.log("Get companies response:", response);
+    //console.log("Get companies response:", response);
     return response;
   } catch (error) {
     console.error("Error fetching companies:", error);
