@@ -232,21 +232,21 @@ async function getCompanyByIdentifier(identifier) {
 
 async function getCompanies(){
   console.log("Entering getAllCompanies...");
-  const pageSize = 100; // Adjust the page size if needed
+  const pageSize = 100;
   let allCompanies = [];
   let currentPage = 1;
-  let totalPages = 1;
+  let fetchedCompanies;
 
   try {
     do {
       console.log(`Fetching page ${currentPage} of companies...`);
-      const response = await cwCompanies.companyCompaniesGet({
+      fetchedCompanies = await cwCompanies.companyCompaniesGet({
         page: currentPage,
         pageSize: pageSize,
       });
 
-      if (response && response.length > 0) {
-        allCompanies = allCompanies.concat(response);
+      if (fetchedCompanies && fetchedCompanies.length > 0) {
+        allCompanies = allCompanies.concat(fetchedCompanies);
         console.log(`Page ${currentPage} fetched, total companies so far: ${allCompanies.length}`);
       } else {
         console.log("No more companies to fetch.");
@@ -254,7 +254,7 @@ async function getCompanies(){
       }
 
       currentPage++;
-    } while (currentPage <= totalPages);
+    } while (fetchedCompanies.length === pageSize); // Continue until the last page
 
     console.log("All companies fetched successfully.");
     return allCompanies;
