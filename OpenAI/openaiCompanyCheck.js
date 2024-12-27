@@ -21,59 +21,57 @@ const client = new AzureOpenAI({
 
 let currentThread = null; // Store the thread for reuse
 
-async function checkCompanies(context, companyToCheck, currentThread = null) {
+async function checkCompanies() {
+    console.log("Entering getAllCompanies...");
+    const pageSize = 100;
+    let allCompanies = [];
+    let currentPage = 1;
+    let fetchedCompanies;
+  
     try {
-      console.log("Starting checkCompanies function");
-      
-      const companyData = await getCompanies();
-      if (!companyData) {
-        console.error("No company data retrieved.");
-        await context.sendActivity("Failed to retrieve company data.");
-        return;
+      do {
+        console.log(`Fetching page ${currentPage} of companies...`);
+        fetchedCompanies = await cwCompanies.companyCompaniesGet({
+          page: currentPage,
+          pageSize: pageSize,
+        });
+  
+        if (fetchedCompanies && fetchedCompanies.length > 0) {
+          allCompanies = allCompanies.concat(fetchedCompanies);
+          console.log(`Page ${currentPage} fetched, total companies so far: ${allCompanies.length}`);
+        } else {
+          console.log("No more companies to fetch.");
+          break;
+        }
+  
+        // Process or store in chunks if total size exceeds limit
+        if (JSON.stringify(allCompanies).length > 250000) {
+          console.log(`Processing batch of ${allCompanies.length} companies...`);
+          await processCompaniesBatch(allCompanies);
+          allCompanies = [];  // Reset for next batch
+        }
+  
+        currentPage++;
+      } while (fetchedCompanies.length === pageSize);
+  
+      // Process any remaining companies
+      if (allCompanies.length > 0) {
+        console.log(`Processing final batch of ${allCompanies.length} companies...`);
+        await processCompaniesBatch(allCompanies);
       }
-      
-      const companyString = JSON.stringify(companyData, null, 2);
-      const promptMessage = `The company inputted is ${companyToCheck}. \nThe company list is: \n${companyString}`;
-      //console.log("Prompt message created: ", promptMessage);
   
-      if (!currentThread) {
-        currentThread = await retryWithBackoff(() =>
-          client.beta.threads.create()
-        );
-        console.log("Thread created: ", currentThread);
-      }
-  
-      await retryWithBackoff(() =>
-        client.beta.threads.messages.create(currentThread.id, {
-          role: "user",
-          content: promptMessage,
-        })
-      );
-  
-      const runResponse = await retryWithBackoff(() =>
-        client.beta.threads.runs.create(currentThread.id, {
-          assistant_id: "asst_gQ8mvmK6osq6t4UNHNfijoDk",
-          max_completion_tokens: 200,
-          temperature: 0.1,
-        })
-      );
-      
-      console.log("Run started: ", runResponse);
-      await context.sendActivity("Processing your request. Please wait...");
-  
-      const messageContent = await waitForRunCompletion(currentThread.id, runResponse.id);
-      
-      if (messageContent) {
-        console.log("Message Content: ", messageContent);
-        return messageContent;
-      } else {
-        console.error("No valid content returned from run.");
-        throw new Error("Failed to retrieve message content.");
-      }
+      console.log("All companies fetched and processed successfully.");
     } catch (error) {
-      console.error("Error in checkCompanies:", error);
-      throw new Error("Failed to process company check.");
+      console.error("Error fetching companies:", error);
+      return null;
     }
+  }
+  
+  // Example: Processing function (adjust as needed)
+  async function processCompaniesBatch(companiesBatch) {
+    // Simulate processing (e.g., write to DB, send to another API)
+    console.log(`Processing ${companiesBatch.length} companies...`);
+    // await db.save(companiesBatch);  // Example for DB save
   }
   
   // Helper function for waiting on completion
