@@ -45,7 +45,7 @@ class TeamsBot extends TeamsActivityHandler {
         isAuthenticated: false,
         lastLoginMessageId: null,
       });
-      checkCompanies(context, "Development LLC");
+      //checkCompanies(context, "Development LLC");
 
       // Store the user message ID to delete it later
       this.userMessageId = context.activity.id;
