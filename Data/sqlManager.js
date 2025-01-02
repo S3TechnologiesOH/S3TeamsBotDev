@@ -1,36 +1,31 @@
 const { DefaultAzureCredential, ClientSecretCredential } = require('@azure/identity');
-const sql = require('mssql');
+const mysql = require('mysql2/promise');
 
 const credential = new DefaultAzureCredential();
 
-async function getAccessToken() {
-  // For Azure SQL, the resources is always 'https://database.windows.net/'
-  const token = await credential.getToken('https://database.windows.net/.default');
-  console.log("Got token: ", token.token);
-  return token.token;
+
+
+function getMySQLConfig() {
+  return {
+    host: process.env.MYSQL_HOST || 'localhost', // Default to localhost
+    port: process.env.MYSQL_PORT ? parseInt(process.env.MYSQL_PORT) : 3306, // Default to 3306
+    user: process.env.MYSQL_USER || 'root', // Default user
+    password: process.env.MYSQL_PASSWORD || '', // Default password
+    database: process.env.MYSQL_DATABASE || 'localdb', // Default database
+  };
 }
-
-
 async function queryDatabase() {
-  let pool;
+  const config = getMySQLConfig();
+  let connection;
   try {
-    const token = await getAccessToken();
-    pool = await sql.connect({
-      server: '127.0.0.1.database.windows.net',
-      database: 'localdb',
-      authentication: {
-        type: 'azure-active-directory-access-token',
-        options: {
-          token: token
-        }
-      },
-      options: {
-        encrypt: true
-      }
-    });
+
+    connection = await mysql.createConnection(config);
+
     console.log('Connected to the database with AAD token.');
-    const result = await pool.request().query('SELECT TOP 10 * FROM dbo.users');
-    console.log(result.recordset);
+
+    // Execute a query
+    const [rows, fields] = await connection.execute('SELECT * FROM users LIMIT 10');
+    console.log('Query Results:', rows);
     return result.recordset;
   } catch (err) {
     console.error('Error querying the database with AAD token:', err);
