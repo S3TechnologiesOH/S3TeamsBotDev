@@ -16,8 +16,8 @@ async function queryDatabase() {
   try {
     const token = await getAccessToken();
     pool = await sql.connect({
-      server: 's3-powerbot-server.database.windows.net',
-      database: 's3-powerbot-sqldb',
+      server: '127.0.0.1.database.windows.net',
+      database: 'localdb',
       authentication: {
         type: 'azure-active-directory-access-token',
         options: {
