@@ -1,8 +1,5 @@
 const { DefaultAzureCredential, ClientSecretCredential } = require('@azure/identity');
-const mysql = require('mysql2/promise');revert
-
-
-
+const mysql = require('mysql2/promise');
 
 const parseConnectionString = (connectionString) => {
   const config = {};
