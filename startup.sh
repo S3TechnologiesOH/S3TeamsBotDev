@@ -1,17 +1,10 @@
 #!/bin/bash
 
-# Update package list and install Python3 and pip3
-apt-get update
-apt-get install -y python3 python3-pip
+# Start PM2 and run the apps
+pm2 start ecosystem.config.js
 
-# Navigate to the app directory
-cd /home/site/wwwroot
+# Optionally, save the PM2 process list
+pm2 save
 
-# Install Python dependencies
-pip3 install schedule
-
-# Start the Node.js bot in the background
-node bot.js &
-
-# Start the Python timer script
-python3 timer.py
+# Keep the container running
+pm2 logs
