@@ -1,18 +1,49 @@
 const { DefaultAzureCredential, ClientSecretCredential } = require('@azure/identity');
-const mysql = require('mysql2/promise');
-
-const credential = new DefaultAzureCredential();
+const mysql = require('mysql2/promise');revert
 
 
 
-function getMySQLConfig() {
+
+const parseConnectionString = (connectionString) => {
+  const config = {};
+  const parts = connectionString.split(';');
+
+  parts.forEach((part) => {
+    if (part.includes('=')) {  // Ensure it's a valid key-value pair
+      const [key, value] = part.split('=');
+      if (key && value) {  // Check that both key and value exist
+        config[key.trim().toLowerCase()] = value.trim();
+      }
+    }
+  });
+
   return {
-    host: process.env.MYSQL_HOST || 'localhost', // Default to localhost
-    port: process.env.MYSQL_PORT ? parseInt(process.env.MYSQL_PORT) : 3306, // Default to 3306
-    user: process.env.MYSQL_USER || 'root', // Default user
-    password: process.env.MYSQL_PASSWORD || '', // Default password
-    database: process.env.MYSQL_DATABASE || 'localdb', // Default database
+    host: config['data source'].split(':')[0],
+    port: parseInt(config['data source'].split(':')[1], 10) || 3306,
+    user: config['user id'],
+    password: config['password'],
+    database: config['database'],
   };
+};
+
+
+const sqlconfig = parseConnectionString(process.env.MYSQLCONNSTR_localdb);
+const pool = mysql.createPool(sqlconfig);
+
+async function connectToMySQL() {
+  try {
+    // Establish connection
+    connection = await mysql.createConnection(sqlconfig);
+    connection = await pool.createConnection(sqlconfig);
+    console.log('Connected to MySQL In-App');
+
+    const [tables] = await connection.execute('SHOW TABLES');
+    console.log('Tables:', tables);
+  
+  }
+  catch (error) {
+    console.error('Error connecting to MySQL:', error);
+  }
 }
 async function queryDatabase() {
   const config = getMySQLConfig();
@@ -30,10 +61,6 @@ async function queryDatabase() {
   } catch (err) {
     console.error('Error querying the database with AAD token:', err);
     throw err;
-  } finally {
-    if (pool) {
-      pool.close();
-    }
   }
 }
 
@@ -279,4 +306,4 @@ async function queryDatabase() {
   */
  
 module.exports = { getTables, insertSingleRow, logCommand,
-   checkAndInsertOpportunity, updateOpportunityAndCheck, queryDatabase};
+   checkAndInsertOpportunity, updateOpportunityAndCheck, queryDatabase, connectToMySQL};
