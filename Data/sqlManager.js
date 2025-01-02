@@ -30,11 +30,11 @@ const pool = mysql.createPool(sqlconfig);
 async function connectToMySQL() {
   try {
     // Establish connection
-    connection = await mysql.createConnection(sqlconfig);
-    connection = await pool.createConnection(sqlconfig);
+    connection = await pool.getConnection(sqlconfig);
+
     console.log('Connected to MySQL In-App');
 
-    const [tables] = await connection.execute('SHOW TABLES');
+    const [tables] = await pool.query('SHOW TABLES');
     console.log('Tables:', tables);
   
   }
