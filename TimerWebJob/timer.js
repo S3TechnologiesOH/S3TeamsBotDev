@@ -4,7 +4,7 @@ const cron = require('node-cron');
 const path = require('path');
 
 // Path to your test_script.js
-const scriptPath = path.join(__dirname, 'test_script.js');
+const scriptPath = path.join(__dirname, '..', '..', '..', '..', 'WebJob', 'test_script.js');
 
 // Import the runTest function
 const { runTest } = require(scriptPath);
