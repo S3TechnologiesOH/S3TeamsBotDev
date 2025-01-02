@@ -1,22 +1,18 @@
-// test_script.js
+// timer.js
 
-// This is a simple test script for the bot.
-// It logs the current timestamp to the console.
+const cron = require('node-cron');
+const path = require('path');
 
-const fs = require('fs');
+// Path to your test_script.js
+const scriptPath = path.join(__dirname, 'test_script.js');
 
-function runTest() {
-    const timestamp = new Date().toISOString();
-    const message = `Test script executed at ${timestamp}\n`;
-    console.log(message);
+// Import the runTest function
+const { runTest } = require(scriptPath);
 
-    // Optionally, write the log to a file for verification
-    fs.appendFile('test_log.txt', message, (err) => {
-        if (err) {
-            console.error('Error writing to log file:', err);
-        }
-    });
-}
+// Schedule the task to run every 1 minute using cron syntax
+cron.schedule('* * * * *', () => {
+    console.log('Cron job triggered: Running test_script.js');
+    runTest();
+});
 
-// Execute the test
-runTest();
+console.log('Cron timer started. Running test_script.js every 1 minute.');
