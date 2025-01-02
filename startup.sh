@@ -1,10 +1,19 @@
 #!/bin/bash
 
-# Start PM2 and run the apps
-pm2 start ecosystem.config.js
+# Navigate to the application directory
+cd /home/site/wwwroot
 
-# Optionally, save the PM2 process list
-pm2 save
+# Install PM2 locally
+npm install
 
-# Keep the container running
-pm2 logs
+# Start PM2 with the ecosystem file
+npx pm2 start ecosystem.config.js
+
+# Ensure PM2 restarts on reboot
+npx pm2 startup systemd -u $USER --hp /home/site/wwwroot
+
+# Save the PM2 process list
+npx pm2 save
+
+# Keep the script running
+tail -f /dev/null
