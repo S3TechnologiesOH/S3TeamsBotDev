@@ -82,72 +82,68 @@ const fetchDeals = async (perPage = 100) => {
   }
 };
 
-const fetchActivities = async (perPage = 100) => {
-  const baseUrl = 'https://api.apollo.io/api/v1/activities/';
-  const api_key = process.env.APOLLO_API_KEY;
+class ActivitiesAPI {
+  constructor(opportunity_id) {
+    this.api_key = process.env.APOLLO_API_KEY;
+    if (!this.api_key) {
+      throw new Error('Apollo API key is not defined in environment variables.');
+    }
 
-  if (!api_key) {
-    throw new Error('Apollo API key is not defined in environment variables.');
+    this.headers = {
+      'accept': 'application/json',
+      'Content-Type': 'application/json',
+      'X-Api-Key': this.api_key,
+    };
+    this.url = new URL('https://api.apollo.io/v1/activities').href; // Ensure valid URL
+    this.opportunity_id = opportunity_id;
+    this.perPage = 100;
   }
 
-  const headers = {
-    accept: 'application/json',
-    'Content-Type': 'application/json',
-    'X-Api-Key': api_key,
-  };
+  async fetchActivities() {
+    let currentPage = 1;
+    const allActivities = [];
 
-  let currentPage = 1;
-  const allActivities = [];
+    try {
+      while (true) {
+        const requestBody = {
+          opportunity_id: this.opportunity_id,
+          page: currentPage,
+          per_page: this.perPage,
+        };
 
-  try {
-    while (true) {
-      const requestBody = {
-        search_query: '',
-        search_filter_json: {
-          filters: [],
-        },
-        page: currentPage,
-        per_page: perPage,
-        opportunity_id: "66d08f6787c41902d00c6638",
-      };
+        console.log(`\nFetching page ${currentPage} for opportunity ${this.opportunity_id}...`);
+        console.log('Request URL:', this.url);
 
-      console.log(`\nFetching page ${currentPage} for opportunity ${this.opportunity_id}...`);
+        const response = await axios.post(this.url, requestBody, { headers: this.headers });
+        const { activities = [], pagination = {} } = response.data;
 
-      const response = await axios.post(this.url, requestBody, { headers: this.headers });
-      const { activities = [], pagination = {} } = response.data;
-
-      console.log(`Page ${currentPage} retrieved. Total activities on this page: ${activities.length}`);
-
-      if (activities.length > 0) {
+        console.log(`Page ${currentPage} retrieved. Total activities on this page: ${activities.length}`);
         allActivities.push(...activities);
-        console.log(`Accumulated ${allActivities.length} activities so far.`);
-      }
 
-      if (pagination.has_next_page) {
+        if (!pagination.has_next_page) break;
         currentPage++;
-      } else {
-        console.log('No more pages to fetch. Exiting loop.');
-        break;
       }
-    }
 
-    console.log(`Total activities for opportunity ${this.opportunity_id}: ${allActivities.length}`);
-    return allActivities;
-  } catch (error) {
-    if (error.response) {
-      console.error(`API Error: ${error.response.status} - ${error.response.statusText}`);
-      console.error('Error Details:', error.response.data);
-    } else if (error.request) {
-      console.error('No response received from the API:', error.request);
-    } else {
-      console.error('Error in setting up the API request:', error.message);
+      return allActivities;
+    } catch (error) {
+      console.error('Error during API request:', error.message);
+      throw error;
     }
-    throw error;
   }
 }
 
+const fetchOpportunityActivities = async () => {
+  const opportunityId = '657c6cc9ab96200302cbd0a3';  // Replace with actual ID
+
+  const api = new ActivitiesAPI(opportunityId);
+
+  try {
+    const activities = await api.fetchActivities();
+    console.log('Fetched activities:', activities);
+  } catch (error) {
+    console.error('Failed to fetch activities:', error.message);
+  }
+};
 
 
-
-
-module.exports = { fetchDeals, fetchActivities };
+module.exports = { fetchDeals, fetchOpportunityActivities };
