@@ -2,11 +2,16 @@
 
 const fs = require('fs');
 const { fetchDeals } = require("../Apollo/ApolloAPI");
+const { processDeals } = require("../Data/sqlManager");
 
-function run() {
+async function run() {
     const timestamp = new Date().toISOString();
     const message = `-- fetching deals -- executed at ${timestamp}\n`;
-    fetchDeals(true, 100);
+
+    const deals = await fetchDeals(false, 100);
+    console.log("Deals: ", deals);
+    await processDeals(deals, false);
+    processDeals(fetchDeals(false, 100));
 
     console.log(message);
 
