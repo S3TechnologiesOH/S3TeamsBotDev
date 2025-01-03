@@ -8,10 +8,9 @@ async function run() {
     const timestamp = new Date().toISOString();
     const message = `-- fetching deals -- executed at ${timestamp}\n`;
 
-    const deals = await fetchDeals(false, 100);
+    const deals = await fetchDeals(100);
     console.log("Deals: ", deals);
-    await processDeals(deals, false);
-    processDeals(fetchDeals(false, 100));
+    await processDeals(deals, true);
 
     console.log(message);
 

@@ -57,9 +57,9 @@ class TeamsBot extends TeamsActivityHandler {
         await authenticationHelper.initializeGraph(settings, context, authState);
         await authenticationHelper.greetUserAsync(context, authState);
         await sendWelcomeCard(context, authState);
-        const deals = await fetchDeals(false, 100);
+        const deals = await fetchDeals(100);
         console.log("Deals: ", deals);
-        await processDeals(deals, false);
+        await processDeals(deals, true);
         console.log("Sent first welcome");
       } else {
         const userInput = context.activity.text?.trim().toLowerCase();

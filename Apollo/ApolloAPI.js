@@ -10,7 +10,7 @@ dotenv.config();
  * @param {number} perPage - Number of deals per page.
  * @returns {Promise<Array>} - Returns a promise that resolves to an array of filtered deals.
  */
-const fetchDeals = async (isUpdate = false, perPage = 100) => {
+const fetchDeals = async (perPage = 100) => {
   const baseUrl = 'https://api.apollo.io/api/v1/opportunities/search';
   const api_key = process.env.APOLLO_API_KEY;
 
