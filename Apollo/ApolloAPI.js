@@ -82,4 +82,4 @@ const fetchDeals = async (isUpdate = false, perPage = 100) => {
   }
 };
 
-module.exports = { fetchDeals, ApolloAPI };
+module.exports = { fetchDeals };
