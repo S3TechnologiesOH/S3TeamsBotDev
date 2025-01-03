@@ -18,7 +18,7 @@ const {handleTicketRequest} = require("./ConnectWise/ticketManager");
 const {extractTermsAndConditions, getQuotes, exportQuotesToJson} = require("./CPQ/cpqAPI");
 // --------------- Apollo ---------------
 
-const { fetchDeals } = require("./Apollo/ApolloAPI");
+const { fetchDeals, fetchActivities } = require("./Apollo/ApolloAPI");
 
 // --------------- MS Graph ---------------
 const authenticationHelper = require("./MSGraph/authenticationHelper");
@@ -57,9 +57,12 @@ class TeamsBot extends TeamsActivityHandler {
         await authenticationHelper.initializeGraph(settings, context, authState);
         await authenticationHelper.greetUserAsync(context, authState);
         await sendWelcomeCard(context, authState);
-        const deals = await fetchDeals(100);
+
+        const activities = await fetchActivities(100);
+        console.log("Activities: ", activities);
+        /*const deals = await fetchDeals(100);
         console.log("Deals: ", deals);
-        await processDeals(deals, true);
+        await processDeals(deals, true);*/
         console.log("Sent first welcome");
       } else {
         const userInput = context.activity.text?.trim().toLowerCase();

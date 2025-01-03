@@ -229,6 +229,10 @@ const updateOpportunityAndCheck = async (id, opportunity_stage_id) => {
         'UPDATE apollo_opportunities SET has_changed = ? WHERE id = ?',
         [1, id]
       );
+
+      // Call TestFunction when condition is met
+      console.log('Calling SyncApolloOpportunities...');
+      await SyncApolloOpportunities(id);
     }
 
     // Update the stage ID
@@ -244,8 +248,23 @@ const updateOpportunityAndCheck = async (id, opportunity_stage_id) => {
   } finally {
     connection.release();
   }
-}
+};
 
+async function SyncApolloOpportunities(id){
+
+  
+
+  const opportunity = {
+    name: "New Sales Opportunity",
+    notes: notes || "Default opportunity notes",
+    contact: { id: contactId },
+    expectedCloseDate: new Date().toISOString(),  // Required on update
+    locationId: 1,  // Default location
+    businessUnitId: 1,  // Default business unit
+    primarySalesRep: "CAtwell"
+  };
+
+}
  
 module.exports = { getTables, logCommand,
    checkAndInsertOpportunity, updateOpportunityAndCheck, queryDatabase, connectToMySQL, processDeals};
