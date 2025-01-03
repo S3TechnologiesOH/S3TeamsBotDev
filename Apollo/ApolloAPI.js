@@ -114,7 +114,7 @@ class ActivitiesAPI {
         console.log(`\nFetching page ${currentPage} for opportunity ${this.opportunity_id}...`);
         console.log('Request URL:', this.url);
 
-        const response = await axios.post(this.url, requestBody, { headers: this.headers });
+        const response = await axios.get(this.url, requestBody, { headers: this.headers });
         const { activities = [], pagination = {} } = response.data;
 
         console.log(`Page ${currentPage} retrieved. Total activities on this page: ${activities.length}`);
@@ -133,7 +133,7 @@ class ActivitiesAPI {
 }
 
 const fetchOpportunityActivities = async () => {
-  const opportunityId = '657c6cc9ab96200302cbd0a3';  // Replace with actual ID
+  const opportunityId = '6759c175edd68f02ce89377c';  // Replace with actual ID
 
   const api = new ActivitiesAPI(opportunityId);
 
