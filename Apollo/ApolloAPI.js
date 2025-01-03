@@ -83,7 +83,7 @@ const fetchDeals = async (perPage = 100) => {
 };
 
 const fetchActivities = async (perPage = 100) => {
-  const baseUrl = 'https://api.apollo.io/api/v1/activities';
+  const baseUrl = 'https://api.apollo.io/v1/activities/';
   const api_key = process.env.APOLLO_API_KEY;
 
   if (!api_key) {
