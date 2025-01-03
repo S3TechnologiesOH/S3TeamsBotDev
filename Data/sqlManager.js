@@ -247,5 +247,5 @@ const updateOpportunityAndCheck = async (id, opportunity_stage_id) => {
 }
 
  
-module.exports = { getTables, insertSingleRow, logCommand,
+module.exports = { getTables, logCommand,
    checkAndInsertOpportunity, updateOpportunityAndCheck, queryDatabase, connectToMySQL, processDeals};
