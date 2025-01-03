@@ -128,7 +128,7 @@ async function logCommand(user, command) {
  * @param {Array} deals - Array of deal objects to process.
  * @param {boolean} isUpdate - Indicates whether to perform update operations.
  */
-const processDeals = async (deals, isUpdate = false) => {
+const processDeals = async (deals, isUpdate) => {
   const CONCURRENCY_LIMIT = 10;
   const asyncLib = require('async');
 

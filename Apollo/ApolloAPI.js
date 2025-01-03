@@ -25,7 +25,7 @@ const fetchDeals = async (perPage = 100) => {
   };
 
   let currentPage = 1;
-  const targetStageId = '657c6cc9ab96200302cbd0a3';
+  const targetStageIds = ['657c6cc9ab96200302cbd0a3', '669141aa1bcf2c04935c3074'];
   const allFilteredDeals = [];
 
   try {
@@ -48,7 +48,7 @@ const fetchDeals = async (perPage = 100) => {
       console.log(`Page ${currentPage} retrieved. Total deals on this page: ${opportunities.length}`);
 
       const filteredOpportunities = opportunities.filter(
-        (deal) => deal.opportunity_stage_id === targetStageId
+        (deal) => targetStageIds.includes(deal.opportunity_stage_id)
       );
       console.log(`Filtered deals on this page: ${filteredOpportunities.length}`);
 
