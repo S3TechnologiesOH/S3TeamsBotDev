@@ -83,7 +83,7 @@ const fetchDeals = async (perPage = 100) => {
 };
 
 const fetchActivities = async (perPage = 100) => {
-  const baseUrl = 'https://api.apollo.io/v1/activities/';
+  const baseUrl = 'https://api.apollo.io/api/v1/activities/';
   const api_key = process.env.APOLLO_API_KEY;
 
   if (!api_key) {
@@ -106,9 +106,9 @@ const fetchActivities = async (perPage = 100) => {
         search_filter_json: {
           filters: [],
         },
-        opportunity_id: "66d08f6787c41902d00c6638",
         page: currentPage,
         per_page: perPage,
+        opportunity_id: "66d08f6787c41902d00c6638",
       };
 
       console.log(`\nFetching page ${currentPage} for opportunity ${this.opportunity_id}...`);
