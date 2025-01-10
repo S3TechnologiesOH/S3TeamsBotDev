@@ -51,6 +51,7 @@ try {
   cwContacts = new ContactsApi(`${connectwiseUrl}`);
   cwOpportunityNotes = new OpportunityNotesApi(`${connectwiseUrl}`);
   
+  cwService.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
   cwCompaniesTeams.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
   cwSites.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
   cwCompanies.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
