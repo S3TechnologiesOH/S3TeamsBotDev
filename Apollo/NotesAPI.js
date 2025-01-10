@@ -1,8 +1,8 @@
 const fs = require('fs');
-
+const {extractParagraphText} = require('./ConnectWiseAPI.js')
 class NotesAPI {
     constructor() {
-        this.apiKey = process.env.APOLLO_API_KEY;  // Replace with actual API key
+        this.apiKey = "rwYHYDXtbYkuXRImQKoDVA";  // Replace with actual API key
         this.url = 'https://api.apollo.io/v1/notes/';
         this.headers = {
             'accept': 'application/json',
@@ -20,12 +20,12 @@ class NotesAPI {
         const results = await this.getAllResults(api.url, api.data, api.headers, opportunityId);
 
         fs.writeFileSync('notes.json', JSON.stringify(results, null, 2));
-        console.log("Results written to notes.json");
+        console.log("Results written to notes.json: ", results);
 
         // Read and process the file
         const data = JSON.parse(fs.readFileSync('notes.json', 'utf-8'));
 
-        const processedNotes = data.map(note => new Note(note, opportunityId));
+        const processedNotes = data.map(note => new Note(note, opportunityId, results));
 
         // Write processed notes to a txt file
         const output = processedNotes.map(note => {
@@ -36,6 +36,7 @@ class NotesAPI {
 
         fs.writeFileSync('notes.txt', output);
         console.log('Notes written to notes.txt');
+        return { raw: results, processed: processedNotes };
     }
 
 // Fetch paginated results
@@ -74,11 +75,11 @@ async getAllResults(url, data, headers, opportunityId) {
 }
 
 class Note {
-    constructor(note, opportunityId) {
+    constructor(note, opportunityId, rawNote) {
         this.id = note.id;
         this.opportunity_id = opportunityId;
         this.title = note.title || 'Untitled';
-        this.body = note.body || 'No content';
+        this.body = extractParagraphText(rawNote); // Extract the note body
         this.created_at = note.created_at;
         this.updated_at = note.updated_at;
         this.author = note.author ? note.author.name : 'Unknown';

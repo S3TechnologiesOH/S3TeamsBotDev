@@ -1,4 +1,7 @@
-const { TicketsApi, TicketTasksApi, ProductsItemApi, CompaniesApi, CompanyTeamsApi, CompanySitesApi } = require('connectwise-rest-api/release/api/api');
+const fs = require('fs');
+const path = require('path');
+
+const { TicketsApi, TicketTasksApi, ProductsItemApi, CompaniesApi, CompanyTeamsApi, CompanySitesApi, OpportunitiesApi, ContactsApi, OpportunityNotesApi } = require('connectwise-rest-api/release/api/api');
 const { ManageAPI } = require('connectwise-rest');
 const { CommonParameters, CWMOptions } = require('connectwise-rest');
 const { TeamsBot } = require('../teamsBot');
@@ -44,10 +47,17 @@ try {
   cwCompaniesTeams = new CompanyTeamsApi(`${connectwiseUrl}`);
   cwManage = new ManageAPI(CWMOptions);
   cwSites = new CompanySitesApi(`${connectwiseUrl}`);
-
+  cwOpportunities = new OpportunitiesApi(`${connectwiseUrl}`);
+  cwContacts = new ContactsApi(`${connectwiseUrl}`);
+  cwOpportunityNotes = new OpportunityNotesApi(`${connectwiseUrl}`);
+  
   cwCompaniesTeams.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
   cwSites.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
   cwCompanies.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
+  cwOpportunities.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
+  cwContacts.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
+  cwOpportunityNotes.defaultHeaders = { 'Authorization': `Basic ${authKey}`, 'clientId': clientId };
+
   console.log("ConnectWise APIs initialized successfully.");
 } catch (error) {
   console.error("Error initializing ConnectWise API:", error);
@@ -67,7 +77,6 @@ async function fetch_ticket_by_id(ticketId) {
     throw new Error("Failed to fetch ticket.");
   }
 }
-
 async function fetch_ticket_tasks_by_id(ticketId) {
   console.log(`Entering fetch_ticket_tasks_by_id with ticketId: ${ticketId}`);
   try {
@@ -80,7 +89,6 @@ async function fetch_ticket_tasks_by_id(ticketId) {
     throw new Error("Failed to fetch ticket tasks.");
   }
 }
-
 // Fetch time entries related to a specific ticket
 async function fetch_time_entries_for_ticket(ticketId) {
   console.log(`Entering fetch_time_entries_for_ticket with ticketId: ${ticketId}`);
@@ -94,7 +102,6 @@ async function fetch_time_entries_for_ticket(ticketId) {
     throw new Error("Failed to fetch time entries.");
   }
 }
-
 async function createSite(siteName, siteAddress, siteCity, siteState, companyId) {
   console.log("Entering createSite with details:", { siteName, siteAddress, siteCity, siteState, companyId });
   const response = await cwSites.companyCompaniesIdSitesPost({
@@ -106,7 +113,6 @@ async function createSite(siteName, siteAddress, siteCity, siteState, companyId)
     }
   });
 }
-
 async function createTeam(companyId, companyIdentifier, _teamRole, contactName) {
   console.log("Entering createTeam with details:", { companyId, teamRole, contactName });
       const teamResponse = await cwCompaniesTeams.companyCompaniesIdTeamsPost({
@@ -115,8 +121,7 @@ async function createTeam(companyId, companyIdentifier, _teamRole, contactName) 
             teamRole: _teamRole
           }
       });
-  }
-
+}
 async function createCompany(context, companyDetails, appointmentDetails, authState) {
   console.log("Entering createCompany with details:", companyDetails);
 
@@ -132,6 +137,7 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
     console.log("Checking if company exists...");
     const existingCompany = await getCompanyByIdentifier(payload.identifier);
     if (existingCompany) {
+
       console.log("Company already exists:", existingCompany.id);
       context.sendActivity(`This company already exists: ${existingCompany.name}`);
 
@@ -214,7 +220,6 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
     throw error;
   }
 }
-
 async function getCompanyByIdentifier(identifier) {
   console.log(`Entering getCompanyByIdentifier with identifier: ${identifier}`);
   try {
@@ -229,7 +234,6 @@ async function getCompanyByIdentifier(identifier) {
     return null;
   }
 }
-
 async function getCompanies(){
   console.log("Entering getAllCompanies...");
   const pageSize = 100;
@@ -256,7 +260,7 @@ async function getCompanies(){
       // Process or store in chunks if total size exceeds limit
       if (JSON.stringify(allCompanies).length > 250000) {
         console.log(`Processing batch of ${allCompanies.length} companies...`);
-        await processCompaniesBatch(allCompanies);
+        //await processCompaniesBatch(allCompanies);
         allCompanies = [];  // Reset for next batch
       }
 
@@ -266,7 +270,7 @@ async function getCompanies(){
     // Process any remaining companies
     if (allCompanies.length > 0) {
       console.log(`Processing final batch of ${allCompanies.length} companies...`);
-      await processCompaniesBatch(allCompanies);
+      //await processCompaniesBatch(allCompanies);
     }
 
     console.log("All companies fetched and processed successfully.");
@@ -290,8 +294,8 @@ async function processCompaniesBatch(companiesBatch) {
       console.log(`Sending chunk of ${chunk.length} companies...`);
       
       // Example API call (replace with your actual API method)
-      const response = await someApiEndpoint.sendCompanies(chunk);
-      console.log(`Chunk processed. API response: ${response.status}`);
+      //const response = await someApiEndpoint.sendCompanies(chunk);
+      //console.log(`Chunk processed. API response: ${response.status}`);
     }
 
     console.log(`Batch of ${companiesBatch.length} companies processed successfully.`);
@@ -331,7 +335,6 @@ async function createSalesTicket(summary, address, contactInfo, rep, companyId, 
     throw new Error("Failed to create sales ticket.");
   }
 }
-
 async function deleteSalesTicket(id, context, authState) {
   try {
     console.log("Attempting to delete ticket with ID:", id);
@@ -357,7 +360,6 @@ async function deleteSalesTicket(id, context, authState) {
     throw new Error("Failed to delete sales ticket.");
   }
 }
-// Helper function to format date and time
 function formatAppointmentDateTime(date, time) {
   const appointmentDate = new Date(`${date}T${time}`);
   
@@ -385,6 +387,163 @@ function formatAppointmentDateTime(date, time) {
   // Combine formatted date and time
   return `${dayWithSuffix} @ ${formattedTime} EST`;
 }
+async function createOpportunity(opportunityReference) {
+
+  try {
+    const response = await cwOpportunities.salesOpportunitiesPost({ opportunity: opportunityReference });
+    console.log("Opportunity created successfully:", response);
+    return response;
+} catch (error) {
+    console.error("Error creating opportunity:", error);
+
+    if (error.response) {
+        const errorBody = await error.response.text();
+        console.error("API Error Response Body:", errorBody);
+    }
+
+    return null;
+}
+}
+async function createContact(contactReference) {
+  try {
+      const response = await cwContacts.companyContactsPost({ contact: contactReference });
+      console.log("Contact created successfully:", response);
+      return response;
+  } catch (error) {
+      console.error("Error creating contact:", error);
+
+      if (error.response) {
+          const errorBody = await error.response.text();
+          console.error("API Error Response Body:", errorBody);
+      }
+
+      return null;
+  }
+}
+async function createOpportunityNote(opportunityId, noteJson) {
+
+  if (!noteJson) {
+      console.error("No note text to create an opportunity note.");
+      return null;
+  }
+
+  try {
+      const response = await cwOpportunityNotes.salesOpportunitiesIdNotesPost({
+          id: opportunityId,
+          note: { text: noteJson.content }
+      });
+      console.log("Opportunity note created successfully:", response);
+      return response;
+  } catch (error) {
+      console.error("Error creating opportunity note:", error);
+
+      if (error.response) {
+          const errorBody = await error.response.text();
+          console.error("API Error Response Body:", errorBody);
+      }
+      return null;
+  }
+}
+async function findCompanyIdByDealAccount(accountName) {
+  try {
+      // Read and parse deals.json
+      const dealsPath = path.resolve(__dirname, 'deals.json');
+      const dealsData = JSON.parse(fs.readFileSync(dealsPath, 'utf8'));
+
+      // Find the deal with the matching account name
+      const deal = dealsData.find(d => d.account && d.account.name === accountName);
+
+      if (!deal) {
+          console.log(`No deal found for account: ${accountName}`);
+          return null;
+      }
+
+      console.log(`Deal found for account: ${deal.account.name}`);
+
+      // Fetch all companies from ConnectWise
+      const companies = await getCompanies();
+      const companyString = JSON.stringify(companies, null, 2);
+      //console.log(companyString);
+      if (!companyString || companyString.length === 0) {
+          console.log('No companies found from ConnectWise.');
+          return null;
+      }
+
+      // Dump all company names into a txt file
+      const companyDumpPath = path.resolve(__dirname, 'company_names.txt');
+      const companyList = companies.map(c => `${c.name}`).join('\n');
+      fs.writeFileSync(companyDumpPath, companyList);
+      console.log('All company names dumped to company_names.txt');
+
+      // Match the deal account name with the company name
+      const matchedCompany = companies.find(c => c.name.toLowerCase() === deal.account.name.toLowerCase());
+
+      if (!matchedCompany) {
+          console.log(`No matching company found for account: ${deal.account.name}`);
+          return null;
+      }
+
+      console.log(`Matched company ID: ${matchedCompany.id}`);
+      return matchedCompany.id;
+
+  } catch (error) {
+      console.error('Error finding company by deal account:', error);
+      return null;
+  }
+}
+async function getCompanyById(id) {
+  console.log(`Entering getCompanyByIdentifier with identifier: ${identifier}`);
+  try {
+    console.log("Calling cwCompanies.companyCompaniesGet...");
+    const response = await cwCompanies.companyCompaniesGet({
+      conditions: `id='${id}'`
+    });
+    console.log("Get company response:", response);
+    return response && response.length > 0 ? response[0] : null;
+  } catch (error) {
+    console.error("Error fetching company by identifier:", error);
+    return null;
+  }
+}
+function readCompaniesFromFile() {
+  const filePath = path.join(__dirname, 'companies_dump.txt');
+  const data = fs.readFileSync(filePath, 'utf-8');
+  const companies = JSON.parse(data);
+  console.log("Total companies read:", companies.length);
+  return companies;
+} 
+function extractParagraphText(rawNote) {
+  try {
+      // Check if the note has a content field
+      if (!rawNote || !rawNote.content) {
+          throw new Error("Content field is missing.");
+      }
+      
+      // Parse the content field
+      const parsedContent = JSON.parse(rawNote.content);
+
+      // Check if parsed content has the expected structure
+      if (!parsedContent || !Array.isArray(parsedContent.content)) {
+          throw new Error("Invalid or missing content structure.");
+      }
+    
+      // Extract text from paragraph nodes
+      const paragraphText = parsedContent.content
+          .filter(item => item.type === "paragraph") // Filter for paragraph nodes
+          .flatMap(item =>
+              (item.content || []) // Handle potential missing content arrays
+                  .filter(subItem => subItem.type === "text") // Extract text nodes
+                  .map(subItem => subItem.text) // Get the text value
+          )
+          .join("\n"); // Join paragraphs with newlines
+
+      return paragraphText || "No paragraph content found.";
+  } catch (error) {
+      console.error("Error extracting paragraph text:", error.message);
+      return "Error extracting content.";
+  }
+}
+
 module.exports = {
   fetch_ticket_by_id,
   fetch_time_entries_for_ticket,
@@ -394,5 +553,11 @@ module.exports = {
   createSalesTicket,
   deleteSalesTicket,
   createSite,
-  getCompanies
+  getCompanies,
+  extractParagraphText,
+  createOpportunityNote,
+  createContact,
+  createOpportunity, 
+  getCompanyById, 
+  findCompanyIdByDealAccount
 };

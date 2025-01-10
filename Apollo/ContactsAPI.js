@@ -2,7 +2,7 @@ const fs = require('fs');
 
 class ContactsAPI {
     constructor() {
-        this.apiKey = process.env.APOLLO_API_KEY;  // Replace with actual API key
+        this.apiKey = "rwYHYDXtbYkuXRImQKoDVA";  // Replace with actual API key
         this.baseUrl = 'https://app.apollo.io/api/v1/opportunities/';
         this.headers = {
             'accept': 'application/json',
@@ -20,7 +20,7 @@ class ContactsAPI {
         const results = await this.getAllResults(opportunityId);
 
         fs.writeFileSync('contacts.json', JSON.stringify(results, null, 2));
-        console.log("Results written to contacts.json");
+        //console.log("Results written to contacts.json");
 
         // Read and process the file
         const data = JSON.parse(fs.readFileSync('contacts.json', 'utf-8'));
@@ -35,7 +35,8 @@ class ContactsAPI {
         }).join('\n\n');
 
         fs.writeFileSync('contacts.txt', output);
-        console.log('Contacts written to contacts.txt');
+        //console.log('Contacts written to contacts.txt');
+        return { raw: results, processed: processedContacts };
     }
 
     // Fetch paginated results

@@ -32,7 +32,7 @@ class UserAction{
 
 class ActivitiesAPI {
     constructor() {
-        this.apiKey = process.env.APOLLO_API_KEY;  // Replace with actual API key
+        this.apiKey = "rwYHYDXtbYkuXRImQKoDVA";  // Replace with actual API key
         this.url = 'https://api.apollo.io/v1/activities/';
         this.headers = {
             'accept': 'application/json',
@@ -50,7 +50,7 @@ async dumpResultsToFile(opportunityId) {
     const results = await this.getAllResults(api.url, api.data, api.headers, opportunityId);
 
     fs.writeFileSync('activities.json', JSON.stringify(results, null, 2));
-    console.log("Results written to activities.json");
+    //console.log("Results written to activities.json");
 
     // Read and process the file
     const data = JSON.parse(fs.readFileSync('activities.json', 'utf-8'));
@@ -65,7 +65,7 @@ async dumpResultsToFile(opportunityId) {
     }).join('\n');
 
     fs.writeFileSync('activities.txt', output);
-    console.log('Activities written to activities.txt');
+    //console.log('Activities written to activities.txt');
 }
 
 // Fetch paginated results
