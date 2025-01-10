@@ -58,8 +58,8 @@ class TeamsBot extends TeamsActivityHandler {
         await authenticationHelper.greetUserAsync(context, authState);
         await sendWelcomeCard(context, authState);
 
-        const activities = await fetchOpportunityActivities();
-        console.log("Activities: ", activities);
+        //const activities = await fetchOpportunityActivities();
+        //console.log("Activities: ", activities);
         /*const deals = await fetchDeals(100);
         console.log("Deals: ", deals);
         await processDeals(deals, true);*/
