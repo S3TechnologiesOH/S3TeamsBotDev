@@ -35,7 +35,7 @@ const getQuotes = async () => {
 };
 
   // Function to extract and format termsAndConditions field from quotes.json by quote number
-  const extractTermsAndConditions = (filename, quoteNumber) => {
+const extractTermsAndConditions = (filename, quoteNumber) => {
     try {
       const data = fs.readFileSync(filename, 'utf8');
       const quotes = JSON.parse(data);
@@ -52,7 +52,7 @@ const getQuotes = async () => {
     } catch (error) {
       return `Error reading or parsing file: ${error.message}`;
     }
-  };
+};
 
 // Function to export quotes to a formatted JSON file
 const exportQuotesToJson = (quotes, filename = 'quotes.json') => {
