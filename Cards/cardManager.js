@@ -37,7 +37,7 @@ async function sendWelcomeCard(context, authState) {
     body: [
       {
         type: "Image",
-        url: "https://botd3dba9.azurewebsites.net/s3LogoSignature.png",  // <-- Must be publicly accessible or base64
+        url: "../s3LogoSignature.png",  // <-- Must be publicly accessible or base64
         altText: "S3 Logo",
         size: "medium",
         horizontalAlignment: "center"
