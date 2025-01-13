@@ -36,6 +36,13 @@ async function sendWelcomeCard(context, authState) {
     version: "1.4",
     body: [
       {
+        type: "Image",
+        url: "https://botd3dba9.azurewebsites.net/s3LogoSignature.png",  // <-- Must be publicly accessible or base64
+        altText: "S3 Logo",
+        size: "medium",
+        horizontalAlignment: "center"
+      },
+      {
         type: "TextBlock",
         text: `Welcome to the Teams Bot ${authState.userDisplayName}!`,
         weight: "Bolder",
@@ -53,9 +60,8 @@ async function sendWelcomeCard(context, authState) {
   };
 
   try {
-    // Check permissions and dynamically add buttons
+    // Dynamically add actions based on permissions
     if (await hasCommandPermission(authState.userEmail, "admin")) {
-      console.log("User has admin permissions");
       adaptiveCard.actions.push({
         type: "Action.Submit",
         title: "Admin Commands",
@@ -66,7 +72,6 @@ async function sendWelcomeCard(context, authState) {
     }
 
     if (await hasCommandPermission(authState.userEmail, "ticket_commands")) {
-      console.log("User has ticket_commands permissions");
       adaptiveCard.actions.push({
         type: "Action.Submit",
         title: "Ticket Information",
@@ -77,7 +82,6 @@ async function sendWelcomeCard(context, authState) {
     }
 
     if (await hasCommandPermission(authState.userEmail, "company_commands")) {
-      console.log("User has company_commands permissions");
       adaptiveCard.actions.push({
         type: "Action.Submit",
         title: "Company Creation",
@@ -88,7 +92,6 @@ async function sendWelcomeCard(context, authState) {
     }
 
     if (await hasCommandPermission(authState.userEmail, "help_commands")) {
-      console.log("User has help_commands permissions");
       adaptiveCard.actions.push({
         type: "Action.Submit",
         title: "Help",
