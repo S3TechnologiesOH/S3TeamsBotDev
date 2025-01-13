@@ -22,7 +22,7 @@ const headers = {
 
 const handleQuoteRequest = async (context, quoteNumber) => {
   await fetchQuotes(baseUrl, headers);
-  const value = extractTermsAndConditions('quotes.json', quoteNumber);
+  const value = extractTermsAndConditions(getQuotes(), quoteNumber);
   console.log("Quote: ", value);
   await context.sendActivity(`\n\n` + 
     `**Parts:** ` +
