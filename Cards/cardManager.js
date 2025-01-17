@@ -134,7 +134,7 @@ async function onAdaptiveCardSubmit(context, authState) {
   }
 
   try {
-    //await logCommand(authState.userDisplayName, submittedData.action);
+    await logCommand(authState.userDisplayName, submittedData.action);
     console.log("Logged command:", submittedData.action);
 
     switch (submittedData.action) {
