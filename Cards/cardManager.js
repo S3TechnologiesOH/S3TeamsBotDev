@@ -1,5 +1,5 @@
 const { dataManager, hasCommandPermission, assignUserRole, permissionsPath } = require("../Data/dataManager");
-const { logCommand } = require("../Data/sqlManager");
+const { logCommand, checkPermission } = require("../Data/sqlManager");
 const ticketManager = require("../ConnectWise/ticketManager");
 const { connectwiseAPI } = require("../ConnectWise/connectwiseAPI");
 const cpq = require("../CPQ/cpqAPI");
@@ -54,7 +54,7 @@ async function sendWelcomeCard(context, authState) {
 
   try {
     // Check permissions and dynamically add buttons
-    if (await hasCommandPermission(authState.userEmail, "admin")) {
+    if (await checkPermission(authState.userEmail, "admin", 1)) {
       console.log("User has admin permissions");
       adaptiveCard.actions.push({
         type: "Action.Submit",
@@ -65,7 +65,7 @@ async function sendWelcomeCard(context, authState) {
       });
     }
 
-    if (await hasCommandPermission(authState.userEmail, "ticket_commands")) {
+    if (await checkPermission(authState.userEmail, "guest", 1)) {
       console.log("User has ticket_commands permissions");
       adaptiveCard.actions.push({
         type: "Action.Submit",
@@ -76,7 +76,7 @@ async function sendWelcomeCard(context, authState) {
       });
     }
 
-    if (await hasCommandPermission(authState.userEmail, "company_commands")) {
+    if (await checkPermission(authState.userEmail, "company_management", 1) ){
       console.log("User has company_commands permissions");
       adaptiveCard.actions.push({
         type: "Action.Submit",
@@ -87,7 +87,7 @@ async function sendWelcomeCard(context, authState) {
       });
     }
 
-    if (await hasCommandPermission(authState.userEmail, "help_commands")) {
+    if (await checkPermission(authState.userEmail, "guest", 1)) {
       console.log("User has help_commands permissions");
       adaptiveCard.actions.push({
         type: "Action.Submit",

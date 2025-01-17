@@ -127,6 +127,40 @@ async function logCommand(user, command) {
   }
 }
 
+async function checkPermission(email, group, value) {
+  let connection; // Define the connection variable
+  try {
+      // Establish connection using MySQL pool
+      connection = await pool.getConnection(sqlconfig);
+
+      // Dynamically build the query to check the specified group column
+      const query = `
+          SELECT ${group} 
+          FROM permissions
+          WHERE emails = ? AND ${group} = ?
+      `;
+      const values = [email, value];
+
+      // Execute the query
+      const [rows] = await connection.query(query, values);
+
+      // Check if the row exists
+      if (rows.length > 0) {
+          console.log('Permission found:', { email, group, value });
+          return true;
+      } else {
+          console.log('Permission not found:', { email, group, value });
+          return false;
+      }
+  } catch (error) {
+      console.error('Error checking permission:', error);
+      throw error; // Re-throw to notify the caller
+  } finally {
+      if (connection) {
+          connection.release(); // Release the connection back to the pool
+      }
+  }
+}
 
 
 /**
@@ -273,4 +307,4 @@ async function SyncApolloOpportunities(id){
 }
  
 module.exports = { getTables, logCommand,
-   checkAndInsertOpportunity, updateOpportunityAndCheck, queryDatabase, connectToMySQL, processDeals};
+   checkAndInsertOpportunity, updateOpportunityAndCheck, queryDatabase, connectToMySQL, processDeals, checkPermission};
