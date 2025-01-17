@@ -65,7 +65,7 @@ async function sendWelcomeCard(context, authState) {
       });
     }
 
-    if (await checkPermission(authState.userEmail, "guest", 1)) {
+    if (await checkPermission(authState.userEmail, "guest", 1) || await checkPermission(authState.userEmail, "admin", 1)) {
       console.log("User has ticket_commands permissions");
       adaptiveCard.actions.push({
         type: "Action.Submit",
@@ -76,7 +76,7 @@ async function sendWelcomeCard(context, authState) {
       });
     }
 
-    if (await checkPermission(authState.userEmail, "company_management", 1) ){
+    if (await checkPermission(authState.userEmail, "company_management", 1) || await checkPermission(authState.userEmail, "admin", 1) ){
       console.log("User has company_commands permissions");
       adaptiveCard.actions.push({
         type: "Action.Submit",
@@ -87,7 +87,7 @@ async function sendWelcomeCard(context, authState) {
       });
     }
 
-    if (await checkPermission(authState.userEmail, "guest", 1)) {
+    if (await checkPermission(authState.userEmail, "guest", 1) || await checkPermission(authState.userEmail, "admin", 1)) {
       console.log("User has help_commands permissions");
       adaptiveCard.actions.push({
         type: "Action.Submit",
