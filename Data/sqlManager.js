@@ -1,9 +1,6 @@
 const { DefaultAzureCredential, ClientSecretCredential } = require('@azure/identity');
 const mysql = require('mysql2/promise');
 
-
-
-
 const parseConnectionString = (connectionString) => {
   const config = {};
   const parts = connectionString.split(';');
@@ -104,43 +101,32 @@ async function getTables() {
     }
 }
 
-// Function to log a command
 async function logCommand(user, command) {
-  let pool; // Define the pool variable
+  let connection; // Define the connection variable
   try {
-      const token = await getAccessToken(); // Get the access token
-      pool = await sql.connect({
-          server: 's3-powerbot-server.database.windows.net',
-          database: 's3-powerbot-sqldb',
-          authentication: {
-              type: 'azure-active-directory-access-token',
-              options: {
-                  token: token,
-              },
-          },
-          options: {
-              encrypt: true,
-          },
-      });
+      // Establish connection using MySQL pool
+      connection = await pool.getConnection(sqlconfig);
 
-      // Use the connection pool to execute the query
-      await pool
-          .request()
-          .input('user', sql.VarChar, user)
-          .input('command', sql.VarChar, command)
-          .input('date', sql.DateTime, new Date())
-          .query('INSERT INTO dbo.command_logs (user, command, date) VALUES (@user, @command, @date)');
+      // Execute the query to log the command
+      const query = `
+          INSERT INTO command_logs (user, command, date)
+          VALUES (?, ?, ?)
+      `;
+      const values = [user, command, new Date()];
+
+      await connection.query(query, values);
 
       console.log('Command logged:', { user, command });
   } catch (error) {
       console.error('Error logging command:', error);
-      throw error; // Re-throw the error to notify the caller
+      throw error; // Re-throw to notify the caller
   } finally {
-      if (pool) {
-          pool.close(); // Close the connection pool
+      if (connection) {
+          connection.release(); // Release the connection back to the pool
       }
   }
 }
+
 
 
 /**
