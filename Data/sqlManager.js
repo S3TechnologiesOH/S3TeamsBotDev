@@ -106,22 +106,42 @@ async function getTables() {
 
 // Function to log a command
 async function logCommand(user, command) {
-    try {
+  let pool; // Define the pool variable
+  try {
+      const token = await getAccessToken(); // Get the access token
+      pool = await sql.connect({
+          server: 's3-powerbot-server.database.windows.net',
+          database: 's3-powerbot-sqldb',
+          authentication: {
+              type: 'azure-active-directory-access-token',
+              options: {
+                  token: token,
+              },
+          },
+          options: {
+              encrypt: true,
+          },
+      });
 
-      connection = await pool.getConnection(sqlconfig);
-
+      // Use the connection pool to execute the query
       await pool
-        .request()
-        .input('user', sql.VarChar, user)
-        .input('command', sql.VarChar, command)
-        .input('date', sql.DateTime, new Date())
-        .query('INSERT INTO dbo.command_logs (user, command, date) VALUES (@user, @command, @date)');
+          .request()
+          .input('user', sql.VarChar, user)
+          .input('command', sql.VarChar, command)
+          .input('date', sql.DateTime, new Date())
+          .query('INSERT INTO dbo.command_logs (user, command, date) VALUES (@user, @command, @date)');
 
       console.log('Command logged:', { user, command });
-    } catch (error) {
+  } catch (error) {
       console.error('Error logging command:', error);
-    }
+      throw error; // Re-throw the error to notify the caller
+  } finally {
+      if (pool) {
+          pool.close(); // Close the connection pool
+      }
+  }
 }
+
 
 /**
  * Processes an array of deals by inserting or updating them in the MySQL database.
