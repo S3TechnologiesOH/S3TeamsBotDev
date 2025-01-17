@@ -32,37 +32,28 @@ const { checkCompanies } = require("./OpenAI/openaiCompanyCheck");
 let authState = null;
 
 class TeamsBot extends TeamsActivityHandler {
-  
   constructor(userState) {
     super();
 
-    this.userMessageId = null; // Track the last user message ID    
+    this.userMessageId = null; // Track the last user message ID
     this.userState = userState;
     this.userAuthState = this.userState.createProperty("userAuthState");
     connectToMySQL();
-    //queryDatabase()
-    
 
     this.onMessage(async (context, next) => {
-      authState = await this.userAuthState.get(context, {
+      const userId = context.activity.from.id; // Unique user ID
+      let authState = await this.userAuthState.get(context, {
         isAuthenticated: false,
         lastLoginMessageId: null,
       });
-      //checkCompanies(context, "Development LLC");
 
       // Store the user message ID to delete it later
       this.userMessageId = context.activity.id;
-    
+
       if (!authState.isAuthenticated) {
         await authenticationHelper.initializeGraph(settings, context, authState);
         await authenticationHelper.greetUserAsync(context, authState);
         await sendWelcomeCard(context, authState);
-
-        //const activities = await fetchOpportunityActivities();
-        //console.log("Activities: ", activities);
-        /*const deals = await fetchDeals(100);
-        console.log("Deals: ", deals);
-        await processDeals(deals, true);*/
         console.log("Sent first welcome");
       } else {
         const userInput = context.activity.text?.trim().toLowerCase();
@@ -82,12 +73,12 @@ class TeamsBot extends TeamsActivityHandler {
           console.log("Sent welcome card due to no input");
         }
       }
-    
-      //await this.deleteUserMessage(context); // Delete the user's message
-      await this.userState.saveChanges(context);
+
+      await this.userState.saveChanges(context, true); // Explicitly save changes for the current user
       await next();
     });
-  }    
+  }
+
 
   async handleUserCommand(context, userInput) {
     const ticketRegex = /^\/ticket (\d+)$/;

@@ -245,7 +245,7 @@ async function onAdaptiveCardSubmit(context, authState) {
           await context.sendActivity("Please enter a resolution number.");
         }
         break;
-
+      
       case "assignRoleCommand":
         console.log("Action: assignRoleCommand");
         const { roleName, userEmail } = submittedData;
