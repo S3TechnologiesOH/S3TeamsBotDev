@@ -1,8 +1,9 @@
 const { DefaultAzureCredential, ClientSecretCredential } = require('@azure/identity');
 const mysql = require('mysql2/promise');
 
-let sqlconfig;
-let pool;
+
+const sqlconfig = parseConnectionString(process.env.MYSQLCONNSTR_localdb);
+const pool = mysql.createPool(sqlconfig);
 
 const parseConnectionString = (connectionString) => {
   if (!connectionString) {
