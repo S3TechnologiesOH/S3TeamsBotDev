@@ -2,26 +2,35 @@ const { DefaultAzureCredential, ClientSecretCredential } = require('@azure/ident
 const mysql = require('mysql2/promise');
 
 const parseConnectionString = (connectionString) => {
+  if (!connectionString) {
+      throw new Error('Connection string is undefined or empty.');
+  }
+
   const config = {};
   const parts = connectionString.split(';');
 
   parts.forEach((part) => {
-    if (part.includes('=')) {  // Ensure it's a valid key-value pair
-      const [key, value] = part.split('=');
-      if (key && value) {  // Check that both key and value exist
-        config[key.trim().toLowerCase()] = value.trim();
+      if (part.includes('=')) {  // Ensure it's a valid key-value pair
+          const [key, value] = part.split('=');
+          if (key && value) {  // Check that both key and value exist
+              config[key.trim().toLowerCase()] = value.trim();
+          }
       }
-    }
   });
 
+  if (!config['data source'] || !config['user id'] || !config['password'] || !config['database']) {
+      throw new Error('Connection string is missing required components.');
+  }
+
   return {
-    host: config['data source'].split(':')[0],
-    port: parseInt(config['data source'].split(':')[1], 10) || 3306,
-    user: config['user id'],
-    password: config['password'],
-    database: config['database'],
+      host: config['data source'].split(':')[0],
+      port: parseInt(config['data source'].split(':')[1], 10) || 3306,
+      user: config['user id'],
+      password: config['password'],
+      database: config['database'],
   };
 };
+
 
 const sqlconfig = parseConnectionString(process.env.MYSQLCONNSTR_localdb);
 const pool = mysql.createPool(sqlconfig);
