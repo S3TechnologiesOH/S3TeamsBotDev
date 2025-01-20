@@ -1,6 +1,9 @@
 const { DefaultAzureCredential, ClientSecretCredential } = require('@azure/identity');
 const mysql = require('mysql2/promise');
 
+let sqlconfig;
+let pool;
+
 const parseConnectionString = (connectionString) => {
   if (!connectionString) {
       throw new Error('Connection string is undefined or empty.');
@@ -22,18 +25,16 @@ const parseConnectionString = (connectionString) => {
       throw new Error('Connection string is missing required components.');
   }
 
-  return {
+  sqlconfig = {
       host: config['data source'].split(':')[0],
       port: parseInt(config['data source'].split(':')[1], 10) || 3306,
       user: config['user id'],
       password: config['password'],
       database: config['database'],
   };
+  return sqlconfig;
 };
 
-
-const sqlconfig = parseConnectionString(process.env.MYSQLCONNSTR_localdb);
-const pool = mysql.createPool(sqlconfig);
 
 async function connectToMySQL() {
   try {
@@ -315,5 +316,5 @@ async function SyncApolloOpportunities(id){
 
 }
  
-module.exports = { getTables, logCommand,
+module.exports = { parseConnectionString, getTables, logCommand,
    checkAndInsertOpportunity, updateOpportunityAndCheck, queryDatabase, connectToMySQL, processDeals, checkPermission};
