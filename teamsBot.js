@@ -39,8 +39,8 @@ class TeamsBot extends TeamsActivityHandler {
     this.userState = userState;
     this.userAuthState = this.userState.createProperty("userAuthState");
 
-    parseConnectionString(process.env.MYSQLCONNSTR_localdb);
-    const pool = mysql.createPool(sqlconfig);
+    
+    const pool = mysql.createPool(parseConnectionString(process.env.MYSQLCONNSTR_localdb));
     connectToMySQL(pool);
 
     this.onMessage(async (context, next) => {
