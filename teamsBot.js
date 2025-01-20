@@ -40,7 +40,7 @@ class TeamsBot extends TeamsActivityHandler {
     this.userAuthState = this.userState.createProperty("userAuthState");
 
 
-    connectToMySQL(pool);
+    connectToMySQL();
 
     this.onMessage(async (context, next) => {
       const userId = context.activity.from.id; // Unique user ID
