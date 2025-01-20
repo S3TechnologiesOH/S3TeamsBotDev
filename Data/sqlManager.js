@@ -89,7 +89,7 @@ async function getTables() {
           encrypt: true
         }
       });
-
+      
       const query = `
         SELECT TABLE_NAME 
         FROM INFORMATION_SCHEMA.TABLES 
