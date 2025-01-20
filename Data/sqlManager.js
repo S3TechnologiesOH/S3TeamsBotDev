@@ -36,7 +36,8 @@ const parseConnectionString = (connectionString) => {
 };
 
 
-async function connectToMySQL() {
+async function connectToMySQL(pool) {
+  this.pool = pool;
   try {
     // Establish connection
     connection = await pool.getConnection(sqlconfig);

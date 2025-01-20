@@ -41,7 +41,7 @@ class TeamsBot extends TeamsActivityHandler {
 
     parseConnectionString(process.env.MYSQLCONNSTR_localdb);
     const pool = mysql.createPool(sqlconfig);
-    connectToMySQL();
+    connectToMySQL(pool);
 
     this.onMessage(async (context, next) => {
       const userId = context.activity.from.id; // Unique user ID
