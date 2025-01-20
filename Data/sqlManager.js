@@ -32,10 +32,10 @@ const parseConnectionString = (connectionString) => {
    
 };
 
-const sqlconfig = parseConnectionString(process.env.MYSQLCONNSTR_localdb);
 const pool = mysql.createPool(sqlconfig);
 
 async function connectToMySQL() {
+  const sqlconfig = parseConnectionString(process.env.MYSQLCONNSTR_localdb);
   try {
     // Establish connection
     connection = await pool.getConnection(sqlconfig);
