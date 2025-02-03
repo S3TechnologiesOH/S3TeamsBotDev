@@ -51,14 +51,6 @@ class TeamsBot extends TeamsActivityHandler {
         lastUserMessageId: null,
       });
 
-      // Delete the previous message for this user (if any) using their stored message id.
-      if (authState.lastUserMessageId) {
-        try {
-          await context.deleteActivity(authState.lastUserMessageId);
-        } catch (error) {
-          console.error(`Failed to delete previous user message: ${error}`);
-        }
-      }
       // Store the current message id in the per-user auth state.
       authState.lastUserMessageId = context.activity.id;
 
