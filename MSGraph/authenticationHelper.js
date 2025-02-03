@@ -1,8 +1,10 @@
-const {assignUserRole, permissionsPath} = require("../Data/dataManager");
-const { insertSingleRow } = require("../Data/sqlManager");
+// authenticationHelper.js
+
+const { assignUserRole } = require("../Data/dataManager");
+const { insertSingleRow, ensureGuestRole } = require("../Data/sqlManager");
 const { initializeGraphForUserAuth, getUserAsync } = require("./graphHelper");
 const { CardFactory } = require("botbuilder");
-const fs = require("fs");
+
 async function initializeGraph(settings, context, authState) {
   console.log("Attempting to initialize graph for user auth...");
 
@@ -40,10 +42,11 @@ async function initializeGraph(settings, context, authState) {
       version: "1.2",
     });
 
-    const response = await context.sendActivity({ attachments: [card] });
+    await context.sendActivity({ attachments: [card] });
     console.log("Sent login card");
   });
 }
+
 async function greetUserAsync(context, authState) {
   try {
     const user = await getUserAsync();
@@ -51,16 +54,8 @@ async function greetUserAsync(context, authState) {
     authState.userEmail = user.mail ?? user.userPrincipalName;
     console.log(`User: ${authState.userDisplayName} (${authState.userEmail})`);
 
-    // Check if the user is already in the 'guest' role
-    const data = fs.readFileSync(permissionsPath, "utf8");
-    const permissionsConfig = JSON.parse(data);
-
-    const guestRole = permissionsConfig.roles.guest || [];
-    if (!guestRole.includes(authState.userEmail)) {
-      // If not in the guest role, assign them using assignUserRole
-      await insertSingleRow(authState.userDisplayName, authState.userEmail);
-      await assignUserRole(context, "guest", authState.userEmail, false);
-    }
+    // Ensure the user has the guest role in the database.
+    await ensureGuestRole(authState.userEmail);
 
     authState.isAuthenticated = true; // Set user as authenticated
     console.log("User authenticated");
@@ -70,4 +65,4 @@ async function greetUserAsync(context, authState) {
   }
 }
 
-  module.exports = { initializeGraph, greetUserAsync };
+module.exports = { initializeGraph, greetUserAsync };
