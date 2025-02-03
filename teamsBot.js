@@ -50,7 +50,7 @@ class TeamsBot extends TeamsActivityHandler {
         lastLoginMessageId: null,
         lastUserMessageId: null
       });
-
+//
       // If there is a previous message from this user, delete it.
       if (authState.lastUserMessageId) {
         try {
