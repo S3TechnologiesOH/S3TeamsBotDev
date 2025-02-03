@@ -1,7 +1,7 @@
 // teamsBot.js
 
 // --------------- Setup ---------------
-const { TeamsActivityHandler, CardFactory } = require("botbuilder");
+const { TeamsActivityHandler } = require("botbuilder");
 const entry = require("./index");
 const config = require("./config");
 const settings = require("./appSettings");
@@ -35,7 +35,7 @@ class TeamsBot extends TeamsActivityHandler {
   constructor(userState) {
     super();
 
-    // Use the provided userState to store per-user auth data.
+    // Use per-user state for authentication info.
     this.userState = userState;
     this.userAuthState = this.userState.createProperty("userAuthState");
 
@@ -44,14 +44,14 @@ class TeamsBot extends TeamsActivityHandler {
 
     this.onMessage(async (context, next) => {
       const userId = context.activity.from.id;
-      // Retrieve per-user auth state; initialize properties if missing.
+      // Get or initialize auth state for this user.
       let authState = await this.userAuthState.get(context, {
         isAuthenticated: false,
         lastLoginMessageId: null,
-        lastUserMessageId: null
+        lastUserMessageId: null,
       });
-//
-      // If there is a previous message from this user, delete it.
+
+      // Delete the previous message for this user (if any) using their stored message id.
       if (authState.lastUserMessageId) {
         try {
           await context.deleteActivity(authState.lastUserMessageId);
@@ -59,10 +59,11 @@ class TeamsBot extends TeamsActivityHandler {
           console.error(`Failed to delete previous user message: ${error}`);
         }
       }
-      // Save the current message ID into the user state.
+      // Store the current message id in the per-user auth state.
       authState.lastUserMessageId = context.activity.id;
 
       if (!authState.isAuthenticated) {
+        // Initialize and greet user for authentication.
         await authenticationHelper.initializeGraph(settings, context, authState);
         await authenticationHelper.greetUserAsync(context, authState);
         await sendWelcomeCard(context, authState);
@@ -74,13 +75,16 @@ class TeamsBot extends TeamsActivityHandler {
           const isCommandHandled = await this.handleUserCommand(context, userInput);
           console.log("Command handled: ", isCommandHandled);
           if (!isCommandHandled) {
+            // If not a valid command, simply show the welcome card.
             await sendWelcomeCard(context, authState);
             console.log("Sent welcome card due to false handling");
           }
         } else if (context.activity.value) {
+          // Handle adaptive card submission.
           await onAdaptiveCardSubmit(context, authState);
           console.log("Handled adaptive card submission");
         } else {
+          // No text or card data? Show the welcome card.
           await sendWelcomeCard(context, authState);
           console.log("Sent welcome card due to no input");
         }
@@ -111,7 +115,7 @@ class TeamsBot extends TeamsActivityHandler {
     return false; // No valid command found
   }
 
-  // Handle start card or welcome card.
+  // Optional: separate start card function if needed.
   async startCard(context, authState) {
     await sendWelcomeCard(context, authState);
   }
