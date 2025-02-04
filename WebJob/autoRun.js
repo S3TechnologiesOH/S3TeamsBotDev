@@ -9,7 +9,7 @@ async function run() {
     const message = `-- fetching deals -- executed at ${timestamp}\n`;
 
     const deals = await fetchDeals(100);
-    console.log("Deals: ", deals);
+    //console.log("Deals: ", deals);
     await processDeals(deals, false);
 
     console.log(message);
