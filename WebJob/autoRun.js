@@ -5,7 +5,7 @@ const { fetchDeals } = require("../Apollo/ApolloAPI");
 const { processDeals, connectToMySQL } = require("../Data/sqlManager");
 
 async function run() {
-    connectToMySQL();
+    connectToMySQL("Database=localdb;Data Source=127.0.0.1:49838;User Id=azure;Password=6#vWHD_$");
     const timestamp = new Date().toISOString();
     const message = `-- fetching deals -- executed at ${timestamp}\n`;
 
