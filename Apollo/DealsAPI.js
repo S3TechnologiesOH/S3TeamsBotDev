@@ -69,28 +69,12 @@ class DealsAPI {
 
     // Fetch a specific deal by opportunity ID
     async getDealById(opportunityId) {
-        const requestBody = {
-            per_page: 1,
-            page: 1,
-            filters: {
-                id: opportunityId
-            }
-        };
-
-        const response = await fetch(this.baseUrl, {
-            method: 'POST',
-            headers: this.headers,
-            body: JSON.stringify(requestBody)
-        });
-
-        if (!response.ok) {
-            
-            (`Error: ${response.status}`);
-            return null;
+        try {
+            const deal = await deals.getDealById(opportunityId);
+            console.log("Deal: ", deal);
+        } catch (error) {
+            console.error('Error fetching deal:', error);
         }
-
-        const responseData = await response.json();
-        return responseData.opportunities[0] || null;
     }
 
 }
