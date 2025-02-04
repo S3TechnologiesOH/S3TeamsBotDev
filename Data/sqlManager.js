@@ -180,10 +180,10 @@ const processDeals = async (deals, isUpdate) => {
         try {
           if (isUpdate) {
             await updateOpportunityAndCheck(id, opportunity_stage_id);
-            console.log(`Updated deal with ID: ${id}`);
+            //console.log(`Updated deal with ID: ${id}`);
           } else {
             await checkAndInsertOpportunity(id, opportunity_stage_id);
-            console.log(`Inserted deal with ID: ${id}`);
+            //console.log(`Inserted deal with ID: ${id}`);
           }
         } catch (error) {
           console.error(`Error processing deal with ID: ${id}`, error.message);
@@ -224,7 +224,7 @@ const checkAndInsertOpportunity = async (id, opportunity_stage_id) => {
       'INSERT INTO apollo_opportunities (id, opportunity_stage_id, has_changed) VALUES (?, ?, ?)',
       [id, opportunity_stage_id, false]
     );
-    console.log('Opportunity inserted:', { id, opportunity_stage_id, has_changed: false });
+    //console.log('Opportunity inserted:', { id, opportunity_stage_id, has_changed: false });
   } catch (error) {
     console.error('Error in checkAndInsertOpportunity:', error);
     throw error;
@@ -271,7 +271,7 @@ const updateOpportunityAndCheck = async (id, opportunity_stage_id) => {
       'UPDATE apollo_opportunities SET opportunity_stage_id = ? WHERE id = ?',
       [opportunity_stage_id, id]
     );
-    console.log('Opportunity updated:', { id, opportunity_stage_id });
+    //console.log('Opportunity updated:', { id, opportunity_stage_id });
   } catch (error) {
     console.error('Error in updateOpportunityAndCheck:', error);
     throw error;
