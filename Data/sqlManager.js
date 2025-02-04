@@ -293,7 +293,7 @@ async function SyncApolloOpportunities(id) {
     businessUnitId: 1,
     primarySalesRep: "CAtwell"
   };
-  console.log(dealsApi.getDealById(id));
+  console.log("Get Deal By ID: ", await dealsApi.getDealById(id));
 }
 
 /**
