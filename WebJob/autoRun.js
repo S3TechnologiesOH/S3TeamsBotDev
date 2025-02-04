@@ -11,7 +11,7 @@ async function run() {
 
     const deals = await fetchDeals(100);
     //console.log("Deals: ", deals);
-    await processDeals(deals, false);
+    await processDeals(deals, true);
 
     console.log(message);
 
