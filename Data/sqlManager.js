@@ -2,6 +2,7 @@
 
 const { DefaultAzureCredential, ClientSecretCredential } = require('@azure/identity');
 const mysql = require('mysql2/promise');
+const { DealsAPI } = require('../Apollo/DealsAPI');
 
 const parseConnectionString = (connectionString) => {
   if (!connectionString) {
@@ -280,6 +281,9 @@ const updateOpportunityAndCheck = async (id, opportunity_stage_id) => {
 };
 
 async function SyncApolloOpportunities(id) {
+
+  dealsApi = new DealsAPI();
+
   const opportunity = {
     name: "New Sales Opportunity",
     notes: typeof notes !== 'undefined' ? notes : "Default opportunity notes",
@@ -289,7 +293,7 @@ async function SyncApolloOpportunities(id) {
     businessUnitId: 1,
     primarySalesRep: "CAtwell"
   };
-  // Implement the rest of the sync logic here.
+  console.log(dealsApi.getDealById(id));
 }
 
 /**

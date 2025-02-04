@@ -92,6 +92,7 @@ class DealsAPI {
         const responseData = await response.json();
         return responseData.opportunities[0] || null;
     }
+
 }
 
 class Deal {
