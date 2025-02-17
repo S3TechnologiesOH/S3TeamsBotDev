@@ -186,17 +186,10 @@ const processDeals = async (deals, isUpdate) => {
       CONCURRENCY_LIMIT,
       async (deal) => {
         const { id, opportunity_stage_id } = deal;
-        try {
-          if (isUpdate) {
-            await updateOpportunityAndCheck(id, opportunity_stage_id, connection);
-            //console.log(`Updated deal with ID: ${id}`);
-          } else {
-            await checkAndInsertOpportunity(id, opportunity_stage_id, connection);
-            //console.log(`Inserted deal with ID: ${id}`);
-          }
-        } catch (error) {
-          console.error(`Error processing deal with ID: ${id}`, error.message, " or SQL: ", process.env.MYSQLCONNSTR_localdb);
-        }
+        
+        await checkAndInsertOpportunity(id, opportunity_stage_id, connection);
+        await updateOpportunityAndCheck(id, opportunity_stage_id, connection);
+
       },
       (err) => {
         if (err) {
