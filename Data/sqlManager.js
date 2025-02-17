@@ -5,6 +5,8 @@ const mysql = require('mysql2/promise');
 const { DealsAPI } = require('../ApolloAutomation/DealsAPI');
 const { SetReferences } = require('../ApolloAutomation/automation.js');
 const { config } = require('dotenv');
+const path = require('path');
+
 const parseConnectionString = (connectionString) => {
   if (!connectionString) {
     throw new Error('Connection string is undefined or empty.');
