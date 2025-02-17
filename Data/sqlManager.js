@@ -6,6 +6,7 @@ const { DealsAPI } = require('../ApolloAutomation/DealsAPI');
 const { SetReferences } = require('../ApolloAutomation/automation.js');
 const { config } = require('dotenv');
 const path = require('path');
+const fs = require('fs');
 
 const parseConnectionString = (connectionString) => {
   if (!connectionString) {
