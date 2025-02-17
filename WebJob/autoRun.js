@@ -3,9 +3,10 @@
 const fs = require('fs');
 const { fetchDeals } = require("../Apollo/ApolloAPI");
 const { processDeals, connectToMySQL } = require("../Data/sqlManager");
+require("dotenv").config();
 
 async function run() {
-    connectToMySQL(process.env.MYSQLCONNSTR_localdb);
+    //connectToMySQL(process.env.MYSQLCONNSTR_localdb);
     const timestamp = new Date().toISOString();
     const message = `-- fetching deals -- executed at ${timestamp}\n`;
 
