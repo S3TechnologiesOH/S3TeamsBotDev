@@ -91,7 +91,7 @@ class DealsAPI {
         const responseData = await response.json();
         console.log("Found Deal, ", responseData, " with ID: ", opportunityId);
 
-        return responseData.opportunities[0] || null;
+        return responseData || null;
     }
 }
 

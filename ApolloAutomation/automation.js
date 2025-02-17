@@ -104,14 +104,14 @@ async function createActivityEntry(opportunityResponse, opportunityReference, op
     }
 }
 
-async function SetReferences(opportunityId) {
+async function SetReferences(opportunityId, companyName) {
     try {
         let foundCompany;
         let foundCompanyIdentifier;
         let foundCompanyID;
         // COMPANY ID --------------------------------------------------------------
         try {
-            const foundCompany = await findCompanyIdByDealAccount("Country Meats");
+            const foundCompany = await findCompanyIdByDealAccount(companyName);
             console.log("Found Company ID:", foundCompany.identifier, " with ID: ", foundCompany.id);
             companyReference = { id: foundCompany.id };
             foundCompanyID = foundCompany.id;

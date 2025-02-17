@@ -280,11 +280,27 @@ const updateOpportunityAndCheck = async (id, opportunity_stage_id, connection) =
   }
 };
 
+async function findDealById(dealId) {
+  try {
+    const dealsPath = path.resolve(__dirname, 'deals.json');
+    const dealsData = JSON.parse(fs.readFileSync(dealsPath, 'utf8'));
+    const deal = dealsData.find(d => d.id === dealId);
+    if (!deal) {
+      console.log(`No deal found with id: ${dealId}`);
+      return null;
+    }
+    return deal;
+  } catch (error) {
+    console.error('Error reading deals.json:', error);
+    return null;
+  }
+}
+
 async function SyncApolloOpportunities(id) {
 
   dealsApi = new DealsAPI();
-  dealsApi.getDealById(id).catch(err => console.error('Error:', err));
-  SetReferences(id);
+  deal = await findDealById(id);
+  SetReferences(id, deal.name);
 }
 
 /**
