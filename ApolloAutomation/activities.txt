@@ -1,0 +1,20 @@
+Activity ID: 67a8af2775f14e00012cafec | Opportunity ID: 66b6712e9d122f02d1b29fbf | Type: rule_action | Emailer Message: N/A | User Action: N/A
+Activity ID: 66f2c269e3095301b2d9f86c | Opportunity ID: 66b6712e9d122f02d1b29fbf | Type: task | Emailer Message: N/A | User Action: N/A
+Activity ID: 670e701ab7778900017c4ba8 | Opportunity ID: 66b6712e9d122f02d1b29fbf | Type: task | Emailer Message: N/A | User Action: N/A
+Activity ID: 6794e8b42a14630001b447c8 | Opportunity ID: 66b6712e9d122f02d1b29fbf | Type: rule_action | Emailer Message: N/A | User Action: N/A
+Activity ID: 6792507396dd300001ca912f | Opportunity ID: 66b6712e9d122f02d1b29fbf | Type: emailer_message | Emailer Message: {"id":"6792507396dd300001ca912f","subject":"Next Meeting","to_email":"rick@countrymeats.com","from_email":"kpotenza@mys3tech.com"} | User Action: N/A
+Activity ID: 678273abaf3e1100013d180d | Opportunity ID: 66b6712e9d122f02d1b29fbf | Type: rule_action | Emailer Message: N/A | User Action: N/A
+Activity ID: 676ead30bd829d0001497130 | Opportunity ID: 66b6712e9d122f02d1b29fbf | Type: rule_action | Emailer Message: N/A | User Action: N/A
+Activity ID: 675c382c10561400010af784 | Opportunity ID: 66b6712e9d122f02d1b29fbf | Type: rule_action | Emailer Message: N/A | User Action: N/A
+Activity ID: 6749c32bed9e6e0001593609 | Opportunity ID: 66b6712e9d122f02d1b29fbf | Type: rule_action | Emailer Message: N/A | User Action: N/A
+Activity ID: 6735fca70862ce000138a2c7 | Opportunity ID: 66b6712e9d122f02d1b29fbf | Type: rule_action | Emailer Message: N/A | User Action: N/A
+Activity ID: 6722363cda9fcc00010f27c1 | Opportunity ID: 66b6712e9d122f02d1b29fbf | Type: rule_action | Emailer Message: N/A | User Action: N/A
+Activity ID: 670e6fcfbcb07d0001d5e4bf | Opportunity ID: 66b6712e9d122f02d1b29fbf | Type: rule_action | Emailer Message: N/A | User Action: N/A
+Activity ID: 66faa9619b7f1a00016f74e6 | Opportunity ID: 66b6712e9d122f02d1b29fbf | Type: task | Emailer Message: N/A | User Action: N/A
+Activity ID: 66fd644e6550a201b2a8c6e5 | Opportunity ID: 66b6712e9d122f02d1b29fbf | Type: phone_call | Emailer Message: N/A | User Action: N/A
+Activity ID: 66faa9398d43c300013da055 | Opportunity ID: 66b6712e9d122f02d1b29fbf | Type: rule_action | Emailer Message: N/A | User Action: N/A
+Activity ID: 66e6e2b9abbf3100019a4dff | Opportunity ID: 66b6712e9d122f02d1b29fbf | Type: rule_action | Emailer Message: N/A | User Action: N/A
+Activity ID: 66d31c428683cf00013dc2e9 | Opportunity ID: 66b6712e9d122f02d1b29fbf | Type: rule_action | Emailer Message: N/A | User Action: N/A
+Activity ID: 66c3669938945301b3b505ae | Opportunity ID: 66b6712e9d122f02d1b29fbf | Type: note | Emailer Message: N/A | User Action: N/A
+Activity ID: 66c34361fe01d301b31fa469 | Opportunity ID: 66b6712e9d122f02d1b29fbf | Type: task | Emailer Message: N/A | User Action: N/A
+Activity ID: 66bf65a2fb139700011d801b | Opportunity ID: 66b6712e9d122f02d1b29fbf | Type: emailer_message | Emailer Message: {"id":"66bf65a2fb139700011d801b","subject":"Rick great meeting you. Here is the Proposal","to_email":"rick@countrymeats.com","from_email":"kpotenza@mys3tech.com"} | User Action: N/A

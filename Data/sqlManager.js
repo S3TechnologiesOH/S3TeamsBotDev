@@ -3,7 +3,7 @@
 const { DefaultAzureCredential, ClientSecretCredential } = require('@azure/identity');
 const mysql = require('mysql2/promise');
 const { DealsAPI } = require('../Apollo/DealsAPI');
-
+const { SetReferences } = require('../ApolloAutomation/automation.js');
 const parseConnectionString = (connectionString) => {
   if (!connectionString) {
     throw new Error('Connection string is undefined or empty.');
@@ -283,17 +283,8 @@ const updateOpportunityAndCheck = async (id, opportunity_stage_id) => {
 async function SyncApolloOpportunities(id) {
 
   dealsApi = new DealsAPI();
-
-  const opportunity = {
-    name: "New Sales Opportunity",
-    notes: typeof notes !== 'undefined' ? notes : "Default opportunity notes",
-    contact: { id: typeof contactId !== 'undefined' ? contactId : null },
-    expectedCloseDate: new Date().toISOString(),
-    locationId: 1,
-    businessUnitId: 1,
-    primarySalesRep: "CAtwell"
-  };
-  console.log("Get Deal By ID: ", await dealsApi.getDealById(id));
+  dealsApi.getDealById(id).catch(err => console.error('Error:', err));
+  SetReferences();
 }
 
 /**

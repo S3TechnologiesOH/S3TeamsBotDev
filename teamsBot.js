@@ -41,7 +41,7 @@ class TeamsBot extends TeamsActivityHandler {
     fetchDeals();
     // Connect to MySQL once when the bot is created.
     connectToMySQL(process.env.MYSQLCONNSTR_localdb);
-
+    console.log("Connected to MySQL: ", process.env.MYSQLCONNSTR_localdb);
     this.onMessage(async (context, next) => {
       const userId = context.activity.from.id;
       // Get or initialize auth state for this user.

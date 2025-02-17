@@ -1,0 +1,24 @@
+[
+  {
+    "id": "66c3669938945301b3b505ae",
+    "user_id": "623de04527f2f4013309ea08",
+    "content": "{\"type\":\"doc\",\"content\":[{\"type\":\"noteTitle\",\"content\":[{\"type\":\"text\",\"text\":\"$340.00 For 2 screens with 2 Media Players\"}]},{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"He will put in the budget for approval for the next fiscal year, 1/1/2025 \"}]}]}",
+    "updated_at": "2025-02-13T00:47:14.508Z",
+    "created_at": "2024-08-19T15:36:57.056Z",
+    "contact_id": null,
+    "conversation_id": null,
+    "account_id": null,
+    "pinned_to_top": false,
+    "system": null,
+    "opportunity_id": null,
+    "account_ids": [],
+    "contact_ids": [],
+    "opportunity_ids": [
+      "66b6712e9d122f02d1b29fbf"
+    ],
+    "calendar_event_ids": [],
+    "conversation_ids": [],
+    "is_org_chart_note": false,
+    "crm_notes": []
+  }
+]

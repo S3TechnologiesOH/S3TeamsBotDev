@@ -1,0 +1,253 @@
+Deal ID: 65f9959ac0559f01c6574416 | Name: Haemonetics | Stage: Unknown Stage | Amount: 3600 | Close Date: No Date
+
+Deal ID: 65ae97c1663764030065a5e7 | Name: Richmond Power & Light | Stage: Unknown Stage | Amount: 9600 | Close Date: No Date
+
+Deal ID: 65e88c9f8fb00e01c61e1695 | Name: ipaper.com | Stage: Unknown Stage | Amount: 2400 | Close Date: No Date
+
+Deal ID: 66706b4d7983ed038b3ebe0e | Name: SaskPower | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 66ad0ef56c542001b2d6292a | Name: STELCO - The Steel Company of Canada | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 6668924236885a06af798aa9 | Name: EMJ | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 660b05db6dfbb501c6a99c4d | Name: AAK | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 659d7313ead13d043dc1a351 | Name: WestRock Company | Stage: Unknown Stage | Amount: 6000 | Close Date: No Date
+
+Deal ID: 658efbe707d0810300e8310f | Name: Packaging Corporation of America | Stage: Unknown Stage | Amount: 3900 | Close Date: No Date
+
+Deal ID: 661ff5529141b101c731b6c3 | Name: gcinc.com | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 66e1ace335e4a301b29cc697 | Name: TOM SMITH INDUSTRIES INC | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 65fb0c27847c0901c6167ac5 | Name: Packaging Corporation of America | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 65b3fb3d234f31043b23401f | Name: Pratt Industries | Stage: Unknown Stage | Amount: 3900 | Close Date: No Date
+
+Deal ID: 65b26a8914e78a01c6e9fd3b | Name: Flex | Stage: Unknown Stage | Amount: 7000 | Close Date: No Date
+
+Deal ID: 65bc01c9f8cd87031a043bbe | Name: Martin Transportation Systems | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 6617e19b1762cd01c7aea8f8 | Name: PaperWorks | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 65cce37d6a2c2101c67ceb14 | Name: Quaker Chemical Corporation | Stage: Unknown Stage | Amount: 3480 | Close Date: No Date
+
+Deal ID: 66cde95ced9a0b050ffbf569 | Name: Sims Lifecycle Services | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 663bc7f09be09501c77eb990 | Name: Lane County Government | Stage: Unknown Stage | Amount: 4200 | Close Date: No Date
+
+Deal ID: 65b80ac8aa47d70598286fb4 | Name: Victaulic Company | Stage: Unknown Stage | Amount: 7600 | Close Date: No Date
+
+Deal ID: 65faf9e74dc1c001c65eb081 | Name: Cal-Waste Recovery Systems | Stage: Unknown Stage | Amount: 9600 | Close Date: No Date
+
+Deal ID: 6579b15a10f9e903f1fda41f | Name: Bomarko, Inc. | Stage: Unknown Stage | Amount: 4800 | Close Date: No Date
+
+Deal ID: 66f6e17560623a01b49e731b | Name: International Paper Company (Spotswood, NJ | Stage: Unknown Stage | Amount: 6120 | Close Date: No Date
+
+Deal ID: 66c64142f79ee202d2504807 | Name: International Paper Company (Spotswood, NJ | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 671025399283b703ec7de93c | Name: Huntsville Utilities | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 6579c885c347ce01ae80bce5 | Name: ESTERLINE & SONS MFG. | Stage: Unknown Stage | Amount: 3840 | Close Date: No Date
+
+Deal ID: 66f5b56c2ac65501b3d1abc3 | Name: Schnitzer Steel Industries | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 65805c0b40886601c62fae45 | Name: Alpha Foundry Company | Stage: Unknown Stage | Amount: 3000 | Close Date: No Date
+
+Deal ID: 65a051416f4aa001c6a1fe54 | Name: Lhoist | Stage: Unknown Stage | Amount: 12000 | Close Date: No Date
+
+Deal ID: 65a6b5f45b06ab031ad46edf | Name: Uckele Health & Nutrition | Stage: Unknown Stage | Amount: 11500 | Close Date: No Date
+
+Deal ID: 657b094c4d938f02d0f18afa | Name: Wabtec Corporation | Stage: Unknown Stage | Amount: 3600 | Close Date: No Date
+
+Deal ID: 6786db8de875ed01b0eea03b | Name: SWARCO | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 66edda22ffc10601b308737a | Name: Packaging Corp Of America | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 676058e9613607051d774982 | Name: Genus PLC | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 679bdf881abcb202ce42b126 | Name: Messer (Kittery, ME) | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 665751d33947fe04779f53ce | Name: Leatherman Tool Group | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 6759c175edd68f02ce89377c | Name: International Paper Company (Spotswood, NJ | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 674f2d3e6540a5079710b808 | Name: Magni Industries, Inc. | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 660edbf3f4fabf0303b2fb11 | Name: Universal Stainless & Alloy Products Inc | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 67a62a6761c9f903eb0bc418 | Name: States Industries | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 66bf680c269bf002d5cebb52 | Name: International Paper Company (Spotswood, NJ | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 66b6712e9d122f02d1b29fbf | Name: Country Meats | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 65f9bdb761c93d01c677f877 | Name: Agri Beef | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 65cbe7da6449d701c6bb912b | Name: Minuteman | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 662a9839994de1030050f66a | Name: International Paper Company (Spotswood, NJ | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 66156f66e9abd102e9010c69 | Name: Amy's Kitchen | Stage: Unknown Stage | Amount: 1056 | Close Date: No Date
+
+Deal ID: 66d8baa0b669d801b3014dcf | Name: International Paper Company (Spotswood, NJ | Stage: Unknown Stage | Amount: 5400 | Close Date: No Date
+
+Deal ID: 65f8995c93959103006239a2 | Name: AvCarb Material Solutions | Stage: Unknown Stage | Amount: 5880 | Close Date: No Date
+
+Deal ID: 66b50e9bcfd98802d0c31bad | Name: International Paper Company (Spotswood, NJ | Stage: Unknown Stage | Amount: 3600 | Close Date: No Date
+
+Deal ID: 66718c8471683b038cd61f0e | Name: Victaulic Company | Stage: Unknown Stage | Amount: 6240 | Close Date: No Date
+
+Deal ID: 6579b8fa2896be037bf86252 | Name: CIE | Stage: Unknown Stage | Amount: 14400 | Close Date: No Date
+
+Deal ID: 6595af35429cf50589fb1b52 | Name: lightstonegen.com | Stage: Unknown Stage | Amount: 960 | Close Date: No Date
+
+Deal ID: 65a051076f4aa0043ba1f9b9 | Name: Packaging Corporation of America | Stage: Unknown Stage | Amount: 4020 | Close Date: No Date
+
+Deal ID: 6669bc7909501403a13c0ff9 | Name: UTLX | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 661967d96124c002fdea5b23 | Name: Logistics | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 6579b6a06416dd02d0ac121c | Name: INOAC USA | Stage: Unknown Stage | Amount: 3600 | Close Date: No Date
+
+Deal ID: 66ccbe5901a9b702d1d37422 | Name: SA Recycling | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 66edcc504c953003ee7e3703 | Name: International Paper Company (Spotswood, NJ | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 657c5a1e119a6601c6786f7d | Name: Bulldog Battery Corporation | Stage: Unknown Stage | Amount: 1200 | Close Date: No Date
+
+Deal ID: 6716b63bb96a9701b03358f7 | Name: International Paper Company (Spotswood, NJ | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 67a3c819f7e0a302cf24311e | Name: International Paper Company (Spotswood, NJ | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 6579b8386416dd01aeac7103 | Name: Shamrock Technologies, Inc. | Stage: Unknown Stage | Amount: 11000 | Close Date: No Date
+
+Deal ID: 66f597390068b002d22b0f7a | Name: International Paper Company (Spotswood, NJ | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 67852f8ba511eb01b0d73374 | Name: Specialty Screw Corporation | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 65fdf0c27c4e610300b1acb0 | Name: International Paper | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 663bc03f143aa401c71704d8 | Name: Conagra Brands | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 66a7f7d3568c0601b40ffd21 | Name: Ghilotti Bros.,Inc. | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 668fe5c63a68850292975019 | Name: Cornerstone Building Brands | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 6579b28510f9e902d0fdd203 | Name: Packaging Corporation of America | Stage: Unknown Stage | Amount: 2700 | Close Date: No Date
+
+Deal ID: 669555eb290a1a04946883e4 | Name: CPM Solutions | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 66e988ba6d1a3b01b38b0080 | Name: International Paper Company (Spotswood, NJ | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 66d08f6787c41902d00c6638 | Name: Unnamed Deal | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 6581adf6e544d204399d4ee2 | Name: Hillyard, Inc. | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 6579beaeddba3b01ae45fd95 | Name: Penske Corporation | Stage: Unknown Stage | Amount: 20580 | Close Date: No Date
+
+Deal ID: 66156e90162b1e01c7938451 | Name: International Paper Company (Spotswood, NJ | Stage: Unknown Stage | Amount: 4560 | Close Date: No Date
+
+Deal ID: 65f0b32d6697cd01c6861bf2 | Name: Cornerstone Building Brands | Stage: Unknown Stage | Amount: 8100 | Close Date: No Date
+
+Deal ID: 662813fd39e09a01c7b50581 | Name: nestle | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 65b13148d6e2b6031ad1fc46 | Name: ofi | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 661928ca290ba001c7fd3c53 | Name: Monarch Enterprises | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 67110b1590d7d301b06b16f6 | Name: Zen-Noh Grain Corporation | Stage: Unknown Stage | Amount: 6900 | Close Date: No Date
+
+Deal ID: 66b386451d4eaa01b34f432d | Name: SupplyOne, Inc. | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 6679ae552c947c066cfe0611 | Name: KC Jones Plating | Stage: Unknown Stage | Amount: 26400 | Close Date: No Date
+
+Deal ID: 6579b092d42a5a02d005800a | Name: Packaging Corporation of America | Stage: Unknown Stage | Amount: 7198 | Close Date: No Date
+
+Deal ID: 662269f869c6c501afcde591 | Name: Dormont Mfg Co | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 66a8e0472b69e702d0890b21 | Name: Semex | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 6658e28bac5da701e2348f31 | Name: Roark | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 672e6da40f248b03f35e4028 | Name: International Paper Company (Spotswood, NJ | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 65e88f559788b401c6d8b475 | Name: Nucraft Furniture | Stage: Unknown Stage | Amount: 7800 | Close Date: No Date
+
+Deal ID: 671b9930aaa0f401b0c8037b | Name: International Paper Company (Spotswood, NJ | Stage: Unknown Stage | Amount: 2400 | Close Date: No Date
+
+Deal ID: 671bc88cd38bc201b0b3d49d | Name: International Paper Company (Spotswood, NJ | Stage: Unknown Stage | Amount: 4920 | Close Date: No Date
+
+Deal ID: 669151bab21cd80294dc3ea6 | Name: International Paper Company (Spotswood, NJ | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 662159afcbe2f501c7c3fa51 | Name: Silicon Valley Power | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 67a627677a9e1101b1339097 | Name: bahamaspowerandlight | Stage: Unknown Stage | Amount: 17100 | Close Date: No Date
+
+Deal ID: 67a626cb7a9e1102cf33697b | Name: Transcontinental | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 663a15b3b942d705736e2f29 | Name: Cornerstone Building Brands | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 670eaf70508a9202d0d4f9ce | Name: International Paper | Stage: Unknown Stage | Amount: 4320 | Close Date: No Date
+
+Deal ID: 66c755c9547b9c01b2c705c3 | Name: International Paper | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 66952bf53d9ef00892c4fe9f | Name: International Paper Company (Spotswood, NJ | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 66fad7123e023301b2f95263 | Name: Modesto and Empire Traction | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 66ffebba292e6f01b23aed28 | Name: Myers Industries | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 6797f2dcd1388f01b27f4da3 | Name: McLane Company, Inc. | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 661951b64f674e030119e606 | Name: Yuasa Battery, Inc. - USA | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 66cf78d07b7be201b3c38623 | Name: International Paper | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 6579b35510f9e901aefe1d01 | Name: SHAVER TRANSPORTATION COMPANY | Stage: Unknown Stage | Amount: 3756 | Close Date: No Date
+
+Deal ID: 65eb1229d9d2070300ab2b50 | Name: Victaulic Company | Stage: Unknown Stage | Amount: 12600 | Close Date: No Date
+
+Deal ID: 65baba1a7f3e8304215a072c | Name: Georgia-Pacific Consumer Products | Stage: Unknown Stage | Amount: 6300 | Close Date: No Date
+
+Deal ID: 66605acf8311c909c8a8e612 | Name: Best Way Disposal | Stage: Unknown Stage | Amount: 2400 | Close Date: No Date
+
+Deal ID: 6655edc3539dcd01ebabb193 | Name: International Paper Company (Spotswood, NJ | Stage: Unknown Stage | Amount: 4320 | Close Date: No Date
+
+Deal ID: 66f40d05c8810f01b2a659c1 | Name: centralmanagement.com | Stage: Unknown Stage | Amount: 34000 | Close Date: No Date
+
+Deal ID: 6697b6f17184fb02d247856b | Name: International Paper Company (Spotswood, NJ | Stage: Unknown Stage | Amount: 13500 | Close Date: No Date
+
+Deal ID: 677ea88587f42c01b0eb326b | Name: Aphena Pharma Solutions, Inc. | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 679b9f75742b46050b943acc | Name: Messer North America | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 661971dc3b48140301d081f5 | Name: Bunzl Distribution NA | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 67043b0ef91de601b1eae246 | Name: Veolia | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 66eadd649864f501b2e0808e | Name: L3Harris | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 66993a08b6510601b23504b7 | Name: Helena Industries, Inc. | Stage: Unknown Stage | Amount: 45000 | Close Date: No Date
+
+Deal ID: 66215a5e449162043aa0b6c7 | Name: weatherford aerospace | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 678fbd264e935d02ce1555be | Name: Willows Lodge and Pyramid Global Hospitality | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 660b05996dfbb501c6a99ba2 | Name: Chelsea Milling Company | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 66fb0111e685ab01b269129f | Name: Martinrea International | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 65cd0a122b880a02e8a46666 | Name: Canfor | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 6579b5a9aa33c801ae8f8304 | Name: GDI Integrated Facility Services | Stage: Unknown Stage | Amount: 13293 | Close Date: No Date
+
+Deal ID: 6697ffe135f80401b3dcbf8c | Name: MPW INDUSTRIAL SERVICES INC. | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 673273cc3b426202d118fc06 | Name: International Paper Company (Spotswood, NJ | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date
+
+Deal ID: 65a98bd0168acb01ae60829d | Name: American Industrial Transport - AITX | Stage: Unknown Stage | Amount: 12000 | Close Date: No Date
+
+Deal ID: 66281efb77f19d01c7423c1c | Name: Modern Forge Tennessee | Stage: Unknown Stage | Amount: 4680 | Close Date: No Date
+
+Deal ID: 65cb980196854601c6d85fc4 | Name: Bunzl Distribution NA | Stage: Unknown Stage | Amount: Not Specified | Close Date: No Date

@@ -1,4 +1,4 @@
-// test_script.js
+// autoRun.js
 
 const fs = require('fs');
 const { fetchDeals } = require("../Apollo/ApolloAPI");
@@ -10,7 +10,6 @@ async function run() {
     const message = `-- fetching deals -- executed at ${timestamp}\n`;
 
     const deals = await fetchDeals(100);
-    //console.log("Deals: ", deals);
     await processDeals(deals, true);
 
     console.log(message);
