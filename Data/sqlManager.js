@@ -188,7 +188,7 @@ const processDeals = async (deals, isUpdate) => {
             //console.log(`Inserted deal with ID: ${id}`);
           }
         } catch (error) {
-          console.error(`Error processing deal with ID: ${id}`, error.message);
+          console.error(`Error processing deal with ID: ${id}`, error.message, " SQL: ", sqlconfig , " or SQL: ", process.env.MYSQLCONNSTR_localdb);
         }
       },
       (err) => {
