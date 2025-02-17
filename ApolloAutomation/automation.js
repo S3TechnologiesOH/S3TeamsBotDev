@@ -29,8 +29,6 @@ const activites = new ActivitiesAPI();
 const contacts = new ContactsAPI();
 const deals = new DealsAPI();
 
-activites.dumpResultsToFile(opportunityId).catch(err => console.error('Error:', err));
-
 async function createOpportunityEntry(foundCompanyID, contactId, foundCompanyIdentifier, siteReference, memberReference) {
     const opportunityReference = {
         company: { id: foundCompanyID },
