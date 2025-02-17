@@ -30,14 +30,27 @@ const contacts = new ContactsAPI();
 const deals = new DealsAPI();
 
 async function createOpportunityEntry(foundCompanyID, contactId, foundCompanyIdentifier, siteReference, memberReference) {
-    const opportunityReference = {
-        company: { id: foundCompanyID },
-        contact: { id: contactId },
-        name: `${foundCompanyIdentifier}`,
-        primarySalesRep: memberReference,
-        site: siteReference
-    };
-    console.log("OPPORTUNITY REFERENCE:", opportunityReference.company, opportunityReference.contact, opportunityReference.name, opportunityReference.primarySalesRep, opportunityReference.site);
+    
+    let opportunityReference;
+    if(foundCompanyID != null)
+        {
+        const opportunityReference = {
+            company: { id: foundCompanyID },
+            contact: { id: contactId },
+            name: `${foundCompanyIdentifier}`,
+            primarySalesRep: memberReference,
+            site: siteReference
+        };
+    }
+    else
+    {
+        const opportunityReference = {
+            contact: { id: contactId },
+            name: `${foundCompanyIdentifier}`,
+            primarySalesRep: memberReference,
+            site: siteReference
+        };
+    }
     const opportunityResponse = await createOpportunity(opportunityReference);
     console.log("Opportunity creation response:", opportunityResponse);
     return { opportunityResponse, opportunityReference };
@@ -119,6 +132,9 @@ async function SetReferences(opportunityId, companyName) {
         } catch (err) {
             console.error("Error finding company ID:", err);
             companyReference = { id: null };
+            foundCompanyID = null;
+            foundCompanyIdentifier = null;
+
         }
 
         // CONTACT --------------------------------------------------------------
