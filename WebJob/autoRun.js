@@ -1,7 +1,7 @@
 // autoRun.js
 
 const fs = require('fs');
-const { fetchDeals } = require("../Apollo/ApolloAPI");
+const { fetchDeals } = require("../ApolloAutomation/ApolloAPI");
 const { processDeals, connectToMySQL } = require("../Data/sqlManager");
 require("dotenv").config();
 

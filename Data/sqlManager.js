@@ -4,6 +4,7 @@ const { DefaultAzureCredential, ClientSecretCredential } = require('@azure/ident
 const mysql = require('mysql2/promise');
 const { DealsAPI } = require('../Apollo/DealsAPI');
 const { SetReferences } = require('../ApolloAutomation/automation.js');
+const { config } = require('dotenv');
 const parseConnectionString = (connectionString) => {
   if (!connectionString) {
     throw new Error('Connection string is undefined or empty.');
@@ -36,6 +37,7 @@ const parseConnectionString = (connectionString) => {
 
 let pool;
 let sqlconfig;
+
 async function connectToMySQL(connstr) {
   sqlconfig = parseConnectionString(connstr);
   console.log('SQL CONN: ', process.env.MYSQLCONNSTR_localdb);
@@ -208,7 +210,18 @@ const processDeals = async (deals, isUpdate) => {
  * @param {string} opportunity_stage_id - Stage ID of the opportunity.
  */
 const checkAndInsertOpportunity = async (id, opportunity_stage_id) => {
-  const connection = await pool.getConnection();
+  let connection;
+  if(pool == null || sqlconfig == null) {
+    sqlconfig = parseConnectionString(process.env.MYSQLCONNSTR_localdb);
+    console.log('SQL CONN: ', process.env.MYSQLCONNSTR_localdb);
+    pool = mysql.createPool(sqlconfig);
+    connection = await pool.getConnection();
+
+  }
+  else
+  {
+    connection = await pool.getConnection();
+  }
   try {
     const [rows] = await connection.execute(
       'SELECT * FROM apollo_opportunities WHERE id = ?',
@@ -239,8 +252,18 @@ const checkAndInsertOpportunity = async (id, opportunity_stage_id) => {
  * @param {string} opportunity_stage_id - New Stage ID of the opportunity.
  */
 const updateOpportunityAndCheck = async (id, opportunity_stage_id) => {
-  const connection = await pool.getConnection();
-  try {
+  let connection;
+  if(pool == null || sqlconfig == null) {
+    sqlconfig = parseConnectionString(process.env.MYSQLCONNSTR_localdb);
+    console.log('SQL CONN: ', process.env.MYSQLCONNSTR_localdb);
+    pool = mysql.createPool(sqlconfig);
+    connection = await pool.getConnection();
+
+  }
+  else
+  {
+    connection = await pool.getConnection();
+  }  try {
     const [rows] = await connection.execute(
       'SELECT * FROM apollo_opportunities WHERE id = ?',
       [id]
