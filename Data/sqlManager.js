@@ -188,7 +188,7 @@ const processDeals = async (deals, isUpdate) => {
             //console.log(`Inserted deal with ID: ${id}`);
           }
         } catch (error) {
-          console.error(`Error processing deal with ID: ${id}`, error.message, " SQL: ", sqlconfig , " or SQL: ", process.env.MYSQLCONNSTR_localdb);
+          console.error(`Error processing deal with ID: ${id}`, error.message, " or SQL: ", process.env.MYSQLCONNSTR_localdb);
         }
       },
       (err) => {
@@ -211,8 +211,8 @@ const processDeals = async (deals, isUpdate) => {
 const checkAndInsertOpportunity = async (id, opportunity_stage_id) => {
   let connection;
   if(pool == null || sqlconfig == null) {
-    sqlconfig = parseConnectionString(process.env.MYSQLCONNSTR_localdb);
-    console.log('SQL CONN: ', process.env.MYSQLCONNSTR_localdb);
+    sqlconfig = parseConnectionString("Database=localdb;Data Source=127.0.0.1:49838;User Id=azure;Password=6#vWHD_$");
+    console.log('SQL CONN: ', "Database=localdb;Data Source=127.0.0.1:49838;User Id=azure;Password=6#vWHD_$");
     pool = mysql.createPool(sqlconfig);
     connection = await pool.getConnection();
 
@@ -253,8 +253,8 @@ const checkAndInsertOpportunity = async (id, opportunity_stage_id) => {
 const updateOpportunityAndCheck = async (id, opportunity_stage_id) => {
   let connection;
   if(pool == null || sqlconfig == null) {
-    sqlconfig = parseConnectionString(process.env.MYSQLCONNSTR_localdb);
-    console.log('SQL CONN: ', process.env.MYSQLCONNSTR_localdb);
+    sqlconfig = parseConnectionString("Database=localdb;Data Source=127.0.0.1:49838;User Id=azure;Password=6#vWHD_$");
+    console.log("SQL CONN: `Database=localdb;Data Source=127.0.0.1:49838;User Id=azure;Password=6#vWHD_$`");
     pool = mysql.createPool(sqlconfig);
     connection = await pool.getConnection();
 
