@@ -284,7 +284,7 @@ async function SyncApolloOpportunities(id) {
 
   dealsApi = new DealsAPI();
   dealsApi.getDealById(id).catch(err => console.error('Error:', err));
-  SetReferences();
+  SetReferences(id);
 }
 
 /**

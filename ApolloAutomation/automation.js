@@ -9,7 +9,6 @@ const { createOpportunityNote, createContact, getCompanyById, getCompanyByIdenti
 
 
 // Example Usage
-const opportunityId = "66b6712e9d122f02d1b29fbf";
 
 let foundCompanyID;
 let companyIdentifier;
@@ -107,7 +106,7 @@ async function createActivityEntry(opportunityResponse, opportunityReference, op
     }
 }
 
-async function SetReferences() {
+async function SetReferences(opportunityId) {
     try {
         let foundCompany;
         let foundCompanyIdentifier;
