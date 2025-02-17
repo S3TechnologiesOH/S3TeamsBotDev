@@ -285,7 +285,7 @@ const updateOpportunityAndCheck = async (id, opportunity_stage_id, connection) =
 
 async function findDealById(dealId) {
   try {
-    const dealsPath = path.resolve(__dirname, 'deals.json');
+    const dealsPath = path.resolve(__dirname, '../ApolloAutomation/deals.json');
     const dealsData = JSON.parse(fs.readFileSync(dealsPath, 'utf8'));
     const deal = dealsData.find(d => d.id === dealId);
     if (!deal) {
