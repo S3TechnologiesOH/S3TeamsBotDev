@@ -196,7 +196,6 @@ const processDeals = async (deals, isUpdate) => {
           console.error('Error processing deals:', err);
           reject(err);
         } else {
-          console.log(`All ${deals.length} deals processed successfully.`);
           resolve();
         }
       }
