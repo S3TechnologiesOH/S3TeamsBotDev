@@ -172,7 +172,14 @@ async function checkPermission(email, group, value) {
 const processDeals = async (deals, isUpdate) => {
   const CONCURRENCY_LIMIT = 10;
   const asyncLib = require('async');
+  let connection;
+  if(pool == null || sqlconfig == null) {
+    sqlconfig = parseConnectionString("Database=localdb;Data Source=127.0.0.1:49838;User Id=azure;Password=6#vWHD_$");
+    console.log('SQL CONN: ', "Database=localdb;Data Source=127.0.0.1:49838;User Id=azure;Password=6#vWHD_$");
+    pool = mysql.createPool(sqlconfig);
+    connection = await pool.getConnection();
 
+  }
   return new Promise((resolve, reject) => {
     asyncLib.eachLimit(
       deals,
@@ -181,10 +188,10 @@ const processDeals = async (deals, isUpdate) => {
         const { id, opportunity_stage_id } = deal;
         try {
           if (isUpdate) {
-            await updateOpportunityAndCheck(id, opportunity_stage_id);
+            await updateOpportunityAndCheck(id, opportunity_stage_id, connection);
             //console.log(`Updated deal with ID: ${id}`);
           } else {
-            await checkAndInsertOpportunity(id, opportunity_stage_id);
+            await checkAndInsertOpportunity(id, opportunity_stage_id, connection);
             //console.log(`Inserted deal with ID: ${id}`);
           }
         } catch (error) {
@@ -208,19 +215,8 @@ const processDeals = async (deals, isUpdate) => {
  * @param {string} id - Opportunity ID.
  * @param {string} opportunity_stage_id - Stage ID of the opportunity.
  */
-const checkAndInsertOpportunity = async (id, opportunity_stage_id) => {
-  let connection;
-  if(pool == null || sqlconfig == null) {
-    sqlconfig = parseConnectionString("Database=localdb;Data Source=127.0.0.1:49838;User Id=azure;Password=6#vWHD_$");
-    console.log('SQL CONN: ', "Database=localdb;Data Source=127.0.0.1:49838;User Id=azure;Password=6#vWHD_$");
-    pool = mysql.createPool(sqlconfig);
-    connection = await pool.getConnection();
+const checkAndInsertOpportunity = async (id, opportunity_stage_id, connection) => {
 
-  }
-  else
-  {
-    connection = await pool.getConnection();
-  }
   try {
     const [rows] = await connection.execute(
       'SELECT * FROM apollo_opportunities WHERE id = ?',
@@ -250,19 +246,8 @@ const checkAndInsertOpportunity = async (id, opportunity_stage_id) => {
  * @param {string} id - Opportunity ID.
  * @param {string} opportunity_stage_id - New Stage ID of the opportunity.
  */
-const updateOpportunityAndCheck = async (id, opportunity_stage_id) => {
-  let connection;
-  if(pool == null || sqlconfig == null) {
-    sqlconfig = parseConnectionString("Database=localdb;Data Source=127.0.0.1:49838;User Id=azure;Password=6#vWHD_$");
-    console.log("SQL CONN: `Database=localdb;Data Source=127.0.0.1:49838;User Id=azure;Password=6#vWHD_$`");
-    pool = mysql.createPool(sqlconfig);
-    connection = await pool.getConnection();
-
-  }
-  else
-  {
-    connection = await pool.getConnection();
-  }  try {
+const updateOpportunityAndCheck = async (id, opportunity_stage_id, connection) => {
+  try {
     const [rows] = await connection.execute(
       'SELECT * FROM apollo_opportunities WHERE id = ?',
       [id]
