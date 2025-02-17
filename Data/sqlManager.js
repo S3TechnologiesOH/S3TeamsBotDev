@@ -2,7 +2,7 @@
 
 const { DefaultAzureCredential, ClientSecretCredential } = require('@azure/identity');
 const mysql = require('mysql2/promise');
-const { DealsAPI } = require('../Apollo/DealsAPI');
+const { DealsAPI } = require('../ApolloAutomation/DealsAPI');
 const { SetReferences } = require('../ApolloAutomation/automation.js');
 const { config } = require('dotenv');
 const parseConnectionString = (connectionString) => {
@@ -186,7 +186,7 @@ const processDeals = async (deals, isUpdate) => {
       CONCURRENCY_LIMIT,
       async (deal) => {
         const { id, opportunity_stage_id } = deal;
-        
+
         await checkAndInsertOpportunity(id, opportunity_stage_id, connection);
         await updateOpportunityAndCheck(id, opportunity_stage_id, connection);
 

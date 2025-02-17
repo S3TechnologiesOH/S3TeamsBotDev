@@ -2,7 +2,7 @@ const fs = require('fs');
 
 class DealsAPI {
     constructor() {
-        this.apiKey = "rwYHYDXtbYkuXRImQKoDVA";  // Replace with actual API key
+        this.apiKey = "IJwnAxYkM5FmPBPtYWHV9A";  // Replace with actual API key
         this.baseUrl = 'https://api.apollo.io/api/v1/opportunities/search';
         this.headers = {
             'accept': 'application/json',
