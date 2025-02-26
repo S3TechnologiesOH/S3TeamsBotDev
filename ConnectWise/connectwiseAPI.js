@@ -550,20 +550,46 @@ function extractParagraphText(rawNote) {
 
 class ConnectwiseAPI {
   constructor() {
-    this.baseUrl = config.connectwise.apiUrl;
+    // Check if config is properly loaded and has the required properties
+    if (!config || !config.connectwise) {
+      console.error('ConnectWise configuration is missing in config file');
+      this.baseUrl = process.env.CW_URL || 'https://api-na.myconnectwise.net/v4_6_release/apis/3.0';
+      this.companyId = process.env.CW_COMPANY_ID;
+      this.publicKey = process.env.CW_PUBLIC_KEY;
+      this.privateKey = process.env.CW_PRIVATE_KEY;
+      this.clientId = process.env.CW_CLIENTID;
+    } else {
+      this.baseUrl = config.connectwise.apiUrl || process.env.CW_URL || 'https://api-na.myconnectwise.net/v4_6_release/apis/3.0';
+      this.companyId = config.connectwise.companyId || process.env.CW_COMPANY_ID;
+      this.publicKey = config.connectwise.publicKey || process.env.CW_PUBLIC_KEY;
+      this.privateKey = config.connectwise.privateKey || process.env.CW_PRIVATE_KEY;
+      this.clientId = config.connectwise.clientId || process.env.CW_CLIENTID;
+    }
+    
     this.companyEndpoint = '/company/companies';
     this.siteEndpoint = '/company/companies/{companyId}/sites';
     this.contactEndpoint = '/company/contacts';
     this.ticketEndpoint = '/service/tickets';
     
+    // Validate required configuration
+    if (!this.baseUrl) {
+      throw new Error('ConnectWise API URL is not defined. Please set it in config or environment variables.');
+    }
+    
+    if (!this.companyId || !this.publicKey || !this.privateKey || !this.clientId) {
+      console.warn('Some ConnectWise authentication details are missing. API calls may fail.');
+    }
+    
     // Set up authentication
     this.authHeader = {
       'Authorization': `Basic ${Buffer.from(
-        `${config.connectwise.companyId}+${config.connectwise.publicKey}:${config.connectwise.privateKey}`
+        `${this.companyId}+${this.publicKey}:${this.privateKey}`
       ).toString('base64')}`,
-      'clientId': config.connectwise.clientId,
+      'clientId': this.clientId,
       'Content-Type': 'application/json'
     };
+    
+    console.log(`ConnectwiseAPI initialized with baseUrl: ${this.baseUrl}`);
   }
 
   async createCompany(companyData) {
