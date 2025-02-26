@@ -132,8 +132,8 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
     identifier: companyDetails.identifier || companyDetails.name.replace(/\s+/g, '').toLowerCase(),
     addressLine1: companyDetails.address,
     contactInfo: companyDetails.contactInfo,
-    rep: companyDetails.rep,
   };
+  const rep = companyDetails.rep;
 
   try {
     console.log("Checking if company exists...");
