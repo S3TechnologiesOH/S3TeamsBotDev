@@ -130,7 +130,7 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
   const payload = {
     name: companyDetails.name,
     identifier: companyDetails.identifier || companyDetails.name.replace(/\s+/g, '').toLowerCase(),
-    address: companyDetails.address,
+    addressLine1: companyDetails.address,
     contactInfo: companyDetails.contactInfo,
     rep: companyDetails.rep,
   };
