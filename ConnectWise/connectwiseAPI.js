@@ -135,13 +135,11 @@ async function createCompany(context, companyDetails, appointmentDetails, authSt
   }
 
   const payload = {
-    name: companyDetails.name,
     identifier: companyDetails.identifier || companyDetails.name.replace(/\s+/g, '').toLowerCase(),
-    addressLine1: companyDetails.address,
-    // Fix: Correctly map contactInfo to phoneNumber - log before using
-    phoneNumber: companyDetails.contactInfo
+    name: companyDetails.name,
+    addressLine1: companyDetails.address
+    //phoneNumber: companyDetails.contactInfo
   };
-  console.log("Created payload with phoneNumber:", payload.phoneNumber);
   
   const rep = companyDetails.rep;
 
