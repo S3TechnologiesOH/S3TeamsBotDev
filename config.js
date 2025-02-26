@@ -29,8 +29,8 @@ const config = {
   
   // Bot configuration
   bot: {
-    appId: process.env.MicrosoftAppId,
-    appPassword: process.env.MicrosoftAppPassword
+    appId: process.env.BOT_ID,
+    appPassword: process.env.BOT_PASSWORD
   }
 };
 
