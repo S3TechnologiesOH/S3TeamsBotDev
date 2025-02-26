@@ -1,38 +1,50 @@
-const connectwiseAPI = require("./connectwiseAPI"); // ConnectWise API logic
+const { createCompany, createSalesTicket } = require('./connectwiseAPI');
 
-async function handleCreateCompany(context, companyName, address, phoneNumber, rep, siteName, siteAddress, siteCity, selectedState, companyId, marketChoice, appointmentDate, appointmentTime, authState) {
-    try {
+async function handleCreateCompany(context, companyName, companyAddress, companyContactInformation, rep, 
+  siteName, siteAddress, siteCity, selectedState, companyId, marketChoice, appointmentDate, appointmentTime, authState) {
+  
+  try {
+    console.log("Handling company creation request with data:", { 
+      companyName, 
+      companyAddress, 
+      companyContactInformation, 
+      rep, 
+      siteName, 
+      siteAddress, 
+      siteCity, 
+      selectedState 
+    });
 
-        // Setup company details based on input
-        const newCompanyDetails = {
-            name : companyName,
-            market: {
-                id: 1,
-                name: marketChoice
-            },
-            address: address,
-            phoneNumber: phoneNumber,
-            rep: rep,
-            identifier : companyName,
-            site: {
-                _siteName: siteName,
-                _siteAddress: siteAddress,
-                _siteCity: siteCity,
-                _siteState: selectedState
-            },
-        };
+    // Structure company details in the format expected by createCompany function
+    const companyDetails = {
+      name: companyName,
+      identifier: companyId,
+      address: companyAddress,
+      // This is the key fix - make sure contactInfo is properly set
+      contactInfo: companyContactInformation,
+      rep: rep,
+      site: {
+        _siteName: siteName,
+        _siteAddress: siteAddress,
+        _siteCity: siteCity,
+        _siteState: selectedState
+      }
+    };
 
-        const appointmentDetails = {
-            date: appointmentDate,
-            time: appointmentTime
-        }
+    // Structure appointment details
+    const appointmentDetails = {
+      date: appointmentDate,
+      time: appointmentTime
+    };
 
-        // Create a new company
-        newCompany = await connectwiseAPI.createCompany(context, newCompanyDetails, appointmentDetails, authState);
-        //console.log('New Company:', newCompanys); 
+    // Call the API to create the company
+    await createCompany(context, companyDetails, appointmentDetails, authState);
+    await context.sendActivity(`Successfully processed company creation for ${companyName}`);
 
-    } catch (error) {
-        console.error('An error occurred:', error.message);
-    }
+  } catch (error) {
+    console.error("Error in handleCreateCompany:", error);
+    await context.sendActivity(`Error creating company: ${error.message}`);
+  }
 }
+
 module.exports = { handleCreateCompany };

@@ -127,12 +127,22 @@ async function createTeam(companyId, companyIdentifier, _teamRole, contactName) 
 async function createCompany(context, companyDetails, appointmentDetails, authState) {
   console.log("Entering createCompany with details:", companyDetails);
 
+  // Check if we received contactInfo
+  if (!companyDetails.contactInfo) {
+    console.error("Missing contact information!");
+    context.sendActivity("Company creation failed: Missing contact information");
+    return;
+  }
+
   const payload = {
     name: companyDetails.name,
     identifier: companyDetails.identifier || companyDetails.name.replace(/\s+/g, '').toLowerCase(),
     addressLine1: companyDetails.address,
-    phoneNumber: companyDetails.contactInfo,
+    // Fix: Correctly map contactInfo to phoneNumber - log before using
+    phoneNumber: companyDetails.contactInfo
   };
+  console.log("Created payload with phoneNumber:", payload.phoneNumber);
+  
   const rep = companyDetails.rep;
 
   try {
