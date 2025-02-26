@@ -1,5 +1,7 @@
 const fs = require('fs');
 const path = require('path');
+const axios = require('axios');
+const config = require('../config');
 
 const { TicketsApi, TicketTasksApi, ProductsItemApi, CompaniesApi, CompanyTeamsApi, CompanySitesApi, OpportunitiesApi, ContactsApi, OpportunityNotesApi } = require('connectwise-rest-api/release/api/api');
 const { ManageAPI } = require('connectwise-rest');
@@ -545,6 +547,100 @@ function extractParagraphText(rawNote) {
       return "Error extracting content.";
   }
 }
+
+class ConnectwiseAPI {
+  constructor() {
+    this.baseUrl = config.connectwise.apiUrl;
+    this.companyEndpoint = '/company/companies';
+    this.siteEndpoint = '/company/companies/{companyId}/sites';
+    this.contactEndpoint = '/company/contacts';
+    this.ticketEndpoint = '/service/tickets';
+    
+    // Set up authentication
+    this.authHeader = {
+      'Authorization': `Basic ${Buffer.from(
+        `${config.connectwise.companyId}+${config.connectwise.publicKey}:${config.connectwise.privateKey}`
+      ).toString('base64')}`,
+      'clientId': config.connectwise.clientId,
+      'Content-Type': 'application/json'
+    };
+  }
+
+  async createCompany(companyData) {
+    try {
+      const response = await axios.post(
+        `${this.baseUrl}${this.companyEndpoint}`,
+        companyData,
+        { headers: this.authHeader }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error creating company in ConnectWise:', error.response?.data || error.message);
+      throw new Error(`Failed to create company: ${error.response?.data?.message || error.message}`);
+    }
+  }
+
+  async createSite(siteData) {
+    try {
+      const endpoint = this.siteEndpoint.replace('{companyId}', siteData.companyId);
+      const { companyId, ...sitePushData } = siteData; // Remove companyId from payload
+      
+      const response = await axios.post(
+        `${this.baseUrl}${endpoint}`,
+        sitePushData,
+        { headers: this.authHeader }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error creating site in ConnectWise:', error.response?.data || error.message);
+      throw new Error(`Failed to create site: ${error.response?.data?.message || error.message}`);
+    }
+  }
+
+  async createContact(contactData) {
+    try {
+      const response = await axios.post(
+        `${this.baseUrl}${this.contactEndpoint}`,
+        contactData,
+        { headers: this.authHeader }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error creating contact in ConnectWise:', error.response?.data || error.message);
+      throw new Error(`Failed to create contact: ${error.response?.data?.message || error.message}`);
+    }
+  }
+
+  async createTicket(ticketData) {
+    try {
+      const response = await axios.post(
+        `${this.baseUrl}${this.ticketEndpoint}`,
+        ticketData,
+        { headers: this.authHeader }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error creating ticket in ConnectWise:', error.response?.data || error.message);
+      throw new Error(`Failed to create ticket: ${error.response?.data?.message || error.message}`);
+    }
+  }
+
+  async getCompany(companyId) {
+    try {
+      const response = await axios.get(
+        `${this.baseUrl}${this.companyEndpoint}/${companyId}`,
+        { headers: this.authHeader }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error getting company from ConnectWise:', error.response?.data || error.message);
+      throw new Error(`Failed to get company: ${error.response?.data?.message || error.message}`);
+    }
+  }
+}
+
+const connectwiseAPI = new ConnectwiseAPI();
+module.exports = { connectwiseAPI };
 
 module.exports = {
   fetch_ticket_by_id,
