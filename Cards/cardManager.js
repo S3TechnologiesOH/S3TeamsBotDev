@@ -288,11 +288,11 @@ async function onAdaptiveCardSubmit(context, authState) {
       case "handleCreateCompany":
         console.log("Action: handleCreateCompany");
 
-        const { companyName, companyAddress, companyId, companyContactInformation, rep,
+        const { companyName, companyAddress, companyId, phoneNumber, rep,
            siteName, siteAddress, siteCity, selectedState,
             marketChoice, appointmentDate, appointmentTime } = submittedData;
 
-        await companyManager.handleCreateCompany(context, companyName, companyAddress, companyContactInformation, rep, 
+        await companyManager.handleCreateCompany(context, companyName, companyAddress, phoneNumber, rep, 
           siteName, siteAddress, siteCity, selectedState,
            companyId, marketChoice, appointmentDate, appointmentTime, authState);
         break;
